@@ -1,0 +1,46 @@
+<HEAD>
+<TITLE>HALOE LIDAR DATA AND NAMING CONVENTIONS</TITLE>
+</HEAD>
+<BODY>
+<H1>HALOE LIDAR DATA AND NAMING CONVENTIONS</H1>
+<HR>
+
+HALOE was developed by the Defense Advanced Research Projects Agency (DARPA) and fielded in partnership with the Army Geospatial Center (AGC) in the CENTCOM area of responsibility (AOR) to demonstrate wide-area, high-resolution LIDAR imaging from a high-altitude airborne platform.  The LIDAR system was built by Northrop Grumman Corporation, Baltimore, MD and flown by National Aeronautic and Space Agency / Johnson Space Flight Center (NASA/JSC) on the WB-57 platform. 
+<p>
+The standard HALOE products are the 50-cm Digital Surface Model (DSM) and corresponding Intensity image (INT). For the Afghanistan AOR, the native WGS84-referenced DSM is transformed to an EGM96-referenced elevation model. The EGM96 version is considered the primary product for Afghanistan so it vertically matches Buckeye LIDAR and available 5m IFSAR. 
+<p>
+
+
+<H1>NAMING CONVENTIONS</H1>
+
+Haloe naming conventions are as follows:
+<P>
+
+
+
+<PRE>
+
+The 50-cm DSM products are provided in tiles of 2 minutes by 2 minutes.  This size results in a gridded elevation file of 200 MB. The folder name references the southwest geographic coordinate of the tile. The file naming convention is:  
+
+DDMMSSnDDDMMSSe_XYZxx_DSM.tif *  
+
+* DDMMSSnDDDMMSSe – the southwest geographic corner of each tile, where D stands for degrees, M for minutes, S for seconds -  n/e denotes the hemisphere as either N,S or E,W 
+* XYZxx – the vertical datum reference – normally WGS84 ellipsoid and/or the EGM96 geoid 
+* DSM – Digital Surface Model 
+* .tif – the file format. DSM files are 32-bit GeoTIFF; Intensity files (INT) are 8-bit GeoTIFF 
+
+Other characteristics are as follows: 
+
+Classification- UNCLASSIFIED//FOUO	      	Tile Size- 2 min. x 2 min 
+Post Spacing- 0.5 meter			      	Units- Meters                    
+Elevation Format- GeoTIFF 32-bit float point  	1st reflective surface DSM (LIDAR derived)
+Projection- UTM				     	 Null Values- 0
+Datum- (Horizontal) WGS84, (Vertical) EGM-96 or WGS84
+Absolute Horizontal and Vertical Accuracy- Unverified           
+REP.kml file provides some metadata and source information about the sortie and collection swaths 
+
+
+
+
+
+</PRE>

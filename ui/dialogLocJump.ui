@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dialogLocJump</class>
+ <widget class="QDialog" name="dialogLocJump">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>537</width>
+    <height>161</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dialogLocJump</string>
+  </property>
+  <widget class="QRadioButton" name="mgrsButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Jump MGRS</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="utmButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>70</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Jump UTM</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="latButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>100</y>
+     <width>82</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Jump LatLon</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>10</y>
+     <width>301</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Jump to location / Read location of screen center</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>130</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="longEdit">
+   <property name="geometry">
+    <rect>
+     <x>432</x>
+     <y>100</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="latEdit">
+   <property name="geometry">
+    <rect>
+     <x>282</x>
+     <y>100</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>100</y>
+     <width>41</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Latitude</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>100</y>
+     <width>47</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Longitude</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="northEdit">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>70</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="eastEdit">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>70</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="mgrsnEdit">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>40</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="mgrseEdit">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>40</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="mgrsxEdit">
+   <property name="geometry">
+    <rect>
+     <x>212</x>
+     <y>40</y>
+     <width>41</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="mgrsZoneLatEdit">
+   <property name="geometry">
+    <rect>
+     <x>172</x>
+     <y>40</y>
+     <width>21</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="utmZoneLatEdit">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>70</y>
+     <width>21</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="JumpButton">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>130</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Jump</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="mgrsZonLonEdit">
+   <property name="geometry">
+    <rect>
+     <x>132</x>
+     <y>40</y>
+     <width>21</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="utmZoneLonEdit">
+   <property name="geometry">
+    <rect>
+     <x>133</x>
+     <y>70</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>70</y>
+     <width>41</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Northing</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>70</y>
+     <width>47</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Easting</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mgrsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogLocJump</receiver>
+   <slot>doMgrs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>46</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>43</x>
+     <y>33</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>utmButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogLocJump</receiver>
+   <slot>doUtm()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>16</x>
+     <y>83</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>latButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogLocJump</receiver>
+   <slot>doLatLon()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>109</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>58</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>JumpButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogLocJump</receiver>
+   <slot>doJump()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>361</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>334</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogLocJump</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>482</x>
+     <y>138</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>476</x>
+     <y>21</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>doMgrs()</slot>
+  <slot>doUtm()</slot>
+  <slot>doLatLon()</slot>
+  <slot>doJump()</slot>
+ </slots>
+</ui>

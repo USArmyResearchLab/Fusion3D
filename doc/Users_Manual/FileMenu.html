@@ -1,0 +1,111 @@
+<HEAD>
+<TITLE>FILE MENU</TITLE>
+</HEAD>
+<BODY>
+<H1>FILE MENU</H1>
+<HR>
+
+<H2><A NAME="chum_intro">SAVING AND LOADING PROJECTS</A></H2>
+
+The 'Save Project' menu entry allows you to save the current map, any associated vector overlays, and many map parameters to a file.
+The saved file can be loaded later to retrive the map.
+<P>
+By convention, the project file suffix is '.s4d'.
+The file is ASCII and can be modified using any standard editor.
+It uses tags with parameters and the tags are defined in this documentation.
+This is for advanced users, but allows access to some less-used parameters not available from the menus
+and can also be very helpful in shortcutting map setup, particularly for demos.
+More information on project files can be found <A HREF="./ParameterFiles.html">here</A>
+<P>
+
+
+
+
+
+<H2><A NAME="chum_intro">LOADING DEM MAPS</A></H2>
+
+The base data layer for the viewer is the Digital Surface Model (DSM) or Digital Elevation Model (DEM) rasterized map.
+The viewer provides two options for loading DEMs.
+The first is an expedited menu for loading particular DEMs that follow strict naming conventions.
+The second is more general but requires more effort.
+<P>
+
+
+<H3><A NAME="chum_intro">Loading Maps From BuckEye, HALOE and ALIRT</A></H3>
+
+Special expedited loading is provided for DSM/DEM data from the the BuckEye, HALOE and ALIRT programs.
+These programs follow strict naming conventions and this feature can be exploited to load all files from a given
+directory in a single step.
+This includes the DSM/DEM data and also EO texture files and KML files defining tile extents.
+<P>
+For BuckEye, the primary DEM file is the 'a2' or last-hit DEM.  The viewer will automatically load the corresponding 'a1' first-hit
+DEM and the 'mrg' false-color texture file.
+If the 'mrg' file is not available, it will try to load the 'int' lidar intensity file.
+Also, it will load any very-high resolution orthophoto files in the MrSID format that are in the directory.
+These orthophotos are produced by another BuckEye sensor and are available for most of the areas covered by the BuckEye lidar
+as well as some areas covered by HALOE and ALIRT.
+Although they are accessed from a different part of the website, the orthophoto extents are usually coordinated with the lidar 
+making them very handy to use.
+Fusion with the orthophotos greatly improves the utility of the DEMs and you should use them whenever possible.
+<P>
+For HALOE, the primary DEM is usually the 'EGM96_DSM' file or, alternatively, the 'WGS84_DSM' file.
+The viewer will automatically load the 'INT' intensity texture file and, as described above, any MrSID orthophotos in the directory.
+<P>
+For ALIRT, the primary DEM file is the 'DSM' file.
+The viewer will automatically load all the 'RII' intensity texture files and, as described above, any MrSID orthophotos in the directory.
+<P>
+The menu entry allows you to load groups of tiles in a single step.
+For instance, you can load all 64 tiles of the BuckEye Baghdad map in one step, allowing easy access to very large maps.
+The menu will tell you how many files of each type it finds.
+<P>
+
+
+
+
+<H3><A NAME="chum_intro">Loading Maps From Other Sources</A></H3>
+
+The Fusion3D viewer works with commercial DEM data and other programs that do not follow naming conventions.
+When files do not follow the naming conventions for the BuckEye, HALOE and ALIRT programs, use the 'Load DEM -- Other' menu entry.
+This allows you to choose the files individually and to specify which files you want to load.
+<P>
+
+
+
+<H2><A NAME="chum_intro">LOADING LIDAR POINT CLOUDS</A></H2>
+
+The 'Load LAS or BPF Point Cloud' menu entry allows you to load point clouds in either the 'LAS' format or the 'BPF' format.
+The LAS format is the most commonly used format for ladar point clouds and many open-source codes can convert other formats to LAS.
+The Binary Point File (BPF) format was developed by Johns Hopkins APL and is typically used for Geiger Mode ladar outputs.
+This feature is designed primarily for very-high resolution imaging (either from the ground or from the air) for a small area.
+It can also be used for larger terrain maps, but the viewer is not designed for this purpose and is not as efficient as other viewers.
+<P>
+
+
+
+
+<H2><A NAME="chum_intro">CLEAR ALL</A></H2>
+
+The viewer can process only a single map  -- either a single tile or group of tiles loaded in the same single step.
+To access another map, you must first clear the viewer using the 'Clear all Models' menu entry.
+<P>
+
+
+
+
+<H2><A NAME="chum_intro">RENDERING THE SCREEN TO A FILE OR FILES</A></H2>
+
+The 'Save Screen to JPEG' menu entry allows you to render all objects in the scene to a file.
+The viewer does a separate rendering into the file rather than simply copy the screen.
+So the size and aspect ratio of the file are independent of the window size on the screen
+<P>
+The first menu option is to write to a single file that the user specifies.
+The second menu option is to write to a sequence of files in the current directory. 
+Using the defaults, images get saved with filename 'temp.nnnn.jpg', where nnnn is a sequence number.
+In this way you can save a sequence of images with the sequence number embedded in them, starting with 1.
+This option is meant to be used to save a sequence that can be converted to an animated sequence or a movie.
+<P>
+The default output image size is 640 in width by 512 in height.
+The default file-name base and the output image size can be modified in the Parameter file.
+<P>
+
+

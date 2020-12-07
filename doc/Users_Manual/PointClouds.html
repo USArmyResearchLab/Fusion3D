@@ -1,0 +1,102 @@
+<HEAD>
+<TITLE>POINT-CLOUD MENU</TITLE>
+</HEAD>
+<BODY>
+<H1>POINT-CLOUD MENU</H1>
+<HR>
+
+You can load point-cloud data in LAS or BPF formats from the 'File' menu and fuse that data with the DEMs and orthophotos.
+The visualization approach used for Fusion3D makes the combination of DEM and point cloud much easier and more natural than other viewers.
+<P>
+The point-cloud overlay feature was designed for overlays of very high detail for small areas.
+The DEM/orthophoto map provides coverage of the large area and the lidar overlay provides even more details for a area of particular interest.
+One example would be ground-based, mobile-mapping lidar files of a building or block streetscape.
+Another would be the overhead lidar point cloud for a small area that could be examined for detail that might not have been captured in the DEM.
+The viewer option works for lidar for larger areas, but is not designed for this application and probably will not work as well as other viewers.
+<P>
+Lidar overlays can be toggled on and off with the 'Pnts' button on the left of the main window.
+The DEM map can also be toggled on and off with the 'Map' button.
+Using these buttons, you can see either the DEM or the point cloud or both together.
+<P>
+
+
+
+
+<H2><A NAME="chum_intro_lidar"></A>DISPLAY PARAMETERS</H2>
+
+<H3><A NAME="chum_intro_lidar"></A>Color Balance</H3>
+
+By default, colors for point-cloud points are displayed as specified in the data.
+However, some colorized clouds have had a very strong tint and an attempt was made to balance the colors.
+There is an option to histogram-equalize each color independently that markedly improved some clouds.
+<P>
+
+
+
+<H3><A NAME="chum_intro_lidar"></A>False Color Scale</H3>
+
+For clouds that are not colorized, a false color scheme based on elevation is used to help render the cloud.
+The defaut is a relatively natural scale of hues that goes from green to white as elevation increases.
+Alternatively a blue-to-red color scheme can be used.
+<P>
+The default is to base colors on absolute elevation.
+However, for sloping terrain, elevation relative to the local average may be much more useful.
+In this case, basing colors on absolute elevation shows only the slope, resulting in one side of the map being all red and the other side being all blue.
+In most situations, however, color is better used to show local features such as trees, buildings and other manmade objects, which using relative elevation
+does much more effectively.
+<P>
+
+
+
+<H2><A NAME="chum_intro_lidar"></A>FILTERS</H2>
+
+<H3><A NAME="chum_intro_lidar"></A>Filter on Elevation</H3>
+
+This allows the user to process and display only cloud points within the specified elevation bounds.
+It can be useful, for example, for complex forested scenes where points higher in the trees may obscure more interesting features near the ground.
+<P>
+
+
+
+<H3><A NAME="chum_intro_lidar"></A>Filter on Elevation Above DEM</H3>
+
+This allows the user to process and display only point-cloud points within specified elevation bounds relative to the local ground elevation.
+This is similar to filtering on elevation, but is more useful is areas where there is a lot of elevation change.
+Simply filtering on absolute elevation may give meaningful results in only a small region but may be useless for areas further up or down a hill.
+<P>
+
+
+
+<H3><A NAME="chum_intro_lidar"></A>Filter on FINE Algorithm Quality Metric TAU</H3>
+
+This filter was implemented for a specific algorithm, the FINE algorithm developed by a group for NGA, that calculates a quality metric for each point in the cloud.
+It can easily be extended to any algorithm that derives a quality metric.
+The quality metric is particularly useful for Geiger-mode lidars which are very noisy.
+One can filter out virtually all the noise but at the expense of losing some faint features (as you would need to do to grid the cloud into a DSM).
+Alternatively, one can take advantage of people's pattern recognition skills to see relatively faint features through large amounts of noise.
+<P>
+
+
+<H3><A NAME="chum_intro_lidar"></A>FINE Algorithm Threshold Slider</H3>
+
+With this slider one can interactively adjust the threshold on the quality metric to only show points with quality above the threshold.
+Again, this is specific to the FINE algorithm but can be extended to any quality metric.
+<P>
+
+
+<H2><A NAME="chum_intro_lidar"></A>GRIDDING -- MAKING A DSM FROM THE POINT CLOUDS</H2>
+
+This feature makes use a utility code 'gridder' that can create a DSM from the point cloud file(s).
+The 'gridder' code may not be supplied with the Fusion3D distribution,
+but if it is it can provide a quick way to grid a point cloud.
+<P>
+The method used was developed at ARL to produce both a first-hit and last-hit DSM similar to the BuckEye maps.
+We believe it produces significantly better maps than other codes.
+Here it is meant to be a quick way and easy to generate a DSM to complement a point cloud being displayed.
+However, the gridder utility can be used directly or there are many other codes that can be used for this purpose.
+<P>
+
+
+
+
+

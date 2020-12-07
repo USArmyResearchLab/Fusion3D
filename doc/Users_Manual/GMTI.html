@@ -1,0 +1,76 @@
+<HEAD>
+<TITLE>GROUND MOVING TARGET INDICATOR (GMTI) FEATURE</TITLE>
+</HEAD>
+<BODY>
+<H1>GROUND MOVING TARGET INDICATOR (GMTI) FEATURE</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#gmti-hits">GMTI Hits for any Time Interval</A>
+<LI><A HREF="#gmti-area">Calculation of Obscured Areas</A>
+<LI><A HREF="#gmti-vector">Sensor-Direction Vector from a Vehicle or GMTI Hit</A>
+</UL>
+
+The GMTI feature is no longer available in Fusion3D.
+The GMTI feature was developed to analyze obscuration and multibounce problems for GMTI sensors.
+The viewer accepts GMTI data in the NATO 4607 format and was tested on the LSRS sensor.
+GMTI files were loaded through the "Vector Features" menu.
+<P>
+Fusing GMTI data with the terrain elevation map enables calculation of areas obscured from the sensor at any time.
+Since the elevation map is so accurate and has such high-resolution, a very detailed calculation of the obscuration from 
+each house or tree can be made.
+Such calculations can be very useful when tracking vehicles to determine when a vehicle will become obscured and
+when it can be expected to emerge into the open again.
+<P>
+Also, the GMTI feature can be used to investigate the problem of multiple bounces where the apparent location of the target
+is not the true location.
+In particular, the ability to visualize the vector from any GMTI hit back to the sensor
+makes it much easier to identify multibounce hits.
+These hits are in areas where there should be no moving vehicles, which the terrain model helps to identify.
+They also are at slightly longer ranges than they should be, which the sensor-direction vector helps to identify.
+<P>
+<P>
+
+
+
+<H2><A NAME="gmti-hits">GMTI HITS FOR ANY TIME INTERVAL</A></H2>
+
+You can display GMTI hits for any time interval desired -- the default is from the current clock time to 10 s in the past.
+The length of the interval is determined by the tag "GMTI-Show-Interval" in the Parameter File.
+<P>
+You can run the clock to track GMTI hits as vehicles move.
+The hits are shown in purple and are largest for the most current hits and get progressively smaller as the hits get older.
+<P>
+GMTI data files can often cover very long time intervals.
+To limit the interval, one can use the tags "Data-Lims-Tmin" and "Data-Lims-Tmax" in the Parameter File.
+<P>
+
+<H2><A NAME="gmti-area">CALCULATION OF OBSCURED AREAS</A></H2>
+
+At any location and time, you can calculate the obscuration for an area surrounding that location (see line-of-sight documentation).
+This capibility is accessed through the "Line-of-Sight" menu under "Calc LOS to GMTI".
+You click the desired location to the center of the screen and set the time as desired.  The LOS calculation then
+shows the area that is obscured from the sensor at that particular time using the instantaneous sensor position at that time.
+<P>
+
+
+
+<H2><A NAME="gmti-vector">SENSOR-DIRECTION VECTOR FROM VEHICLE OR GMTI HIT</A></H2>
+
+The viewer can draw a vector from two kinds of objects back towards the instantaneous location of the GMTI sensor.
+Typically, the GMTI sensor is at a large standoff distance, so the vector is only drawn for a short distance in the sensor direction.
+You can click (with the middle-mouse button) on any hit to see the vector to that hit.
+This is useful for understanding the geometry of the hit.
+<P>
+If a truth track is loaded (see documentation on vector overlays),
+then the vector is drawn from the position of the vehicle on the track.
+This feature was designed for detailed analysis of ground-truthed tests 
+where vehicles are instrumented with GPS and tracked with GMTI.
+By playing the clock, one can move the vehicle along its track and at any location
+visualize the line-of-sight from the sensor to the vehicle.
+Where the vehicle is obscured by a building or tree, you can clearly see the vector passing through the object.
+<P>
+
+
+
+

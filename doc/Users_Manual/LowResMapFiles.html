@@ -1,0 +1,170 @@
+<HEAD>
+<TITLE>AUXILIARY LOW-RES MAP FILES</TITLE>
+</HEAD>
+<BODY>
+<H1>AUXILIARY LOW-RES MAP FILES</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#lowres-elev">Low-Res Elevation Files</A>
+<P>
+<LI><A HREF="#lowres-tex">Low-Res Texture Files</A>
+<P>
+</UL>
+
+
+DEM maps are constructed as a sequence of small tiles, typically 128x128 pixels.
+High-resolution tiles are made immediately around the focus point,
+Then medium-resolution tiles are made in an anulus around this high-resolution area.
+Finally, in the background, low-resolution tiles are made for the surrounding area to provide context for the display.
+In many cases, orthophotos are available at significantly higher resolution than the DEM and in these cases
+high-resolution tiles are made that utilize the full resolution of both the DEM and the orthophoto texture.
+Medium-resolution tiles use texture at the same resolution as the DEM -- 
+even in the case where orthophotos are not available, grayscale texture is usually available from the lidar data itself.
+Low-resolution tiles use only the 4 corners of each tile for elevations and a heavily subsampled version of the texture.
+These are intended for context only.
+<P>
+In order to visualize arbitrarily large maps and to save time on first opening the viewer,
+maps are constructed only in the vicinity of the focus point.
+As the user moves around on the map, old tiles are discarded and new tiles are constructed on the fly around the new focus point.
+<P>
+When a DEM map is first accessed from a given directory, a low-resolution elevation map is constructed for the entire map area.
+Where the map is large, the low-res map is saved into a file
+and whenever that map is accessed again the row-res elevations are read from that file.
+The low-res elevation map contains the estimated elevations at each corner of the 128x128 tiles.
+There is some data processing involved in estimating elevations,
+which only takes a few seconds for a small map, but can take several minutes for a very large map area.
+<P>
+It is also possible to precompute a texture map downsampled to the desired resolution of the low-res tiles.
+When that is saved to a file, the viewer will use this data to significantly speed up creation of low-res tiles.
+This is not done automatically, however, as it involves using a separate utility code that is not included in the general distribution.
+Also, there are tradeoffs in setting the resolution of the texture map.
+This map must be maintained in Fusion3D memory, and higher-resolution mosaics also use more resources when visualized.
+So the resolution must be set carefully.
+<P>
+The offline mosaicing process is described in the section below.
+<P>
+
+
+
+
+
+
+
+<H2><A NAME="lowres-elev">LOW-RES ELEVATION FILE</A></H2>
+
+<P>
+Whenever the map is large, the low-resolution elevations for the entire area are saved to a file and
+then read from that file thereafter.
+An arbitrary size threshold was set; whenever the map contains multiple tiles or there would be more that 6000
+low-res elevation points, then the data would be saved.
+For smaller maps (the size of one typical BuckEye tile or smaller) the processing time is minimal and it is not 
+worth saving the file.
+For larger maps, however, processing time becomes annoying and then the shortcut file is used.
+<P>
+When a map is accessed, the viewer looks for the low-res elevation file and uses it if available.
+This file follows the following naming convention;
+<PRE>
+
+	When all files are loaded from a given directory, say
+
+		D:\Belgium
+
+	then the low-res elevation file is
+
+		C:\Belgium\Belgium_lowres_elev.dat
+
+	When the files are loaded individually, then the directory of the DEM will be used.
+
+</PRE>
+
+
+
+
+
+<H2><A NAME="lowres-tex">LOW-RES TEXTURE FILE</A></H2>
+
+As originally written, low-res tiles are constructed within the viewer in the same fashion as the other tiles.
+They are made one-by-one in concentric circles around the focus point.
+For each tile (typically 128x128), the corresponding texture file (or files) is opened and at least a portion of that file is read.
+The texture is then clipped to the tile dimensions and then downsampled.
+All this multiple opening and closing, clipping and subsampling is very inefficient.
+The tradeoff for simple and elegant implementation was reasonable for the small maps that were the norm at the time
+the code was developed.
+However, since then maps have grown in size and now province-sized maps are sometimes desired.
+For the largest size low-res area that the viewer can visualize, the time to construct the low-res tiles can be
+as much as an hour.
+Even though this happens in the background and does not disrupt interactive commands, the delay is clearly not tolerable.
+<P>
+Where delays in constructing the low-res tiles for context are significant, a low-res texture file can be created.
+This file is written offline with a utility code, is read once on initializing the viewer, is stored and used to
+create any low-res tiles thereafter.
+This gives dramatically faster performance, creating a large surround in orders of magnitude less time.
+<P>
+
+
+
+<H3>Using the Low-Res Texture Mosaic</H3>
+
+
+If the output mosaic is placed in the proper directory and given the proper name, then it will automatically be read and used by 
+the Fusion3D viewer.
+The convention is as follows:
+
+
+<PRE>
+
+	Fusion3D looks for a low-res texture mosaic in the base directory that was searched for DEM-associated files
+	(the one specified in the File->Load DEM menu and subsequently written to the Project file under the 'Map3d-Index-Find' tag)
+	It does not search subdirectories since these can also have mosaics for subsets of the map.
+
+	It looks for the file with the name ending with '_lowres_texture.tif'
+
+	For example, in the directory
+
+		D:/wosan
+
+	The low-res elevation file is
+
+		D:/wosan/wosan_lowres_elev.dat
+
+	then the following low-res texture file would be found 
+
+		D:/wosan/wosan_res16m_lowres_texture.tif
+
+	Note that the first part of the name is available for encoding additional info such as the map name and 16-m resolution
+
+
+</PRE>
+
+
+
+
+
+
+
+
+<H3>Mosaicr Utility Program</H3>
+
+A utility code 'mosaicr' that generates a single texture mosaic for a large area using smaller higher-resolution subimages
+was written at the Army Research Lab.
+The user has the option of either entering from a chosen directory all the files matching a certain pattern, or
+he can enter groups of files by selecting them from a browser window.
+<P>
+Before it starts the processing, the code will show the size of the output mosaic.
+Keep in mind that the file must be kept in memory in Fusion3D and may be slow to render if made too large. 
+<P>
+The mosaicr code is not implemented for all types of texture files and implemented only for color (3-byte) input imagery.
+It reads MrSID and GeoTiff input files and produces a GeoTiff output file.
+We cannot write MrSID files since we do not have a license to write MrSID (only to read these files).
+Since Fusion3D reads the resulting output file only once at full resolution, there is not a significant advantage of MrSID
+over GeoTiff anyway.
+The code moves file-by-file, summing each input pixel from that file into the appropriate (downsampled) mosaic pixel.
+Thus every output pixel is the average of all the input pixels that overlap it.
+<P>
+
+
+
+
+
+

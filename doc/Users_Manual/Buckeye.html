@@ -1,0 +1,116 @@
+<HEAD>
+<TITLE>BUCKEYE FILE USAGE AND NAMING CONVENTIONS</TITLE>
+</HEAD>
+<BODY>
+<H1>BUCKEYE FILE USAGE AND NAMING CONVENTIONS</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#import_maps_formats">How the Viewer Uses BuckEye Lidar Files</A>
+<LI><A HREF="#import_maps_names">BuckEye Lidar Directory Structure and File Naming Conventions</A>
+<LI><A HREF="#import_maps_mrsid">BuckEye MrSID Orthophoto Data</A>
+</UL>
+
+The viewer uses the basic structure and file format used by the BuckEye Program to simplify loading maps.
+Data from other sources may have to be loaded in a less convenient and less flexible manner.
+<P>
+
+
+
+<H2><A NAME="import_maps_formats">HOW THE VIEWER USES BUCKEYE LIDAR FILES</A></H2>
+
+For BuckEye maps, the viewer expects 4 map files in the geoTiff format for each tile.
+Each contains values on a regularly-spaced grid, typically at a 1-m post spacing.
+So the files can be thought of as pixel images, 2 of which contain elevations of the pixels,
+one of which the pixel intensity and the last a combination of pixel intensity and false color to encode elevation.
+<P>
+
+<DL>
+	<DT>The first file is the lowest elevation hit for each pixel
+	<DD>This is the primary DEM file for each tile and the one from which other file names are derived.
+	<P>
+	<DT>The second file is the highest elevation hit for each pixel
+	<DD>This is the secondary DEM elevation file.  Where the elevation is significantly different, the higher elevation information is added to the map.
+	Where it is within 1m, the information is not used.
+	This file can be omitted but provides very useful information to the map.
+	<P>
+	<DT>The third file is the intensity value for each pixel
+	<DD>This is an 8-bit grayscale value usually from the ladar.
+	The map can be textured either with this file or the color value from the fourth file type, so at least one must be present.
+	<P>
+	<DT>The fourth file is color value for each pixel
+	<DD>This is a 24-bit color value.
+	For the BuckEye data, the intensity value is determined by the lidar and the hue is a false color based on the elevation.
+	Alternatively, the color may be from satellite or other ortho-rectified imagery.
+	The map can be textured either with this file or the intensity value from the third file type, so at least one must be present.
+	<P>
+</DL>
+                        
+<H3><A NAME="import_maps_formats">Map File Constraints</A></H3>
+
+<DL>
+	<DT>All maps for a particular tile should have the same number of pixel rows and columns.
+	<DD>The viewer reads from the primary map file (the lowest elevation) the number of rows and columns and uses these parameters for the secondary elevation file for that tile.
+	If this constraint is not met, there may be read or display errors.
+	<P>
+	<DT>All elevation maps for a particular tile must be coregistered.
+	<DD>The viewer reads from the primary map file (the lowest elevation) the tile location and uses these parameters
+	for most map functions for that tile.
+	Therefore, the maps should precisely overlay or there may be registration errors in the different layers of the map
+	<P>
+</DL>
+<H2><A NAME="import_maps_names">BUCKEYE LIDAR DIRECTORY STRUCTURE AND FILE NAMING CONVENTIONS</A></H2>
+
+The viewer will find all relevent BuckEye files in the specified directory.
+However, it will be easiest to use the data if the BuckEye directory structure is maintained.
+BuckEye typically uses a separate subdirectory for each tile such as the following:
+<PRE>
+
+LasVegas							Main directory
+	Vegas_Tile1						Subdirectory for tile 1
+		dem_1m_a2_vegas_tile1.tif
+		dem_1m_a1_vegas_tile1.tif
+		int_1m_a1_vegas_tile1.tif
+		mrg_1m_a1_vegas_tile1.tif
+	Vegas_Tile2						Subdirectory for tile 2
+		dem_1m_a2_vegas_tile2.tif
+		dem_1m_a1_vegas_tile2.tif
+		int_1m_a1_vegas_tile2.tif
+		mrg_1m_a1_vegas_tile2.tif
+
+
+</PRE>
+
+<DL>For each tile the 4 types of map files have the following BuckEye naming conventions:
+	<DT>The first file is the lowest elevation hit for each pixel
+	<DD>This is the primary elevation file for each tile with a name like "dem_1m_a2_vegas_tile1.tif".
+	Names of the other 3 types of file are derived from this one.
+	<P>
+	<DT>The second file is the highest elevation hit for each pixel
+	<DD>This is the secondary elevation file and has a name like "dem_1m_a1_vegas_tile1.tif"
+	Its name is derived from the first file by substituting "_a1_" for "_a2_"
+	<P>
+	<DT>The third file is the intensity value for each pixel
+	<DD>This is an 8-bit grayscale value usually from the ladar and has a name like "int_1m_a1_vegas_tile1.tif".
+	Its name is derived from the first file by substituting "_a1_" for "_a2_" and "int_" for "dem_".
+	<P>
+	<DT>The fourth file is color value for each pixel
+	<DD>This is a 24-bit color value and has a name like mrg_1m_a1_vegas_tile1.tif.
+	Its name is derived from the first file by substituting "_a1_" for "_a2_" and "mrg_" for "dem_".
+	<P>
+</DL>
+                        
+<H2><A NAME="import_maps_mrsid">BUCKEYE MRSID ORTHOPHOTO DATA</A></H2>
+
+The elevation maps look best when textured with very high resolution orthophotos.
+The resolution of these photos is typically 10 times the resolution of the elevation data and complements the DEM data very well.
+The viewer uses all the MrSID imagery (any files with a .sid suffix) that it can find in the specified directory.
+It assumes that the relevent orthophotos are in the specified directory and that any files with the .sid suffix are potential texture files.
+It will texture with these MrSID files wherever it can and fall back on the lidar intensity in areas that the MrSID data does not cover.
+<P>
+
+
+
+
+
+

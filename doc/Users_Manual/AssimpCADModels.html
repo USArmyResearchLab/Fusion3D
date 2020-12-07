@@ -1,0 +1,43 @@
+<HEAD>
+<TITLE>CAD MENU -- IMPORTING CAD MODELS IN ASSIMP IMPORTABLE FORMATS</TITLE>
+</HEAD>
+<BODY>
+<H1>CAD MENU -- IMPORTING CAD MODELS IN ASSIMP IMPORTABLE FORMATS</H1>
+<HR>
+
+
+Fusion3D uses the Assimp library to import CAD models to superimpose on the map.
+This feature is very new and has only been tested in a few cases, so it should be considered experimental.
+Note that the Shapefile format allows for very simple CAD models, but this format is not handled from this menu.
+It is handled from the 'Vector Overlays' menu.
+<P>
+The Assimp library is a C++ implementation for importing CAD models in many popular formats.
+In particular, it supports Collada (.dae) and Wavefront Object (.obj).
+There is a list of about 30 other supported formats so it is very general.
+Other advantages are that it is self-contained and does not require loading lots of other libraries
+and that it puts data into a structure that is very similar to OpenGL so it does not require
+lots of additional transformations to use it.
+<P>
+
+
+
+
+
+
+<H2><A NAME="assimp_open">OPEN</A></H2>
+
+CAD models are typically defined in a local coordinate system with its origin somewhere within the model.
+So the 'Open' submenu provides a Northing, Easting and elevation in map coordinates to place the CAD model origin
+within the map.
+There are also provisions to rotate and scale the model as well.
+<P>
+
+
+
+
+
+
+
+
+
+

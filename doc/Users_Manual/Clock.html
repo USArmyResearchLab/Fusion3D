@@ -1,0 +1,60 @@
+<HEAD>
+<TITLE>THE VIEWER CLOCK</TITLE>
+</HEAD>
+<BODY>
+<H1>THE VIEWER CLOCK</H1>
+<HR>
+
+<H2><A NAME="chum_intro">1. INTRODUCTION</A></H2>
+
+The viewer clock is activated whenever time-dependent overlay data is read into the viewer.
+At present, the clock is triggered by track data and sensor reports.
+The clock is used to locate vehicles or people on their tracks.
+It can also be used to sequence over sensor reports of object locations issued over a period of time.
+<P>
+The clock can be controlled quickly but roughly through a slider from the 'Clock' menu.
+It can be controlled more precisely through the series of buttons to the left of the viewer window.
+The clock can be stepped forward or backward a single frame, run forward or backward and stopped with these buttons.
+<P>
+By default, the clock is set to cover the entire span of the time-dependent data.
+The minimum clock time is set to the minimum time in any of the active data files
+and the maximum clock time is set to the maximum time in any of the active data files.
+There are 2 tags, "Data-Lims-Tmin" and "Data-Lims-Tmax" that when entered into the
+Parameter file can limit the time span of the clock.
+<P>
+
+
+
+<H2><A NAME="chum_intro">2.  TIME COMPRESSION</A></H2>
+
+This feature is designed to ease the tracking of vehicles as they move with time.
+The usual approach with most software tools is to step the vehicle at a fixed rate, say at one-second intervals.
+The problem with this approach is that vehicles often sit stationary for periods of up to several hours.
+Also, if you are following several vehicles, there may be large gaps between when different vehicles move.
+If one sets the fixed interval small, it takes a very long time to step through the inactive periods.
+If one sets the interval larger, then vehicles move too fast in active periods.
+<P>
+One way to avoid this problem is to block out inactive periods of time.
+However, the user can lose the sense of where and how long the inactive periods are.
+The approach we have taken is to compress time as gracefully as possible during periods
+where vehicles are moving very slowly or sitting.
+Where vehicles are moving fast, time is not compressed.
+As vehicles move more and more slowly, the time compression is gradually increased
+until time runs very fast for a stopped vehicle.
+(When more than one vehicle is present, the calculations are done using the fastest-moving one.)
+Following a vehicle can thus be done much more quickly, while still distinguishing among fast-moving vehicles,
+ones that slow down for traffic,
+ones that are stopped for short periods in traffic, and ones that are parked for longer periods.
+<P>
+The compression is turned on using the Parameter File tag "Clock-Compress" (see documentation on parameter flags).
+The default is compression off where time is incremented at a fixed rate.
+This tag includes a threshold vehicle speed and a compression factor.
+Time is compressed below the threshold speed, but not above it.
+The compression factor must be 1 or greater and a value of 2 is reasonable.
+A value of 1 is maximum compression -- compressing time to the point where vehicles always travel at
+the maximum rate.
+Greater values of the compression factor reduce the effect and very large values will look as if no compression
+were being used.
+<P>
+
+

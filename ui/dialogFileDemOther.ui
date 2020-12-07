@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dialogFileDemOther</class>
+ <widget class="QDialog" name="dialogFileDemOther">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>521</width>
+    <height>325</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dialogFileDemOther</string>
+  </property>
+  <widget class="QPushButton" name="loadButton">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>290</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>290</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="PrimEdit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>50</y>
+     <width>351</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;Required&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="secEdit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>100</y>
+     <width>361</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;optional&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="texEdit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>170</y>
+     <width>361</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;Required&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="kmlEdit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>240</y>
+     <width>361</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;Optional&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>30</y>
+     <width>271</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Primary DEM (last-hit 'a2' or bare-earth DEM</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>80</y>
+     <width>281</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Secondary DEM (first-hit 'a1' DEM or DSM over DTM</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>150</y>
+     <width>141</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>MrSID or GeoTiff texture</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>220</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>KML extent file</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="primButton">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>50</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="secButton">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>100</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="texButton">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>170</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="kmlButton">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>240</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>loadButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemOther</receiver>
+   <slot>doLoad()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>356</x>
+     <y>294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>424</x>
+     <y>210</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemOther</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>465</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>129</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>primButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemOther</receiver>
+   <slot>doPrimBrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>459</x>
+     <y>63</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialogFileDemOther</sender>
+   <signal>windowIconTextChanged(QString)</signal>
+   <receiver>PrimEdit</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>260</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>215</x>
+     <y>59</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemOther</receiver>
+   <slot>doTexBrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>179</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>387</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>secButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemOther</receiver>
+   <slot>doSecBrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>439</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kmlButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemOther</receiver>
+   <slot>doKmlBrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>425</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>doLoad()</slot>
+  <slot>doCancel()</slot>
+  <slot>doKmlText()</slot>
+  <slot>doPrimBrowse()</slot>
+  <slot>doTexBrowse()</slot>
+  <slot>doSecBrowse()</slot>
+  <slot>doKmlBrowse()</slot>
+ </slots>
+</ui>

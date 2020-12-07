@@ -1,0 +1,1273 @@
+<HEAD>
+<TITLE>TAGGED ASCII INPUTS TO INTEGRATED DISPLAY</TITLE>
+</HEAD>
+<BODY>
+<H1>TAGGED ASCII INPUTS TO INTEGRATED DISPLAY</H1>
+<HR>
+
+The display program reads input parameters from ascii files.
+The files use tags so that the format is extensible.
+Typically, tag-parameter pairs take exactly one line.
+Each line contains a tag such as  'Ladar-File' followed by the parameter or
+parameters as specified below.
+Blank lines are allowed as well as comments which should be started with the tag '#' on each line.
+<P>
+
+
+<H2>PROJECT FILE TAGS</H2>
+
+The display program reads input parameters from a single ascii Project file.
+<P>
+
+<TABLE BORDER>
+<CAPTION>Setup Inputs</CAPTION>
+<TR><TH>Type<TH>Tag<TH>Description<TH>Type<TH>Default<TH>R
+
+<TR><TD>Camera
+<TR><TD><TD>Stereo-On-Off     <TD>Stereo status only from defaults file  ("on"/"off"/"anaglyph")  <TD>char<TD>on<TD><A HREF="#cam">[1]</A>
+<TR><TD><TD>Stereo-Offset     <TD>Stereo separation -- angle in deg between eyes  <TD>float<TD>3.0<TD><A HREF="#cam">[2]</A>
+<TR><TD><TD>Camera-Scene-Size <TD>Camera position along z-axis<TD>f z<TD>1000.<TD><A HREF="#cam">[3]</A>
+<TR><TD><TD>Camera-Height-Ang <TD>Height angle in deg of camera FOV (proj only)<TD>f ang (deg)<TD>10.<TD><A HREF="#cam">[4]</A>
+<TR><TD><TD>Camera-El-Max     <TD>Camera elevation angle max from nadir in deg<TD>f elMax<TD>85<TD><A HREF="#cam">[5]</A>
+<TR><TD><TD>Camera-Diag-Level <TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#cam">[6]</A>
+
+<TR><TD>Loc/Time
+<TR><TD><TD>Ref-LL-Deg    <TD>Ref pt of scene (Lat, Lon)<TD>lat, lon<TD><TD><A HREF="#loc">[1]</A>
+<TR><TD><TD>Data-Lims-Tmin<TD>Read time-dependent data only after this time<TD>hh.mm.ss<TD><TD><A HREF="#loc">[2]</A>
+<TR><TD><TD>Data-Lims-Tmax<TD>Read time-dependent data only befor this time<TD>hh.mm.ss<TD><TD><A HREF="#loc">[3]</A>
+<TR><TD><TD>Jump-To       <TD>Jump to designated location and time<TD>d N d E char hh.mm.ss<TD><TD><A HREF="#loc">[4]</A>
+<TR><TD><TD>Status-Color  <TD>Time/compass status -- color        <TD>f red, grn, blu<TD>1.0,0.0.,0.0<TD><A HREF="#loc">[5]</A>
+<TR><TD><TD>Status-Scale  <TD>Time/compass status -- compass scale<TD>f scale<TD>0.025<TD><A HREF="#loc">[6]</A>
+
+
+<TR><TD>DEM Index
+<TR><TD><TD>Map3d-Index-Find  <TD>DEM search directory and search filter<TD>see Note<TD><TD><A HREF="#imap3d">[1]</A>
+<TR><TD><TD>Map3d-Index-MrSID <TD>Search info for additional MrSID texture files<TD>c name<TD><TD><A HREF="#imap3d">[2]</A>
+<TR><TD><TD>Map3d-Index-Files <TD>For files not following naming conventions, 5 filenames<TD>see Note<TD><TD><A HREF="#imap3d">[3]</A>
+<TR><TD><TD>Map3d-Index-Smooth<TD>Parms for algorithm that discriminates smooth from rough surfaces<TD>i nL, f lTh, f sTh<TD>3,0.3,2.0<TD><A HREF="#imap3d">[4]</A>
+<TR><TD><TD>Map3d-Index-Diag  <TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#imap3d">[5]</A>
+
+<TR><TD>Tiles
+<TR><TD><TD>Tiles-N        <TD>No. of tiles to draw, (halfwidths)<TD>i nxlow, i nylow, i nmed, i nhi<TD><TD><A HREF="#tiles">[1]</A>
+<TR><TD><TD>Tiles-Size     <TD>Set tile size in pixels          <TD>i size<TD>128<TD><A HREF="#tiles">[2]</A>
+<TR><TD><TD>Tiles-Guard-Low<TD>When aimpoint within this lim of edge, retile low <TD>i nguard<TD>2   <TD><A HREF="#tiles">[3]</A>
+<TR><TD><TD>Tiles-Guard-Med<TD>When aimpoint within this lim of edge, retile med <TD>i nguard<TD>2   <TD><A HREF="#tiles">[4]</A>
+<TR><TD><TD>Tiles-Guard-Hi <TD>When aimpoint within this lim of edge, retile high<TD>i nguard<TD>1   <TD><A HREF="#tiles">[5]</A>
+<TR><TD><TD>Tiles-Low-Ratio<TD>Downsample ratio of lo-res texture (rel to hi-res)<TD>i ratio <TD>auto<TD><A HREF="#tiles">[6]</A>
+
+<TR><TD>DEM
+<TR><TD><TD>Map3d-Color-Scale    <TD>0=natural/abs elev, 1=blue-to-red/abs, 2=natural/rel, 3=b-r/rel<TD>0/1/2/3<TD>0<TD><A HREF="#nmap3d">[3]</A>
+<TR><TD><TD>Map3d-Color-Rainbow-Ranges<TD>Range limits for rainbow code<TD>f rmin, f rmax<TD><TD><A HREF="#nmap3d">[4]</A>
+<TR><TD><TD>Map3d-Lowres-Ncalc   <TD>Size of region used to calc lowres elevations<TD>int n<TD>32<TD><A HREF="#nmap3d">[6]</A>
+<TR><TD><TD>Map3d-Smooth-Last-Off<TD>Turn off terrain smoothing algorithm<TD><TD>on<TD><A HREF="#nmap3d">[7]</A>
+<TR><TD><TD>Map3d-Hilite-Th      <TD>Hilite thresholds for yellow and red<TD>f thYellow, f thRed<TD>10.,20.<TD><A HREF="#nmap3d">[10]</A>
+<TR><TD><TD>Map3d-Bright-Min     <TD>Boost min brightness for lidar map<TD>f bmin<TD>0<TD><A HREF="#nmap3d">[11]</A>
+<TR><TD><TD>Map3d-Cache-Level    <TD>0 for no cache, 2 for normal cache<TD>i level<TD>2<TD><A HREF="#nmap3d">[12]</A>
+<TR><TD><TD>Map3d-Cache          <TD>Mod amount of cache for tiles<TD>i nMed, i nHi, i Remote, i Diag<TD>50,9,0,0<TD><A HREF="#nmap3d">[13]</A>
+<TR><TD><TD>Map3d-Drape          <TD>On init, use draped-surface for all areas<TD>None<TD>hybrid<TD><A HREF="#nmap3d">[14]</A>
+<TR><TD><TD>Map3d-Obj-Write      <TD>Write all hi-res tiles in .obj format<TD>c name, f scale, f offset<TD><TD><A HREF="#nmap3d">[15]</A>
+<TR><TD><TD>Map3d-Lowres-Complexity<TD>Quality of low-res texture [0.1-1.0]<TD>f quality<TD>1.0<TD><A HREF="#nmap3d">[16]</A>
+<TR><TD><TD>Map3d-Diag-Level       <TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#nmap3d">[17]</A>
+
+<TR><TD>Point Cloud
+<TR><TD><TD>Mobmap-File                <TD>Read a terrestrial Ladar file in LAS format                      <TD>i id, c Name<TD><TD><A HREF="#gladar">[2]</A>
+<TR><TD><TD>Map3d-Color-Scale          <TD>0=natural/abs elev, 1=blue-to-red/abs, 2=natural/rel, 3=b-r/rel  <TD>0/1/2/3<TD>0<TD><A HREF="#gladar">[3]</A>
+<TR><TD><TD>Mobmap-Color-Balance       <TD>On to histogram-balance each color channel, off for no action    <TD>on/off<TD>off<TD><A HREF="#gladar">[4]</A>
+<TR><TD><TD>Map3d-Color-Rainbow-Ranges <TD>Elevation limits for rainbow colors (where no color data)        <TD>f hmin, f hmax<TD>0,300<TD><A HREF="#gladar">[5]</A>
+<TR><TD><TD>Mobmap-Bright-Min          <TD>Min brightness of display                                        <TD>f min [0,1]<TD>0.3<TD><A HREF="#gladar">[6]</A>
+<TR><TD><TD>Mobmap-Amp-Clip            <TD>Amplitude clipping range                                         <TD>f min, f max<TD>no clip<TD><A HREF="#gladar">[7]</A>
+<TR><TD><TD>Mobmap-Cull-Ground         <TD>Cull any pts within threshold distance from the local ground elev<TD>f thresh<TD>no cull<TD><A HREF="#gladar">[8]</A>
+<TR><TD><TD>Mobmap-Max-NDisplay        <TD>Max no. of points to display (dont overload graphics card memory)<TD>i nMax<TD>5000000<TD><A HREF="#gladar">[9]</A>
+<TR><TD><TD>Mobmap-Clip-Extent         <TD>Clip data to extent rectangle in UTM coordinates                 <TD>f W, f E, f S, f N<TD>no clip<TD><A HREF="#gladar">[10]</A>
+<TR><TD><TD>Mobmap-Dec-Ang             <TD>Decimate an angular region                                       <TD>i Ang1, i Ang2, i Fac1, i Fac2<TD>no decimate<TD><A HREF="#gladar">[11]</A>
+<TR><TD><TD>Mobmap-Write               <TD>Write (maybe clipped and decimated) to file in LAS format        <TD>c filename<TD><TD><A HREF="#gladar">[12]</A>
+<TR><TD><TD>Mobmap-Offset              <TD>Offset all points by distance (x,y,z)                            <TD>f x, f y, f z<TD>(0,0,0)<TD><A HREF="#gladar">[13]</A>
+<TR><TD><TD>Mobmap-Filter-Type         <TD>0 for no filter, 1 for filter on FINE alg TAU, 2 on elevation    <TD>0/1/2<TD>0<TD><A HREF="#gladar">[14]</A>
+<TR><TD><TD>Mobmap-Filter-Span         <TD>Span of filter bins to process (max no. to display)              <TD>i min, i max<TD>0, 127<TD><A HREF="#gladar">[15]</A>
+<TR><TD><TD>Mobmap-Filter-Zlims-Abs    <TD>For elev filter, span of absolute els to map into filter bins    <TD>f zmin, f zmax<TD>from data<TD><A HREF="#gladar">[16]</A>
+<TR><TD><TD>Mobmap-Filter-Zlims-Rel    <TD>For elev filter, span of relative els to map into filter bins    <TD>f zmin, f zmax<TD>from data<TD><A HREF="#gladar">[17]</A>
+<TR><TD><TD>Mobmap-Diag-Level          <TD>Level of diagnostic outputs (0=none)                             <TD>i flag<TD>0=none<TD><A HREF="#gladar">[18]</A>
+
+<TR><TD>Draw
+<TR><TD><TD>Vector-Over-File   <TD>Import filename<TD>codes, type, red, grn, blu, filename<TD><TD><A HREF="#vector">[1]</A>
+<TR><TD><TD>Draw-Color-Normal<TD>Line/pt color for non-hilited lines/pts        <TD>f dist<TD>blue  <TD><A HREF="#Draw">[2]</A>
+<TR><TD><TD>Draw-Color-Hilite<TD>Line/pt color for hilited lines/pts            <TD>f dist<TD>red   <TD><A HREF="#Draw">[3]</A>
+<TR><TD><TD>Draw-Above-Ground<TD>Display this distance above reference elevation<TD>f dist<TD>1.    <TD><A HREF="#Draw">[4]</A>
+<TR><TD><TD>Draw-LOD-Dist    <TD>threshold distance of camera from scene for LOD<TD>f dist<TD>50000.<TD><A HREF="#Draw">[5]</A>
+<TR><TD><TD>Draw-Symbol-Size <TD>Set symbol width in pixels                     <TD>f dist<TD>45    <TD><A HREF="#Draw">[6]</A>
+<TR><TD><TD>Draw-Diag-Level  <TD>Level of diagnostic outputs (0=none)           <TD>i flag<TD>0=none<TD><A HREF="#Draw">[7]</A>
+
+<TR><TD>CAD
+<TR><TD><TD>Vector-Over-File<TD>Import filename<TD>codes, type, red, grn, blu, filename<TD> <TD><A HREF="#vector">[1]</A>
+<TR><TD><TD>CAD-Orig-NE     <TD>Map loc of CAD model origin         <TD>d North, d East<TD>0,0     <TD><A HREF="#cad">[2]</A>
+<TR><TD><TD>CAD-Orig-Elev   <TD>Map loc of CAD model origin         <TD>i type, f elev <TD>0,0     <TD><A HREF="#cad">[3]</A>
+<TR><TD><TD>CAD-Rotate-X    <TD>Model rotation about X-axis (East)  <TD>f deg          <TD>0     <TD><A HREF="#cad">[4]</A>
+<TR><TD><TD>CAD-Rotate-Y    <TD>Model rotation about X-axis (North) <TD>f deg          <TD>0     <TD><A HREF="#cad">[5]</A>
+<TR><TD><TD>CAD-Rotate-Z    <TD>Model rotation about X-axis (Up )   <TD>f deg          <TD>0     <TD><A HREF="#cad">[6]</A>
+<TR><TD><TD>CAD-Diag-Level  <TD>Level of diagnostic outputs (0=none)<TD>i flag    <TD>0=none<TD><A HREF="#cad">[7]</A>
+
+<TR><TD>Track/Route
+<TR><TD><TD>Vector-Over-File   <TD>Import filename<TD>codes, type, red, grn, blu, filename<TD><TD><A HREF="#vector">[1]</A>
+<TR><TD><TD>Track-Diag-Level  <TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#track">[1]</A>
+
+<TR><TD>Vec Overlay
+<TR><TD><TD>Vector-Over-File   <TD>Import filename<TD>codes, type, red, grn, blu, filename<TD><TD><A HREF="#vector">[1]</A>
+<TR><TD><TD>Vector-Monitor-Dir <TD>Specify a dir where any new files are read<TD>float interval, char name<TD>off<TD><A HREF="#vector">[2]</A>
+<TR><TD><TD>Vector-Above-Ground<TD>Draw this distance above input data<TD>f elev<TD>1.<TD><A HREF="#vector">[3]</A>
+<TR><TD><TD>Vector-Diag-Level  <TD>Level of diagnostic outputs (0=none)<TD>i level<TD>0<TD><A HREF="#vector">[4]</A>
+
+<TR><TD>Bookmark
+<TR><TD><TD>Vector-Over-File     <TD>Import filename<TD>codes, type, red, grn, blu, filename<TD><TD><A HREF="#vector">[1]</A>
+<TR><TD><TD>Jump-To              <TD>Show as bookmark, enable jump-to-specified location<TD>f yloc, f xloc<TD>n/a<TD><A HREF="#bookmark">[1]</A>
+<TR><TD><TD>Bookmark-Above-Ground<TD>Draw this distance above input data<TD>f elev<TD>2.<TD><A HREF="#bookmark">[2]</A>
+<TR><TD><TD>Bookmark-Diag-Level  <TD>Level of diagnostic outputs (0=none)<TD>i level<TD>0<TD><A HREF="#bookmark">[3]</A>
+
+<TR><TD>Clock
+<TR><TD><TD>Clock           <TD>Turn on/off feature<TD>"on"/"off"<TD>on<TD><A HREF="#clock">[1]</A>
+<TR><TD><TD>Clock-Wall-Dtic <TD>Wall-clock time between clock tics<TD>f deltime<TD>0.03 s<TD><A HREF="#clock">[2]</A>
+<TR><TD><TD>Clock-Model-Dtic<TD>Model/scenario time between clock tics<TD>f deltime<TD>1 s<TD><A HREF="#clock">[2]</A>
+<TR><TD><TD>Clock-Compress  <TD>Compress time where little or no activity<TD>f vth, f compfac<TD>off<TD><A HREF="#clock">[4]</A>
+<TR><TD><TD>Data-Lims-Tmin  <TD>Lower limit for time interval<TD>f time<TD>start data<TD><A HREF="#clock">[5]</A>
+<TR><TD><TD>Data-Lims-Tmax  <TD>Upper limit for time interval<TD>f time<TD>end data<TD><A HREF="#clock">[6]</A>
+<TR><TD><TD>Clock-Diag-Level<TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#clock">[7]</A>
+
+<TR><TD>Line-Sight
+<TR><TD><TD>LOS-Parms       <TD>Basic parameters<TD>f rmin, f rmax, f cenht, fperht<TD>off<TD><A HREF="#los">[2]</A>
+<TR><TD><TD>LOS-Sensor-RLoc <TD>Fixed sensor location (in m relative to map origin)<TD>f north, f east, f elev<TD>GMTI<TD><A HREF="#los">[3]</A>
+<TR><TD><TD>LOS-Sensor-Delev<TD>Ray trace this elev above start pixel<TD>f elev<TD>30<TD><A HREF="#los">[4]</A>
+<TR><TD><TD>LOS-Preread     <TD>Preread a single elevation rectangle for all subsequent LOS<TD>s, n, w, e<TD>No<TD><A HREF="#los">[5]</A>
+<TR><TD><TD>LOS-Limit-North <TD>Limit all LOS calcs<TD>d north<TD>None<TD><A HREF="#los">[6]</A>
+<TR><TD><TD>LOS-Limit-South <TD>Limit all LOS calcs<TD>d south<TD>None<TD><A HREF="#los">[7]</A>
+<TR><TD><TD>LOS-Limit-East  <TD>Limit all LOS calcs<TD>d east <TD>None<TD><A HREF="#los">[8]</A>
+<TR><TD><TD>LOS-Limit-West  <TD>Limit all LOS calcs<TD>d west <TD>None<TD><A HREF="#los">[9]</A>
+<TR><TD><TD>LOS-Diag-Level  <TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#los">[10]</A>
+
+<TR><TD>Mensurate
+<TR><TD><TD>Mensur-Diag-Level  <TD>Level of diagnostic outputs (0=none)  <TD>i flag<TD>none<TD><A HREF="#men">[1]</A>
+
+<TR><TD>Sens-KML
+<TR><TD><TD>Kml-Add-Target    <TD>Add target type to define how to display it 	<TD>see below     <TD>off<TD><A HREF="#kmls">[1]</A>
+<TR><TD><TD>Kml-Inverval	<TD>Time interval where sensor hits displayed  		<TD>f time in s   <TD>30<TD><A HREF="#kmls">[2]</A>
+<TR><TD><TD>Kml-Monitor-Dir   <TD>Dir name to be monitored for new OSUS files       <TD>s dirname     <TD>N/A<TD><A HREF="#kmls">[3]</A>
+<TR><TD><TD>Kml-Monitor-Pat   <TD>Filename pattern for new OSUS files               <TD>s pattern     <TD>*.xml<TD><A HREF="#kmls">[4]</A>
+<TR><TD><TD>Kml-Use-Write-Time<TD>Sort files by write-time rather than create time  <TD>N/A           <TD><TD><A HREF="#osus">[6]</A>
+<TR><TD><TD>Kml-Offset        <TD>Offset all icons in (lat,lon,elev)                <TD>f lat, f lon, f elev<TD>0,0,0<TD><A HREF="#kmls">[5]</A>
+<TR><TD><TD>Kml-Set-Bearing   <TD>Bearing angle for cameras in deg from North cw    <TD>f angle       <TD>0.<TD><A HREF="#kmls">[6]</A>
+<TR><TD><TD>Kml-Warn-Level    <TD>Max number of warnings issued                     <TD>N/A           <TD>10<TD><A HREF="#kmls">[7]</A>
+<TR><TD><TD>Kml-Diag-Level    <TD>Level of diagnostic outputs (0=none)              <TD>N/A           <TD>None<TD><A HREF="#kmls">[8]</A>
+
+<TR><TD>Sens-OSUS
+<TR><TD><TD>Osus-Add-Sensor    <TD>Add sensor type-name to monitor (turns on manager)<TD>see below     <TD>off<TD><A HREF="#osus">[1]</A>
+<TR><TD><TD>Osus-Inverval-Stat <TD>Time interval where static sensor is highlighted  <TD>f time in s   <TD>240<TD><A HREF="#osus">[2]</A>
+<TR><TD><TD>Osus-Inverval-Mov  <TD>Time interval where moving sensor is highlighted  <TD>f time in s   <TD>30 <TD><A HREF="#osus">[3]</A>
+<TR><TD><TD>Osus-Monitor-Dir   <TD>Dir name to be monitored for new OSUS files       <TD>s dirname     <TD>N/A<TD><A HREF="#osus">[4]</A>
+<TR><TD><TD>Osus-Monitor-Pat   <TD>Filename pattern for new OSUS files               <TD>s pattern     <TD>*.xml<TD><A HREF="#osus">[5]</A>
+<TR><TD><TD>Osus-Use-Write-Time<TD>Sort files by write-time rather than create time  <TD>N/A           <TD><TD><A HREF="#osus">[6]</A>
+<TR><TD><TD>Osus-Request-Addr  <TD>Address of OSUS controller to task sensors        <TD>s IP-addr, d port<TD><TD><A HREF="#osus">[7]</A>
+<TR><TD><TD>Osus-Request-Id    <TD>'AssetType' field for sensor to be tasked         <TD>s assetType      <TD><TD><A HREF="#osus">[8]</A>
+<TR><TD><TD>Osus-Text-Display  <TD>0=display no name, 1=short name, 2=long name      <TD>int flag      <TD>0.<TD><A HREF="#osus">[9]</A>
+<TR><TD><TD>Osus-Offset        <TD>Offset all icons in (lat,lon,elev)                <TD>f lat, f lon, f elev<TD>0,0,0<TD><A HREF="#osus">[10]</A>
+<TR><TD><TD>Osus-Image-Size    <TD>Image scale factor for display                    <TD>f factor      <TD>20.<TD><A HREF="#osus">[11]</A>
+<TR><TD><TD>Osus-Set-Bearing   <TD>Bearing angle for cameras in deg from North cw    <TD>f angle       <TD>0.<TD><A HREF="#osus">[12]</A>
+<TR><TD><TD>Osus-Warn-Level    <TD>Max number of warnings issued                     <TD>N/A           <TD>10<TD><A HREF="#osus">[13]</A>
+<TR><TD><TD>Osus-Diag-Level    <TD>Level of diagnostic outputs (0=none)              <TD>N/A           <TD>None<TD><A HREF="#osus">[14]</A>
+
+<TR><TD>Status
+<TR><TD><TD>Status-Color<TD>Color of status display at top-left of main window<TD>r,g,b [0,1]<TD>1,0,0<TD><A HREF="#status">[1]</A>
+<TR><TD><TD>Status-Scale<TD>Scale of status display at top-left of main window<TD>float scale<TD>.025 <TD><A HREF="#status">[2]</A>
+
+<TR><TD>Write
+<TR><TD><TD>Write-Screen<TD>Write Current Screen to file<TD>char name base<TD><TD><A HREF="#write">[1]</A>
+<TR><TD><TD>Write-Size	<TD>Size of written image<TD>i width, i height<TD>512,512<TD><A HREF="#write">[3]</A>
+
+</TABLE>
+<BR><BR><BR>
+
+
+
+
+
+
+
+<H3><A NAME="clock">Notes -- Inputs for Clock</A></H3>
+<PRE>
+
+[1]  Clock		Use or not use the clock feature (and buttons)
+	OnOff		"on"/"off", default is on
+	
+[2]  Clock-Wall-Dtic	Wall-clock time between steps when clock is running
+	deltime	Delta time in s
+
+[3]  Clock-Model-Dtic	Time in the model/scenario between steps when clock is running
+	deltime	Delta time in s
+
+[4]  Clock-Compress	Turns on time compression.  Default is off where clock increments at fixed rate.
+	The feature compress time as gracefully as possible during periods where vehicles are
+	moving very slowly or sitting.  Where vehicles are moving fast, time is not compressed.  As vehicles move
+	more and more slowly, the time compression is gradually increased until it runs very fast for stopped vehicles.
+	Following a vehicle can be done much more quickly, but one can still distinguish between fast-moving vehicles,
+	ones that slow down for traffic, ones that are stopped for short periods in traffic, and ones that are parked
+	for longer periods.
+
+	vthresh     Speed threshold in mph -- time is not compressed when a vehicle is moving above this speed
+	comfactor	Compression factor (>= 1,  1 is max compression, 2 is reasonable compression)
+
+[5]  Data-Lims-Tmin
+	tmin		Time in format 'hh.mm.ss' eg '12.43.03' (default beginning of data)
+
+[6]  Data-Lims-Tmax
+	tmax		Time in format 'hh.mm.ss' eg '12.43.03' (default end of data)
+
+[7]  Clock-Diag-Level	Level of output diagnostics
+	level		0=no diagnostics, 1=limited diagnostics, 2=full diagnostics
+
+
+
+
+</PRE>
+<H3><A NAME="cam">Notes -- Inputs for Camera</A></H3>
+
+Only a perspective camera is implemented.
+For a perspective camera, the view is determined by the distance of the camera from the scene
+and the angle that the camera covers or the zoom.
+The distance is controlled by the "Dolly" thumbwheel on the viewer and is initialized by tag "Camera-Scene-Size".
+The zoom angle is controlled by the "Zoom" thumbwheel on the viewer and is initialized by tag "Camera-Height-Ang".
+For terrain viewing, it seems to be best to leave the zoom angle at its default of 10 deg and adjust the distance.
+<P> 
+<PRE>
+
+[1]  Stereo-On-Off	Stereo status on startup 
+				Because OpenInventor can't toggle raw stereo on the fly, this tag only available from defaults file CustomParms.txt.
+	OnOff		"on"/"off"/"anaglyph", default is on (stereo using Nvidia shutter glasses)
+	
+[2]  Stereo-Offset	The angle in deg between left and right eyes.
+				The perceived stereo separation stays roughly constant with scene size and zoom distance.
+				It is like what you would perceive if you could scale a scene at a fixed distance from you.
+				For the Coin3d library implementation, the perceived stereo separation changes with scene size and with zoom.
+				It is like what you would perceive when moving up or down in an aircraft over the scene.
+				I have compensated for this, by scaling the Coin value by the camera distance so it acts like the VSG version.
+	Angle		Angle in deg
+	
+[3]  Camera-Scene-Size	With tag "Camera-Height-Ang", determines initial camera view (see above)
+	Z		Camera initialized to view a scene of this size  
+			This angle initializes the "Dolly" thumbwheel.
+	
+[4]  Camera-Height-Ang	With tag "Camera-Scene-Size", determines initial camera view (see above)
+	Angle		The angle in deg that the camera sees, default = 10.
+			This angle initializes the "Zoom" thumbwheel.
+			Reducing this angle gives the look of a perspective camera
+			Increasing the angle gives a fisheye camera look of exagurated perspective
+
+[5] Camera-El-Max 	Maximum camera elevation angle.  The camera (user view direction) can vary from
+			nadir (directly overhead) down to this angle -- by default 85 deg, close to ground level
+			but not too close so as to avoid stereo problems and a ground-level view that does not
+			look good with our overhead map data.
+	elMax		maximum angle in deg from nadir
+
+[6] Camera-Diag-Level	Level of diagnostics when user centers at different place on the map
+	level		0=no diagnostics, 1=full diagnostics
+
+
+
+
+</PRE>
+<H3><A NAME="loc">Notes -- General-Purpose Inputs for Location and Time</A></H3>
+
+The two definitions of the reference point can be used interchangably.
+<PRE>
+
+[1]  Ref-LL-Deg		Location of reference point for map
+	Latitude	Latitude in degrees
+	Longitude	Longitude in degrees
+
+[2] Data-Lims-Tmin	Read data only after this time -- clip any time-dependent data
+	time		Must be UTC data in format hh.mm.ss
+
+[3] Data-Lims-Tmax	Read data only befor this time -- clip any time-dependent data
+	time		Must be UTC data in format hh.mm.ss
+
+[4] Jump-To		Jump to loc and time when button pushed
+	Northing	UTM coordinates in m
+	Easting		UTM coordinates in m
+	time		Must be UTC data in format hh.mm.ss
+
+[5] Status-Color	Color of status information -- clock time and compass
+	red		[0,1]
+	grn		[0,1]
+	blu		[0,1]
+
+[6] Status-Scale	Scale of compass
+	scale		scale factor (default 0.025)
+
+</PRE>
+<H3><A NAME="ch">Notes -- Registration of Constant Hawk Tracks</A></H3>
+
+Currently used to project Constant Hawk video frames onto the 3-D terrain maps.
+Frames can be registered automatically or can use the registration supplied in the MIT aux files.
+The automatic registration can be interactively tweaked by the user.
+<P>
+ 
+<PRE>
+
+[1] Place-Points	Turn on the track feature -- necessary for track registration
+
+[2] Pixmap		Turn on CH imagery overlay feature -- necessary for track registration
+
+[3] Place-Attr-File	Input .dbf template file from which shapefile attributes are copied
+			Used in outputting registered tracks -- 3 files output
+			Where possible, attribute values are filled in automatically
+			Otherwise, values left blank for analyst to fill in.
+			The default is to use the attributes from the input track file for all output files.
+			Older versions of the code input filenames, but current versions use hardwired files
+			The files can be updated from the menu, which writes the new file to the same dir with the next larger version number nnn.
+			
+	iType		0 = All track points in point format -- use template file C:\map3dview\bin\templateForTrackt0r[nnn].dbf, largest rev nnn
+			1 = All track points in line format  -- use template file C:\map3dview\bin\templateForTrackt1r[nnn].dbf, largest rev nnn
+			2 = Stop points in point format      -- use template file C:\map3dview\bin\templateForTrackt2r[nnn].dbf, largest rev nnn
+
+[4] Pixmap-Reg-Shadow  Include shadows in registration -- calc shadows for map before correlating with CH
+			The default is not to use shadows.
+	smax		In shadow regions, original map intensities [0,1] map into [0, smax]
+	nmin		In noshadow regions, original map intensities [0,1] map into [nmin, 1]
+
+[5] Pixmap-Over-Alpha	Adjust the transparency of the CH overlays
+	alpha		In range [0=invisible, 1=opaque], default = 0.5
+	
+[6] Pixmap-Reg-Reftype	Type of map data to register against 
+	type		int/mrg
+			int = grayscale intensities obtained from ladar
+			mrg = color overlays from satellite
+				Default comes from tag "Map3d-Index-Loc".  Buckeye maps have only ladar intensities, so use "int".
+				The Lubbock dataset has satellite and that appears to work better.
+			
+[7] Pixmap-Reg-Refsize	Size of portion of the RTV reference image read and buffered for registration use. 
+			When the registration gets too close to the edge of this image, it is reread.
+	size		Size in pixels (default 1024)
+			
+[8] Pixmap-Reg-Corrsize	Size of portion of the ref and test images that are correlated. 
+			When the registration gets too close to the edge of this image, it is reread.
+	size		Size in pixels (default 256)
+			
+[9] Pixmap-Reg-Lims-D	Limits on the registration search region -- offset distances
+			For the default independent registration method, values for each frame should be the same.
+			For the sequential method, it is assumed that absolute errors may be larger than relative errors,
+			so search distance for first frame may need to be larger than subsequent frames.
+
+	dist_first	For first frame,  translations searched within [-dist_first,dist_first], integer (default 80)
+	dist_other	For other frames, translations searched within [-dist_other,dist_other], integer (default 80)
+	
+[10] Pixmap-Reg-Lims-A	Limits on the registration search region -- angles
+	ang_hi	Rotation angles searched within [-ang_hi,ang_hi], default 0.5
+	delta_angle	Angle delta for the search (default 0.5)
+	
+[11] Pixmap-Reg-Lims-S	Limits on the registration search region -- shifts in where the registration correlation is centered.
+			Registration will be done for a number of tiles.  The center tile is at the input reg. loc.
+			Other tiles are centered at different input reg. locs. and are contiguous.
+			This is done to achieve a larger search radius than supported by an individual correlation.
+
+	nshift		No. of tiles is (2*nshift+1) by (2*nshift+1) (default 0 for single tile at center)
+
+[12] Pixmap-Reg-Method	Registration method
+	type		0 = sequential -- use previous frame loc to register current 
+			1 = independent -- use no information on reg from other frames (default)
+
+[13] Pixmap-Reg-Histeq  Apply histogram equalization to both CH and map before reg
+	flag		"on" / "off" (default off)
+
+[14] Pixmap-Above-Ground The image is drawn at a fixed elevation above the reference
+	elev	Distance above reference elevation in m (default=10.0)
+
+[15] Pixmap-Hist-Eq	Use histogram equalization on images on startup
+	onoff		"on"/"off" (default off)
+		
+[16] Pixmap-Diag-Level	Diagnostic level
+	level	0 = no diagnostics (default)
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		3 = very detailed diagnostics including images (./temp_whatever)
+
+
+[17] Apix-Db-Diag	Diagnostic level for database server calls
+	level		level (0=none, 1=minimal, 2=verbose, 3=maximum)
+			Default is diagnostic level set for CH overlays
+
+[18] Apix-Jp2-Diag	Diagnostic level for database server calls
+	level		level (0=none, 1=minimal, 2=verbose, 3=maximum)
+			Default is diagnostic level set for CH overlays
+
+
+
+
+
+</PRE>
+<H3><A NAME="lreg">Notes -- Local Registration of CH Tracks</A></H3>
+
+When the Lincoln Labs database and JPEG2000 servers are not available, there is limited capability to register tracks from local image chips.
+<P>
+ 
+<PRE>
+
+[1] Pixmap-Reg-Local   What type of CH images to use for registration
+	flag		0 = JP2 from LL JP2 server (default)
+			1 = local .pgm files 
+
+[2] Pixmap-Over-Dir	Read sequence of .pgm files with associated .txt files from CH MIT viewer
+	dirname		Directory -- pgm image files from this directory are read
+
+[3] Apix-Db-Id		Address information for Lincoln Labs database server
+	addr		IP address in the format nnn.nnn.nnn.nnn
+	login-name	Login name
+	passwd		Password
+	
+[4] Apix-Db-Mission	Mission name for Lincoln Labs database server
+	mission		Mission name
+	
+[5] Apix-Jp2-Id		Address information for Lincoln Labs JPEG2000 server
+	addr		IP address in the format nnn.nnn.nnn.nnn
+
+[6] Apix-Db-Local	Bypass database server and use parameters below
+	first-frame	First frame no (int)
+	ulx		UTM coordinate of upper left corner of full-scale image
+	uly		UTM coordinate of upper left corner of full-scale image
+	lrx		UTM coordinate of lower right corner of full-scale image
+	lry		UTM coordinate of lower right corner of full-scale image
+	utm_zone_lon	Longitude zone (int) 
+	utm_zone_lat	Laditude zone (single character)
+	path_prefix	Path prefix
+	
+[7] Apix-Jp2-Local	Bypass JPEG2000 server and use path prefix below
+	path		Path prefix
+	
+
+
+</PRE>
+<H3><A NAME="truth">Notes -- Truthing</A></H3>
+<PRE>
+
+[1]  Truth			Toggle on/off feature
+	flag			"on" / "off" (default is on)
+
+[3]  Truth-Fix-Elevs		Adjust elevations from 3D map to be at ground elevation of that map
+				Default is to use elevations as reported from the file
+	
+[4]  Truth-Above-Ground		Draw track/target icon this dist above elev from input data or adjusted elev
+				Drawn with SoAnnotate so it always shows over the terrain regardless of its elevation
+	dist			Distance in m (default 0m)
+	
+[5]  Truth-Ptr-Length		Draw pointer from target back toward GMTI sensor this length.
+	length			Distance in m (default 200m)
+	
+[6]  Truth-Diag-Level
+	level			0=none (default)
+				1=most important diagnostics written
+				2=extensive diagnostics written
+
+
+<H3><A NAME="gmti">Notes -- Ground Moving Target Indicator (GMTI)</A></H3>
+
+Used to display hits from a GMTI sensor.
+<P>
+ 
+<PRE>
+
+[1] GMTI		Turn on the feature with a max no. of GMTI files
+	nfiles_max	Max no. of files that can be read in and displayed
+
+[2] Vector-Over-File	Input filename for to be displayed (also can be used for truth or mti files)
+			If location name is unknown or irrelevent, entering "any" or "unknown" will match any location
+	place		Location name (ie Lubbock or Baghdad) -- must match place names in map3d index tags
+	type		Type of file
+				1 = display only 
+				3 = mti -- special processing for GMTI only
+				4 = truth -- can used time attribute to animate
+	red		Line color red [0,1]
+	grn		Line color green [0,1]
+	blu		Line color blue [0,1]
+	filename	Input filename
+
+[3] GMTI-Show-Interval	Time interval to display (from current time back)
+	dtime		Time interval (default is 10s)
+
+[4] GMTI-Above-Ground	Target hits will all be drawn at this elevation above the reference elevation
+	elev		Elevation in m (default is 20m)
+
+
+[5] GMTI-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+
+
+</PRE>
+<H3><A NAME="vector">Notes -- Vector Feature Overlays</A></H3>
+
+Used to preload vector feature overlays that are used for display only, for truthing, or for GMTI data.
+These overlays can trace map boundaries, rivers or major roads to help orient the user in a large map like Baghdad or Washington DC.
+<P>
+ 
+<PRE>
+
+[1] Vector-Over-File	Input filename for to be displayed (also can be used for truth or mti files)
+	RenderCodes	Originally a location name, but repurposed for additional render parameters to maintain compatibility with old Project Files
+			Has the form nnn.nnRenderCodesnnn
+			First number is float altitude offset in m (some vector overlays are relative to different altitude datum, such as mean-sea-level vs HAE)
+			Middle is flag "RenderCodes" that indicates the newer format
+			Last number is 3 flags	
+				DefaultAltitudeModez;	Altitude mode: 0 for clamp-to-ground, 1 for relative-to-ground, 2 for absolute, 3 for relative to internal attribute
+								Poly-Z files give altitude relative to an internal attribute "GrndHAE", so output as absoulte HAE
+				DefaultFillModet:		Polygon fill mode:  0 for wireframe, 1 for filled
+				asAnnotationFlag:		0 to mix with map when rendering, 1 for annotation (overlays all map elements)
+					WARNING:  Annotation setting creates artifacts with filled polygons since hidden surface algorithms are turned off
+	type		Type of file (string)
+				'display' -- display only 
+				'bookmarks' -- bookmarks 
+				'mti'   -- special processing for GMTI only
+				'track' -- adds capability to fly along the track and measure distances along it
+				'draw'  -- adds capability to draw a military scenario and add, delete, move and otherwise edit the members
+				'cad'   -- adds capability to draw CAD models in many CAD format and to deconflict with DEMs
+	red		Line color red float[0,1]
+	grn		Line color green float[0,1]
+	blu		Line color blue float[0,1]
+	filename	Input filename
+
+[2] Vector-Monitor-Dir			Specify a directory to monitor -- all new files are periodically read and added to display
+	time		Time interval between checks of dir for new files
+	name		Directory name
+
+[3] Vector-Above-Ground	Vectors will all be drawn at this elevation above the reference elevation
+	elev		Elevation in m (default is 1m)
+
+
+[4] Vector-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		3 = very detailed diagnostics
+		
+
+
+</PRE>
+<H3><A NAME="bookmark">Notes -- Bookmark Overlays</A></H3>
+
+Used to indicate interesting locations on the map.
+After input-bookmarks has been turned on from the menu, bookmarks can be added by clicking with the middle mouse and deleted
+by a cntrl-middle mouse click.
+Bookmarks can be saved to a KML file and read from a KML file.
+When 
+<P>
+ 
+<PRE>
+
+[1] Jump-to	Jump to specified location -- show as bookmarks and up to 3 of these are tied to buttons at the left of the main window)
+	yloc		Easting in global coordinate system (double)
+	xloc		Northing in global coordinate system (double)
+
+
+[2] Bookmark-Above-Ground	Vectors will all be drawn at this elevation above the reference elevation
+	elev		Elevation in m (default is 20m)
+
+
+[3] Bookmark-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		3 = very detailed diagnostics
+		
+
+
+</PRE>
+<H3><A NAME="draw">Notes -- Drawing Overlay Lines, Points and Symbols on the Map</A></H3>
+
+<P>
+ 
+<PRE>
+
+[1] Draw-Input-File	Input filename to be appended to current track
+	filename	Input filename
+
+[2] Draw-Color-Normal		Color for normal (non-highlighted) lines and points
+	red		red value of color [0,1]
+	grn		green value of color [0,1]
+	blu		blue value of color [0,1]
+
+[3] Draw-Color-Hilite		Color for highlighted lines and points (used for current line/point)
+	red		red value of color [0,1]
+	grn		green value of color [0,1]
+	blu		blue value of color [0,1]
+
+[4] Draw-Above-Ground	Draw tracks this distance above the reference elevation
+	elev		Elevation in m (default = 1.)
+
+[5] Draw-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+		
+	
+
+<H3><A NAME="cad">Notes -- Visualizing CAD Models</A></H3>
+
+<PRE>
+
+[2] CAD-Orig-NE			Location on map of CAD model origin
+	Northing			In map coordinates
+	Easting			In map coordinates
+
+[3] CAD-Orig-Elev		Location on map of CAD model origin
+	Type				1=relative to terrain, 2=absolute
+	elev				Elevation in m
+
+[4] CAD-Rotate-X		Rotation angle about x-axis (East) 
+	deg				Angle in deg (default 0)
+
+[5] CAD-Rotate-Y		Rotation angle about y-axis (North) 
+	deg				Angle in deg (default 0)
+
+[6] CAD-Rotate-Z		Rotation angle about z-axis (Up) 
+	deg				Angle in deg (default 0)
+
+[7] CAD-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+		
+	
+
+</PRE>
+<H3><A NAME="track">Notes -- Tracks or Routes, non Constant Hawk</A></H3>
+
+Used to read tracks (single-line features) from Shapefiles or KML files, create tracks, edit tracks, merge tracks and write tracks to Shapefiles or KML files.
+<P>
+ 
+<PRE>
+
+[1] Track-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+		
+	
+
+</PRE>
+<H3><A NAME="place">Notes -- Constant Hawk Tracks</A></H3>
+
+Used only for Constant Hawk tracks to read tracks from Shapefiles, create tracks, register tracks and write tracks to Shapefiles.
+<P>
+ 
+<PRE>
+
+[1] Place-Points	Toggle on/off the track feature
+	flag		"on"/"off" (default is off)
+
+[2] Place-Above-Ground	Draw tracks this distance above the reference elevation
+	elev		Elevation in m (default = 10.)
+
+[3] Place-Time-Adjust	Override internal track times when these times bogus (like Scott1)
+	tmin		Min time for track (float)
+	tmax		Max time for track (float)
+
+[5] Place-Input-File	Input filename to be displayed
+	filename	Input filename
+
+[6] Place-Output-Type	Shape type to output (default is from input Shapefile)
+	type 		1=points, 3=polyline	
+
+[7] Place-LL-Or-UTM	Points defined in Lat-Long or UTM
+	flag		0=Lat-Long, 1=UTM (default=0)
+	
+[8] Place-Interp-Dist	Only when there are no interpolation flags in the track file, this distance is used
+			to limit the number of frames registered.  A frame will only be registered when it
+			is at least this distance from the previous registered frame
+	dist		Distance in m
+	
+[9] Place-Fix-Elevs	Adjust elevations to 3D map
+	char		"on" / "off"
+	
+[10] Place-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+	
+
+</PRE>
+<H3><A NAME="tiles">Notes -- DEM Tiles</A></H3>
+
+Tiles are a dynamic and parallelizable way of constructing 3-D terrain maps that supercedes the
+old static method.
+<P>
+ 
+<PRE>
+
+[1]  Tiles-N
+	nxlow		The halfwidth of low-res map in tiles in x (width  is 2*nxlow+1 tiles)
+	nylow		The halfwidth of low-res map in tiles in y (height is 2*nylow+1 tiles)
+	nmed		The halfwidth of medium-res map in tiles 
+	nhi		The halfwidth of high-res map in tiles (negative -> no tiles)
+			Not implemented yet -- intended for hi-res texture like Buckeye images
+	
+[2]  Tiles-Size
+	size		Size of tile in pixels -- both x and y (default=128)
+	
+[3] Tiles-Guard-Low
+	nguard		When camera aim point gets within this many tiles of the low-res
+			map boundary, then retile centered at the camera aim point (default = 2)
+			
+[4] Tiles-Guard-Med
+	nguard		When camera aim point gets within this many tiles of the medium-res
+			map boundary, then retile centered at the camera aim point (default = 2)
+			
+[5] Tiles-Guard-Hi
+	nguard		When camera aim point gets within this many tiles of the very-high-res
+			map boundary, then retile centered at the camera aim point (default = 1)
+			
+[6] Tiles-Low-Ratio	The downsampling ratio for low-res tiles is calculated automatically by default
+			The ratio is a power of 2 which speeds reading MrSID files by a lot and makes downsampling easier and look better.
+			The ratio is relative to the high-res texture if there is one or to the med-res (dem) texture if there is not.
+			
+	ratio		Downsampling ratio -- should be chosen to be a power of 2 and result in an integer number of pixels in x and y.
+
+
+
+			
+			
+			
+</PRE>
+
+
+
+<H3><A NAME="nmap3d">Notes -- DEMs</A></H3>
+<PRE>
+
+[3]  Map3d-Color-Scale	Type of false color scheme for texturing DEMs and point clouds
+	type	0	Natural hue scale based on absolute elevation (default)
+		1	Blue-to-red hue scale based on absolute elevation 
+		2	Natural hue scale based on elevation relative to the mean ground plane
+		3	Blue-to-red hue scale based on elevation relative to the mean ground plane 
+
+[4]  Map3d-Color-Rainbow-Ranges	Limits for rainbow color scheme
+	min	Min range mapping to blue
+	max	Max range mapping to red
+
+[6]  Map3d-Lowres-Ncalc		Size of the region used to calculate lowres elevations
+	A region (nCalc by nCalc)centered at each vertex of a lowres tile is used to estimate elevation at that vertex
+
+	nCalc -- Size of the region used is (nCalc by nCalc) (default = 32)
+
+[7]  Map3d-Smooth-Last-Off	Turn off algorithm that smooths the terrain.  The result is terrain made up
+	of discrete horizontal patches rather than the algorithm warping those patches in smooth areas to
+	join the patches into a smooth surface.
+		
+[9]  Map3d-Hilite-Obstr		Add a button that toggles on and off highlighting.
+	Default is off -- no button available to toggle.
+
+[10]  Map3d-Hilite-Th	Thresholds for hilite colors.
+	 Highlight first-hit points that are more than a threshold value above the corresponding
+	 last-hit points (typically, above the ground).  This serves to highlight vertical obstructions.
+	 Points 10-20m above the last-hit points are highlighted in yellow.
+	 Points > 20m above the last-hit points are highlighted in red.
+
+	thYellow	Threshold for yellow (default 10m)
+	thRed		Threshold for red (default 20m)
+		
+[11]  Map3d-Bright-Min	Boost minimum brightness level for lidar map -- for particularly dark maps
+	level		level [0,1], 1 will put each pixel at max brightness, default = 0
+		
+[12]  Map3d-Cache-Level	Modify cache levels for tiles
+	 a1 and a2 elevation tiles and MrSID texture tiles are cached
+	level		0 for no cache, 1 for low cache (not yet implemented), 2 for normal cache (default 2)
+		
+[13]  Map3d-Cache	Modify cache levels for tiles
+	 a1 and a2 elevation tiles and MrSID texture tiles are cached
+	 Default levels are conservative -- doubling or tripling these levels is reasonable, but you should monitor memory usage
+	nMed		No. of Medium-Res tiles cached (default 50)
+	nHi		No. of High-Res tiles cached	(default 9)
+	iDiag		Diagnostic level for caching -- 0 is silent, 1 gives some diagnostics (default 0)
+		
+[14]  Map3d-Drape	Default visualization is the patented hybrid technique that drapes smooth surfaces but displays rough areas as discrete squares.
+	 Using this tag is equivalent to pressing the 'Tile' button that causes all areas to be draped.
+	 This may be better for very rough mountainous terrain with virtually no vegitation or for animations where small gaps may cause speckle.
+		
+[15]	Map3d-Obj-Write	Write DEM tiles to .obj format -- From a Project File only at this time, no equivalent menu items
+	WARNING -- This is a partially implemented and not well checked out feature
+	Writes all hi-res tiles -- the a1 and a2 DEM for each tile is written to a separate file.
+	Writing is done on initialization centered at the initial aim point (you need to specify this point in a Project File).
+	The number of tiles is determined by the hi-res size specified in the Project File
+	Units are meters relative to the aim point and reference elevation (so approximately centered at origin).
+	The map can be scaled, primarily for use in the Oculus Rift.
+	
+	file		Name of output file (various tiles will use permutations of this name) -- must use '\' rather than '/' in name
+	scale		Scale map before writing
+	offset	Elevation offset
+
+[16]  Map3d-Lowres-Quality	Quality of the lowres texture (implemented for now only for the lowres texture mosaic)
+		The default highest quality texture does significant smoothing of the texture.  
+		This can make the map look blurrier than necessary and a 'poorer' quality rendering may improve the map look.
+		It should also be faster, but I dont know if the difference is significant.
+	quality	value [0.1-1.0] where 1.0 is the default highest quality with significant smoothing, and 0.1 is pixelated
+
+[17]  Map3d-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+		
+		
+</PRE>
+
+
+
+
+<H3><A NAME="gladar">Notes -- Lidar Point Clouds</A></H3>
+
+This is organized to display point-cloud lidar data in LAS or BPF format.
+<P>
+<PRE>
+
+[2]  Mobmap-File	Write current LAS data to LAS file
+	filename	Filename (pathname)
+	
+[3]  Map3d-Color-Scale	Type of false color scheme for texturing DEMs and point clouds
+	type	0	Natural hue scale based on absolute elevation (default)
+		1	Blue-to-red hue scale based on absolute elevation 
+		2	Natural hue scale based on elevation relative to the mean ground plane
+		3	Blue-to-red hue scale based on elevation relative to the mean ground plane 
+
+[4]  Mobmap-Color-Balance
+	state	'on'/'off' (default is off) On histogram balances each channel independently (green channel is sometimes stronger than others)
+		'off' to make no change to colors
+	
+[5]  Map3d--Color-Rainbow-Ranges
+	hmin 	Minimum elevation corresponding to blue
+	hmax	Maximum elevation corresponding to red
+	
+[6]  Mobmap-Bright-Min -- input brightnesses [0,255] will map into [min,1] on the screen
+	min	Min brightness [0,1], default=0.3
+			
+[7]  Mobmap-Amp-Clip	Maps range to [0,255] 
+	min	Min amp corresponding to 0 
+	max	Max amp corresponding to 255
+			
+[8]  Mobmap-Cull-Ground	Cull all points within a threshold distance above the local ground level (determined from the low-res map elevations).	
+	thresh	Threshold distance in m
+
+[9]  Mobmap-Max-NDisplay	Max number of points to display.  
+	Terrestrial lidar files are typically very large and will overwhelm most graphics cards, so the code will decimate the points until
+	the number of points is less than this max value.	
+	nMax	Max no. of points, default = 5000000
+		
+[10]  Mobmap-Clip-Extent	Clip data to the given extent rectangle
+	West		West boundary in UTM coordinates
+	East		East boundary in UTM coordinates
+	South		South boundary in UTM coordinates
+	North		North boundary in UTM coordinates
+
+[11]  Mobmap-Dec-Ang Decimation over an angular region.
+	Every 1 out of Fac samples is kept at each angle, where Fac varies linearly over the region from Fac1 to Fac2.
+	Decimation is based on the scan angle recorded in the LAS record -- this is 1 byte only, so the angle
+	is precision is 2 deg.  Therefore each angular bin is 2 deg wide.
+
+	Ang1	Lower bound of angular region in deg
+	Ang2	Upper bound of angular region in deg
+	Fac1	Decimation factor at lower bound of angular region
+	Fac2	Decimation factor at upper bound of angular region
+
+[12]  Mobmap-Write Write data (perhaps clipped or decimated) in LAS format to a file.
+	filename	Name of file
+
+[13]	Mobmap-Offset	Offset all points by specified distances in (east, north, elevation) 
+	xOffset	Distance east 
+	yOffset	Distance north 
+	zOffset	Distance elevation 
+
+[14] Mobmap-Filter-Type	Type of filtering.  Filtering basically breaks up the points into groups depending on the value filtered and you can use
+     a slider to display only a subset of the groups
+	type		0 for no filtering, 1 for filter on FINE algorithm quality metric TAU, 2 for filter on elevation
+
+[15] Mobmap-Filter-Span	Span of filter bins to process.
+     The default is to display all the points.  From the menu, you can limit the span to a subset.
+     The advantage of this is limiting the number of points for display to eliminate or reduce decimation.
+	imin	The minimum bin in the span
+	imax	The maximum bin in the span
+
+[16] Mobmap-Filter-Zlims-Abs For filtering on elevation, the span of absolute elevations to map into filter bins.
+     The default is to use the min and max elevations from the file header, but these values are not always optimum.
+	fmin	The min elevation to map into the filter
+	fmax	The max elevation to map into the filter
+
+[17] Mobmap-Filter-Zlims-Rel For filtering on elevation, the span of relative elevations to map into filter bins.
+	fmin	The min elevation to map into the filter (default = -5.)
+	fmax	The max elevation to map into the filter (default = 30.)
+
+[18]	Mobmap-Diag-Level	Level of printed diagnostics 
+	level -- 0=none, 1=minimal, 2=more, 3=all 
+
+
+
+</PRE>
+
+
+
+<H3><A NAME="imap3d">Notes -- 3-D maps, Index</A></H3>
+
+The basic idea is that one defines an index of tiles with any number of entries and also a reference point
+and the code displays a region of interest (ROI) centered at that point.
+It finds all tiles that intersects this ROI and constructs the proper surfaces.
+<P>
+ 
+<PRE>
+
+[1]  Map3d-Index-Find -- Load all files in a directory -- Info about the location of tiles and search filters
+	Looks for files [dir]/[prefix][tile-no][suffix]
+
+	Name   -- The name of the map (ie. Lubbock)
+	dir    -- Directory to search for maps
+	prefix -- Prefix characters
+	suffix -- Suffix characters
+	tTex	 -- Type of intensity/color data to texture with
+		int -- intensity only 
+		mrg -- color (either true color satellite data like Lubbock or false color mrg files from BuckEye)
+	nExc	 -- No. of pixels to exclude at the sides of each map file
+		Use 2 for BuckEye data, since their files overlap and the edge pixels are sometimes bad
+		Use 0 for other maps like Lubbock where there is no overlap
+	 
+[2]  Map3d-Index-MrSID -- Load all files in a directory -- 	Search filter for the MrSID file for the map
+		locName     A unique identifier for the map 
+		pattern     Unique pattern to search for MrSID files in the directory (eg *.sid)   
+		index       Not used -- just for backward compatibility
+
+[3]  Map3d-Index-Files -- Use when files dont follow Buckeye/Haloe/Alirt naming conventions
+		Names of files must be explicitly entered but can load as many files as desired
+		All entries between tags are read as filenames (eg between -A2 and -A1)
+
+		-A2    <name> <name> ...	The names of the primary DEM files ('a2' or bare-earth)
+		-A1    <name> <name> ...	The names of the secondary DEM files ('a1' or DSM when primary DEM is bare-earth)
+		-TEX    <name> <name> ...	The names of the texture files (either GeoTiff or MrSID)
+		-KML    <name> <name> ...	The names of the KML files showing tile extents
+		-END
+	NameA2     -- The name of the primary DEM file ('a2' or bare-earth)
+	NameA1     -- The name of the secondary DEM file ('a1' or DSM when primary DEM is bare-earth)
+	NameMrg    -- The name of the texture -- 24-bit rgb ('mrg')
+	NameInt    -- The name of the texture -- 8-bit intensity ('int')
+	NameMrsid  -- The name of the very-high res texture in MrSID format
+
+[4]  Map3d-Index-Smooth  Parameters for algorithm that discriminates between smooth and rough objects for display
+	nLines  -- No of lines that must have similar slopes to be classified smooth (default=3)
+			Probably should not be modified
+	lThresh -- Slope similarity threshold	(default = 0.3)
+			Larger values causes more agressive smoothing
+	sThresh -- Slope threshold -- slopes above this threshold will be classified rough (default = 2.0)
+			Larger values causes more agressive smoothing of areas with larger slope
+		 
+[5]  Map3d-Index-Diag	level of printed diagnostics -- also passed to first .tif read
+	level -- 0=none, 1=minimal, 2=more, 3=all 
+
+</PRE>
+<H3><A NAME="los">Notes -- Line-of-Sight</A></H3>
+
+This feature marks all pixels in the map within a given radius that have a sightline to the chosen location.
+This can be used to find all the surrounding locations that have a view of a particular spot --
+like where can spotters have a view of a IED location.
+It can also be used to find what a person can see from a particular location -- like a lookout.
+<P>
+<PRE>
+
+[2]  LOS-Parms	Basic parameters for LOS
+	rmin	Minimum radius from center loc in m for all LOS calculations
+	rmax	Maximum radius from center loc in m for all LOS calculations
+	cenht	Height above ground at center location for ground-to-ground calculation
+	perht	Height above ground at peripheral locations for ground-to-ground calculation
+
+[3]  LOS-Sensor-RLoc 	Fixed sensor location in m relative to map origin
+	The default is to read changing sensor location of GMTI from the Nato 4607 formatted file
+	north			North of sensor (m relative to map origin)
+	east			East of sensor (m relative to map origin)
+	elev			Elevation of sensor (m relative to map origin)
+
+[4]  LOS-Sensor-Delev	Ray trace upward from each pixel this distance above the pixel before truncating the ray
+	delev			Elevation in m above the pixel 
+
+[5]  LOS-Preread		For ground-to-ground LOS, this may save time rereading elevation data.
+					The first time LOS is called, reads in a fixed area that should cover all subsquent LOS calls.
+					Thereafter, all LOS calls just use this cached elevation
+	south			Southern boundary of elevation rectangle (double, UTM)
+	north			Northern boundary of elevation rectangle (double, UTM)
+	west			Western  boundary of elevation rectangle (double, UTM)
+	east			Eastern  boundary of elevation rectangle (double, UTM)
+
+[6]  LOS-Limit-North	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+	north			Limit in UTM (double)
+
+[7]  LOS-Limit-South	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+	south			Limit in UTM (double)
+
+[7]  LOS-Limit-East	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+	east			Limit in UTM (double)
+
+[9]  LOS-Limit-West	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+	west			Limit in UTM (double)
+
+[10]  LOS-Diag-Level
+	level			0=none, 1=minimal, 2=more, 3=all 
+
+	
+</PRE>
+
+
+
+
+
+
+
+<H3><A NAME="men">Notes -- Mensuration</A></H3>
+
+The distance between any two points on the map can be measured.
+Distance is horizontal and the elevations of the two points is ignored.
+The distance is printed on the screen.
+<P>
+<PRE>
+
+[1]  Mensur-Diag-Level
+	level			0=none
+				1=most important diagnostics written
+				2=extensive diagnostics written
+				
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+<H3><A NAME="kml">Notes -- KML</A></H3>
+<PRE>
+
+[1]  Kml			Enables feature with max no. of files
+	max_files		Max no of files -- can be input from Parm-file or interactively
+
+[2]  Kml-Monitor-Dir		This directory monitored -- any files put there are automatically read and displayed 
+	dirname		Complete pathname
+	
+[3]  Kml-Above-Ground		Draw kml objects this dist above elev from input data or adjusted elev
+	dist			Distance in m (default 20m)
+	
+[4]  Kml-Fix-Elevs		Adjust elevations from 3D map to be at ground elevation of that map
+				Default is to use elevations as reported from the file
+	
+[5]  Kml-Diag-Level
+	level			0=none (default)
+				1=most important diagnostics written
+				2=extensive diagnostics written
+
+
+</PRE>
+
+
+
+
+
+
+
+
+
+
+<H3><A NAME="status">Notes -- Status Display</A></H3>
+
+The status is displayed at the top-left of the main window.
+It consists of a pointer showing the orientation of the display relative to north-up.
+It also shows the current clock time.
+<PRE>
+
+[1]  Status-Color	Color of the status display (default is (1,0,0))
+	red			Red component [0,1]
+	grn			Green component [0,1]
+	blu			Blue component [0,1]
+	
+[2]  Status-Scale	Size of status display
+	scale-factor	Scale factor (default = 0.025)
+
+	
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+<H3><A NAME="write">Notes -- Write</A></H3>
+<PRE>
+
+[1]  Write-Screen	Write current screen to a file.  A sequence of files can be written
+	base	Base of filename.  Filename will be base.nnn.jpg,
+		where nnn is the sequence no. starting from 1
+	
+[2]  Write-Size		Size of output image for 'Write-Screen' option
+	width	Width in pixels (default 512)
+	height	Height in pixels (default 512)
+
+	
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+<H3><A NAME="shape">Notes -- Vector Feature Overlays from Shapefiles</A></H3>
+
+Used to display vector feature overlays.
+These overlays can be used to help orient the user in a large map like Baghdad or Washington DC.
+<P>
+ 
+<PRE>
+
+[1] Shapefiles		Turn on the feature with a max no. of shapefiles.  Shapefiles may be added to the
+			display after initialization up to this max no. of files.
+
+[2] Shape-Input-File	Input filename for shapefile to be displayed
+	red		Line color red [0,1]
+	grn		Line color green [0,1]
+	blu		Line color blue [0,1]
+	filename	Input filename
+
+[3] Shape-Above-Ground	Vectors will all be drawn at this elevation above the reference elevation
+	elev		Elevation in m (default is 20m)
+
+
+[4] Shape-Diag-Level	Diagnostic level
+	level	0 = no diagnostics
+		1 = sparse diagnostics
+		2 = detailed diagnostics
+		
+
+
+</PRE>
+<H3><A NAME="icon">Notes -- Sensor COP Overlays</A></H3>
+
+Used to display information from UGS sensors and GMTI sensors for the 3D Sensor COP.
+SML files give sensor location and other features that are time invariant.
+OML files indicate triggering of a sensor at a particular time and may include such information as bearing and camera images.
+<P>
+ 
+<PRE>
+
+[1] Icon-Show-Interval	Time interval over which icon is highlighted -- from current viewer time 
+	interval		Time interval is s
+
+[2] Sml-Monitor-Dir	This directory is monitored for new sensor SML files 
+	dirname		Path name of the directory
+
+[3] Oml-Monitor-Dir	This directory is monitored for new sensor OML files 
+	dirname		Path name of the directory
+
+[4] Sml-Monitor-Pat	Reads only SML files with this pattern
+	pattern		Filename pattern for new SML files (Default is *_Sensor.xml)
+
+[5] Oml-Monitor-Pat	Reads only OML files with this pattern
+	pattern		Filename pattern for new OML files (Default is *_Observation.xml)
+
+[6] Sml-Set-Bearing	Bearing angles should be included in the SML file and will be read if present,
+				but this info is not always present
+	angle			Bearing angle of sensor in deg from North cw
+
+[7] Sml-Text-Display	Text displayed with each sensor
+	level			0=no name, 1=short name, 2=long name
+
+[8] Sml-Offset		Offset added to all sensor locations to translate them onto the desired map
+	lat			Latitude in deg
+	lon			Longitude in deg
+	elev			elevation in m
+
+[9] Sml-Scale		Scaling of all sensor locations relative to the reference point of the map
+				This can be used to scale down very large sensor fields to more easily managed areas
+
+[10] Icon-Use-Write-Time	Sort files by write time rather than create time (default)
+				When using the viewer in forensic mode, this time is used to determine when files are read into the viewer	
+				from the directory the viewer is monitoring.
+
+[11] Icon-Warn-Level	Maximum number of warnings issued -- used to give some warnings but avoid swamping the text window
+				when there are problems that may occur in thousands of files.
+
+[12] Icon-Diag-Level	Diagnostic level
+	level			0 = no diagnostics, 1 = sparse diagnostics, 2 = detailed diagnostics
+		
+
+
+</PRE>
+
+
+<H3><A NAME="kmls">Notes -- Inputs for Sensors using KML Standard</A></H3>
+
+
+<PRE>
+
+[1]  Kml-Add-Target		Add a target type that can be displayed with a unique color to distinguish it from other objects
+
+	name			name of the target that must match the name field in the KML file
+	red			color of sensor [0,255]
+	grn			color of sensor [0,255]
+	blu			color of sensor [0,255]
+
+[2] Kml-Interval		Time interval over which sensor detections are highlighted -- from current viewer time 
+	interval		Time interval is s
+
+[3] Kml-Monitor-Dir	This directory is monitored for new sensor files 
+	dirname		Path name of the directory
+
+[4] Kml-Monitor-Pat	Reads only KML files with this pattern
+	pattern		Filename pattern for new Osus files (Default is *.kml)
+
+[5] Kml-Use-Write-Time	Sort files by write time rather than create time (default)
+				When using the viewer in forensic mode, this time is used to determine when files are read into the viewer	
+				from the directory the viewer is monitoring.
+
+[6] Kml-Offset		Offset added to all sensor locations to translate them onto the desired map
+	lat			Latitude in deg
+	lon			Longitude in deg
+	elev			elevation in m
+
+[7] Kml-Set-Bearing	Currently not used,
+	angle			Bearing angle of sensor in deg from North cw
+
+[8] Kml-Warn-Level	Maximum number of warnings issued -- used to give some warnings but avoid swamping the text window
+				when there are problems that may occur in thousands of files.
+
+[9] Kml-Diag-Level     Level of diagnostic outputs
+	level			0 for no diagnostics, 1 for little, 2 for moderate, 3 for large               
+
+
+
+</PRE>
+<H3><A NAME="osus">Notes -- Inputs for Sensors using OSUS Standard</A></H3>
+
+
+<PRE>
+
+</pre>
+
+
+
+
+

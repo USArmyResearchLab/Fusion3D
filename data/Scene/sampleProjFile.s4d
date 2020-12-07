@@ -1,0 +1,66 @@
+# ###################################################
+# Project File for Fusion3D Viewer 
+# Can be edited with any standard editor (see documentation on Project File and ASCII tags) 
+# ###################################################
+
+# Reference tags ####################################
+Ref-LL-Deg			41.850197 -74.153114 
+
+# Camera tags ########################################
+Stereo-Offset		3.000000 
+Camera-Type       	 perspective
+Camera-Height-Ang 	 9.999991	# Angle of camera view volume (deg)
+Camera-Scene-Size 	 1000.000000	# Init camera to view this size scene
+Camera-El-Max     	 85.000000
+
+# Map ID tags ########################################
+Map3d-Index-Files
+	-A2  ./dem_0.5m_a2_scene.tif 
+	-A1  ./dem_0.5m_a1_scene.tif 
+	-TEX ./mrg_0.5m_a1_scene.tif 
+	-KML ./mrg_0.5m_a1_scene.kml 
+	-END
+
+# 3-D Maps tags #####################################
+Tiles-N 50 70 4 1
+Tiles-Size 128
+Tiles-Guard-Low	 2
+Tiles-Guard-Med	 2
+Tiles-Guard-Hi 	 1
+Map3d-Cache		50 9 0	# Ntiles-med, Ntiles-hi, cache-diag-flag
+
+# Point cloud tags ######################################
+Mobmap-File 0 "./scene_cull_crop.las"
+
+Map3d-Color-Scale 0  # 0=natural/abs elev, 1=blue-red/abs elev, 2=natural/rel elev, 3=blue-red/rel elev
+Mobmap-Color-Balance	off	# On applies histogram equalization
+Mobmap-Bright-Min 0.100000
+Mobmap-Max-NDisplay 64000000
+
+# Vector overlay tags ###################################
+Vector-Over-File      0.00RenderCodes101 display 1.000000 1.000000 1.000000 ./sampleTrack.kml	# RenderCodes101 0=rel-to-ground,   0=wireframe, 1=always-on-top
+Vector-Above-Ground 0.000000
+
+# Track tags ############################################
+
+# Bookmark tags #########################################
+
+# Draw overlay tags #####################################
+
+# CAD overlay tags ######################################
+
+# Mensuration tags ######################################
+
+# LOS tags ##############################################
+
+# Sensor KML tags #######################################
+
+# Sensor OSUS tags ######################################
+
+# Write screen tags #####################################
+
+# Status tags (compass, maybe clock at upper-left) ######
+Status-Compass 1		# 0 no overlay, 1 simple overlay, 2 fancier overlay
+Status-Color 1.000000 0.000000 0.000000		# r, g, b [0.1] 
+Status-Scale  0.025000		# Scale factor for compass (default = 0.025)
+

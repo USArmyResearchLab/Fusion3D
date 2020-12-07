@@ -1,0 +1,84 @@
+<HEAD>
+<TITLE>MEASURE OR MENSURATION MENU</TITLE>
+</HEAD>
+<BODY>
+<H1>MEASURE OR MENSURATION MENU</H1>
+<HR>
+
+This menu is used for making measurements from the map.
+<B><I>The user should be careful to tilt the scene so he is looking straight down while setting points for mensuration.</I></B>
+Otherwise the point selected may not be the point the user visualizes.
+The middle mouse is used for measures.
+Typically, measure features remain on until cleared and successive clicks will produce more measures.
+<P>
+
+
+
+<H2><A NAME="chum_intro">MEASURE DISTANCE</A></H2>
+
+Use this to measure the distance between two points on the map.
+When in this mode, the first click on a location with the middle mouse button will set the first endpoint of the line
+and display the elevation at that point.
+The second click will set the second endpoint and display the horizontal distance (dh) and the vertical distance or elevation difference (de).
+A line will be drawn between the two points that can be examined in 3D by rotating and tilting the scene.
+<P>
+
+
+<H2><A NAME="measure_point">POINT MEASURE</A></H2>
+
+Use this to measure the location of a point on the map with the middle mouse --
+its Northing, Easting, Latitude, Longitude and elevation.
+<P>
+
+
+<H2><A NAME="measure_point">POINT DISTANCES ALONG A ROUTE</A></H2>
+
+Middle-mouse clicking on two points along a route will measure the distance between the two points.
+When you click, the nearest point will be determined and that point will be used for calculations.
+To avoid inadvertent clicks, you must click reasonably close to a point or the click will be ignored.
+
+
+
+
+<H2><A NAME="measure_point">FOR LOS MEASURE DISTANCE FROM CENTER TO ANY POINT IN THE SCENE</A></H2>
+
+This option turns on measurements of the distance from the center of the LOS calculation to the chosen point.
+The middle mouse is used to select the point and then
+the LOS to that chosen point is illustrated and the distance and depression angle to that point are displayed.
+<P>
+The LOS calculation assumes a person viewing at its center that stands a certain height above the local terrain.
+It also assumes a typical height of objects the person might see in the surrounding terrain.
+These heights are defaulted to 2m and 1m, respectively, but can be adjusted by LOS parameter menu.
+The measurement option draws a cube at the LOS center from the ground to that given person height.
+It draws a second cube to the given object height at the chosen point.
+A line is then drawn from the top of the center cube to the top of the cube at the chosen point to show the LOS. 
+<P>
+The length of the LOS line is printed as well as the depression (look-down) angle in degrees.
+<P>
+
+
+
+
+<H2><A NAME="measure_point">ADJUST HIGHLIGHTING THRESHOLDS</A></H2>
+
+This adjusts elevation thresholds for the highlighting feature.
+Highlighting vertical obstructions is useful for assessing possible landing zones
+or other abrupt changes in elevation that can be dangerous or otherwise of particular interest.
+Two thresholds are set here.
+<P>
+Distance above the terrain is calculated for a DEM pixel by taking the difference between the first-hit and last-hit
+DEM elevation values for the pixel.
+If the difference is above the upper threshold, then the first-hit DEM pixel is highlightes in red. 
+If the difference is just above the second lower threshold, then it is highlighted in yellow.
+<P>
+
+<H2><A NAME="measure_point">CLEAR</A></H2>
+
+This clears any mensuration functions (and any other functions that use the middle mouse).
+These functions remain on until they are cleared.
+<P>
+
+
+
+
+

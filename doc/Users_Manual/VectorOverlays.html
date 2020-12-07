@@ -1,0 +1,132 @@
+<HEAD>
+<TITLE>VECTOR OVERLAYS MENU</TITLE>
+</HEAD>
+<BODY>
+<H1>VECTOR OVERLAYS MENU</H1>
+<HR>
+
+The Vector Overlays menu allows you to import vector files in a variety of formats and to display them on the map.
+It also allows you to import, create and manipulate a special kind of vector file, referred to here as a track or a route.
+This type of file contains timing information that can be used to fly the camera along the track.
+<P>
+
+
+
+<H2><A NAME="vec_display">READING VECTOR OVERLAYS FOR DISPLAY ONLY</A></H2>
+
+Vector overlays can be read in several different formats and superimposed on the 3D map.
+The following formats are implemented:
+<PRE>
+
+	.kml	KML files.			Basic features like points, lines, polygons and icons are implemented.
+						Some more advanced features like image overlays and region-based level-of-detail are ignored
+	.shp	Shapefiles. 		Common feature types are implemented including the ESRI Multipatch variant
+						The coordinate system is derived from the .prj file, if possible.
+	.osm	OpenStreetMap 
+	.sbet	Applanix ascii files.	Narrow implementation specific to Applanix GPS tracking files
+	.csv	LORD GPS/IMU   files.	Narrow implementation specific to LORD-formatted GPS tracking files
+	.kmz	Compressed KML files.	Not explicitly implemented, but they can easily be decompressed into KML files using given instructions
+
+
+</PRE>
+Typically, basic features like points, lines, polygons and icons are implemented.
+Some more advanced features, however, are ignored.
+The Shapefile format is particularly ill-defined, so variants of that format that haven't been tested may not work.
+<P>
+Only a few specific variants of ascii formats have been implemented to input GPS/IMU vehicle tracks.
+<P>
+
+
+
+<H3><A NAME="vec_display">Vector Overlay Menu</A></H3>
+
+Shapefiles (and sometimes other formats as well) often do not have enough information within the file to display them
+in a pleasing manner.
+The Vector Overlay menu, therefore, includes display parameters meant to provide these display parameters.
+It tries only to provide defaults and not to override any parameters actually specified in the file.
+<P>
+One parameter specific to OpenInventor display determines whether to render the overlay file with the map.
+Rendering with the map mixes the vector file with the terrain map when implementing the hidden surface algorithms.
+So the vectors may be obscured by other map features.
+Alternatively, the vector file can be displayed in 'annotation mode' where the file is rendered on top of any map features.
+It is always visible even when it is behind map features.
+Unfortunately, with the OpenInventor library rendering a vector file with filled polygons in annotation mode results nasty artifacts 
+and should never be done.
+<P>
+
+
+
+
+<H2><A NAME="chum_intro">TOGGLING OVERLAY VISIBILITY</A></H2>
+
+The 'Toggle vector file visibility' menu allows you to toggle vector overlay visibility file-by-file.
+The 'Vect' button at the top left of the display is a shortcut that toggles visibility for all vector files at once.  
+<P>
+
+
+<H2><A NAME="chum_intro">TRACKS OR ROUTES WITH ASSOCIATED TIME INFORMATION</A></H2>
+
+A track or route here is a single line feature that has associated time information.
+If time information is included in the file, the viewer will use that.
+If not, then a constant velocity will be assumed for timing purposes.
+Only one track can be defined at one time (as opposed to 'Draw' where multiple features can be manipulated).
+<P> 
+General files can be loaded in either the KML of Shapefile format.
+The Sbet format is included for display of mobile-mapping collection vehicle tracks.
+This option was originally designed for ground-truth vehicle tracks.
+However, it is useful for any track that has associated time information that is of interest.
+<P>
+
+
+
+<H3><A NAME="chum_intro">Digitize</A></H3>
+
+This submenu allows you to digitize a track or edit a track that has been previously opened.
+This feature is very similar to the digitize feature in the 'Draw' menu but allows you to animate the file immediately.
+<P>
+When the digitize feature is turned on, buttons are added to the left of the main window
+for adding, moving and deleting vertices.
+<P>
+
+
+<H3><A NAME="chum_intro">Open, Save and Merging Tracks</A></H3>
+
+This allows you to save the track and open it again later.
+Also it allows you to merge tracks.
+<P>
+Although only one track can be defined at any time, you can open a file while a track is already defined.
+In this case the code will merge the old and new tracks
+merging them in a manner that the end of the first file is closest to the beginning of the second.
+If necessary, it will flip one or both files to create the best merge.
+
+
+<H3><A NAME="chum_intro">Flying the Route</A></H3>
+
+One can 'fly' the current track -- attaching the camera the object and animating it with a clock.
+You can fly forward or back.
+One can draw the track mixed with the terrain so that it can be obscured by the terrain as any other feature.
+Or one can draw the track in 'annotation mode' where the track is always visible even if behind the terrain.
+One can adjust the initial track location and the speed of motion.
+Finally, the camera look direction can be controlled interactively by the user or it can follow the direction of motion.
+<P>
+There is a severe problem with flying the track that the viewer attempts to address.
+Sometimes the track digitization can be rather crude or the track itself may be rough with abrupt switchbacks.
+In this case motion may be unacceptably jerky and camera direction even worse if it is controlled by the track.
+In this case, one can apply averaging to smooth the track and camera direction to an acceptible level.
+<P>
+
+
+
+
+<H3><A NAME="chum_intro">Clear</A></H3>
+
+This clears the current track and, if not previously saved, the information will be lost.
+Note that only one track can be defined at any time and the current track must be cleared before another can be defined.
+<P>
+
+
+
+
+
+
+

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dialogFileDemBuck</class>
+ <widget class="QWidget" name="dialogFileDemBuck">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>529</width>
+    <height>451</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dialogFileDemBuck</string>
+  </property>
+  <widget class="QLineEdit" name="dirEdit">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>70</y>
+     <width>311</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>70</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Choose directory</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="dirButton">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>70</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>351</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load all primary DEMs and associated files from a directory</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>100</y>
+     <width>201</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Choose only 1 of the following sensors</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="buckeyeButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>130</y>
+     <width>341</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>BuckEye Primary, secondary DEMs, MrSID or lidar texture files</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="alirtButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>150</y>
+     <width>321</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ALIRT -- Primary DEMs, MrSID or lidar intensity texture files</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="haloeButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>170</y>
+     <width>311</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Haloe -- Primary DEMs, MrSID of lidar intensity texture files</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>190</y>
+     <width>401</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Haloe only -- Choose vertical datum (typically duplicate files with different datums)</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="egm96Button">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>210</y>
+     <width>82</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>EGM96</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="wgs84Button">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>230</y>
+     <width>82</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>WGS84</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="out1Edit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>260</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="out2Edit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>290</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="out3Edit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>320</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="out4Edit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>350</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="out5Edit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>380</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="loadButton">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>420</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>420</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>dirButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doDirBrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>512</x>
+     <y>62</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>512</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buckeyeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doBuckeye()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>362</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>433</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>alirtButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doAlirt()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>351</x>
+     <y>161</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>417</x>
+     <y>156</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>haloeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doHaloe()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>181</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>475</x>
+     <y>178</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>egm96Button</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doEgm96()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>160</x>
+     <y>217</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>278</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wgs84Button</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doWgs84()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>195</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>242</x>
+     <y>237</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doLoad()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>358</x>
+     <y>434</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>291</x>
+     <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogFileDemBuck</receiver>
+   <slot>doCancel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>469</x>
+     <y>432</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>472</x>
+     <y>450</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>doDirBrowse()</slot>
+  <slot>doBuckeye()</slot>
+  <slot>doAlirt()</slot>
+  <slot>doHaloe()</slot>
+  <slot>doEgm96()</slot>
+  <slot>doWgs84()</slot>
+  <slot>doLoad()</slot>
+  <slot>doCancel()</slot>
+ </slots>
+</ui>

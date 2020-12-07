@@ -1,0 +1,380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9825E0B8-4C18-4FC0-8CE6-F3C7C93A0EF1}</ProjectGuid>
+    <Keyword>Qt4VSv1.0</Keyword>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;LFUSION3D_LIB;BUILD_STATIC;SOQT_DLL;LIBS_FASTLZ;LIBS_COIN;LIBS_SOQT;LIBS_QT;LIBS_MRSID;LIBS_GDAL;LIBS_KML;LIBS_ASSIMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;..\..\..\include\Fusion3D;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtCore;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtWidgets;.\GeneratedFiles\$(ConfigurationName);C:\coin-4.0.0-msvc15-x64\Coin3D\include;C:\soqt-1.6.0-msvc15-x64\Coin3D\include;C:\MrSID_DSDK-9.5.4.4709-win64-vc15\Raster_DSDK\include;C:\gdal-1911-x64-3-1-2\include;C:\assimp-5.0.1-msvc15-x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
+      <DebugInformationFormat Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <SubSystem Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Windows</SubSystem>
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)\$(ProjectName).lib</OutputFile>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateDebugInformation>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <QtMoc>
+      <InputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(FullPath)</InputFile>
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">output</DynamicSource>
+      <ExecutionDescription Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing %(Identity)...</ExecutionDescription>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;.\..\..\..\include\Fusion3D;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtCore;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtWidgets;.\GeneratedFiles\$(ConfigurationName)\.;C:\coin-4.0.0-msvc15-x64\Coin3D\include;C:\soqt-1.6.0-msvc15-x64\Coin3D\include;C:\MrSID_DSDK-9.5.4.4709-win64-vc15\Raster_DSDK\include;C:\gdal-1911-x64-3-1-2\include;C:\assimp-5.0.1-msvc15-x64\include</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;LFUSION3D_LIB;BUILD_STATIC;SOQT_DLL;LIBS_FASTLZ;LIBS_COIN;LIBS_SOQT;LIBS_QT;LIBS_MRSID;LIBS_GDAL;LIBS_KML;LIBS_ASSIMP</Define>
+      <QTDIR Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)</QTDIR>
+    </QtMoc>
+    <QtUic>
+      <ExecutionDescription Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic'ing %(Identity)...</ExecutionDescription>
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\ui_%(Filename).h</OutputFile>
+    </QtUic>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(QtMsBuild)'=='' or !Exists('$(QtMsBuild)\qt.targets')">
+    <QtMsBuild>$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
+    <Import Project="$(QtMsBuild)\qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;LFUSION3D_LIB;BUILD_STATIC;SOQT_DLL;LIBS_FASTLZ;LIBS_COIN;LIBS_SOQT;LIBS_QT;LIBS_MRSID;LIBS_GDAL;LIBS_KML;LIBS_ASSIMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;..\..\..\include\Fusion3D;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtCore;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtWidgets;.\GeneratedFiles\$(ConfigurationName);C:\coin-4.0.0-msvc15-x64\Coin3D\include;C:\soqt-1.6.0-msvc15-x64\Coin3D\include;C:\MrSID_DSDK-9.5.4.4709-win64-vc15\Raster_DSDK\include;C:\gdal-1911-x64-3-1-2\include;C:\assimp-5.0.1-msvc15-x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).lib</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <QtMoc>
+      <OutputFile>.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
+      <IncludePath>.\GeneratedFiles;.;.\..\..\..\include\Fusion3D;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtCore;D:\Qt\Qt5.12.6\5.12.6\msvc2017_64\include\QtWidgets;.\GeneratedFiles\$(ConfigurationName)\.;C:\coin-4.0.0-msvc15-x64\Coin3D\include;C:\soqt-1.6.0-msvc15-x64\Coin3D\include;C:\MrSID_DSDK-9.5.4.4709-win64-vc15\Raster_DSDK\include;C:\gdal-1911-x64-3-1-2\include;C:\assimp-5.0.1-msvc15-x64\include</IncludePath>
+      <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;LFUSION3D_LIB;BUILD_STATIC;SOQT_DLL;LIBS_FASTLZ;LIBS_COIN;LIBS_SOQT;LIBS_QT;LIBS_MRSID;LIBS_GDAL;LIBS_KML;LIBS_ASSIMP</Define>
+    </QtMoc>
+    <QtUic>
+      <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
+      <OutputFile>.\GeneratedFiles\ui_%(Filename).h</OutputFile>
+    </QtUic>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\atrlab_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\atr_class.cpp" />
+    <ClCompile Include="..\..\..\src\atr_los_class.cpp" />
+    <ClCompile Include="..\..\..\src\base_jfd_class.cpp" />
+    <ClCompile Include="..\..\..\src\bookmark_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\bookmark_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\BPFFile.cpp" />
+    <ClCompile Include="..\..\..\src\buttons_input_class.cpp" />
+    <ClCompile Include="..\..\..\src\cache_class.cpp" />
+    <ClCompile Include="..\..\..\src\cad_class.cpp" />
+    <ClCompile Include="..\..\..\src\cad_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\cad_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\camera4d_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\camera4d_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\clock_input_class.cpp" />
+    <ClCompile Include="..\..\..\src\color_balance_class.cpp" />
+    <ClCompile Include="..\..\..\src\csv_class.cpp" />
+    <ClCompile Include="..\..\..\src\dialogCadOpen.cpp" />
+    <ClCompile Include="..\..\..\src\dialogClockTime.cpp" />
+    <ClCompile Include="..\..\..\src\dialogDrawAlt.cpp" />
+    <ClCompile Include="..\..\..\src\dialogDrawNew.cpp" />
+    <ClCompile Include="..\..\..\src\dialogFileDemBuck.cpp" />
+    <ClCompile Include="..\..\..\src\dialogFileDemOther.cpp" />
+    <ClCompile Include="..\..\..\src\dialogFileScreen.cpp" />
+    <ClCompile Include="..\..\..\src\dialogLocJump.cpp" />
+    <ClCompile Include="..\..\..\src\dialogLosParms.cpp" />
+    <ClCompile Include="..\..\..\src\dialogMeasureElev.cpp" />
+    <ClCompile Include="..\..\..\src\dialogMeasureRoute.cpp" />
+    <ClCompile Include="..\..\..\src\dialogOptionsParms.cpp" />
+    <ClCompile Include="..\..\..\src\dialogPcFilter.cpp" />
+    <ClCompile Include="..\..\..\src\dialogPcParms.cpp" />
+    <ClCompile Include="..\..\..\src\dialogPcThresh.cpp" />
+    <ClCompile Include="..\..\..\src\dialogStereoSettings.cpp" />
+    <ClCompile Include="..\..\..\src\dialogVecDisplay.cpp" />
+    <ClCompile Include="..\..\..\src\dialogVecFly.cpp" />
+    <ClCompile Include="..\..\..\src\dialogVecToggle.cpp" />
+    <ClCompile Include="..\..\..\src\dir_class.cpp" />
+    <ClCompile Include="..\..\..\src\dir_monitor_class.cpp" />
+    <ClCompile Include="..\..\..\src\draw_data_class.cpp" />
+    <ClCompile Include="..\..\..\src\draw_data_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\draw_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\draw_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\elev_estimate_class.cpp" />
+    <ClCompile Include="..\..\..\src\fastlz.cpp" />
+    <ClCompile Include="..\..\..\src\fusion3d_viewer_class.cpp" />
+    <ClCompile Include="..\..\..\src\globals_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\gps_calc_class.cpp" />
+    <ClCompile Include="..\..\..\src\icon_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_2d_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_2d_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_3d_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_bpf_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_bpf_demify_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_gdal_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_geo_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_las_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_las_demify_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_mrsid_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_pnm_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_ptcloud_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_resample_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_rtv_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_seq_display_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_tif_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_transformation_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_yaff_class.cpp" />
+    <ClCompile Include="..\..\..\src\interval_calc_class.cpp" />
+    <ClCompile Include="..\..\..\src\keyboard_input_class.cpp" />
+    <ClCompile Include="..\..\..\src\kml_class.cpp" />
+    <ClCompile Include="..\..\..\src\kml_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\kml_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\ladar_mm_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\ladar_mm_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\lfusion3d.cpp" />
+    <ClCompile Include="..\..\..\src\los_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\los_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\map3d_index_class.cpp" />
+    <ClCompile Include="..\..\..\src\map3d_lowres_class.cpp" />
+    <ClCompile Include="..\..\..\src\map3d_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\map3d_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\mensuration_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\mensuration_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\menu_input_class.cpp" />
+    <ClCompile Include="..\..\..\src\mouse_input_class.cpp" />
+    <ClCompile Include="..\..\..\src\nato4607_class.cpp" />
+    <ClCompile Include="..\..\..\src\nato4676_class.cpp" />
+    <ClCompile Include="..\..\..\src\ogr_class.cpp" />
+    <ClCompile Include="..\..\..\src\osus_command_class.cpp" />
+    <ClCompile Include="..\..\..\src\osus_image_store_class.cpp" />
+    <ClCompile Include="..\..\..\src\roi_meta_class.cpp" />
+    <ClCompile Include="..\..\..\src\sbet_class.cpp" />
+    <ClCompile Include="..\..\..\src\script_input_class.cpp" />
+    <ClCompile Include="..\..\..\src\sensor_kml_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\sensor_kml_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\sensor_osus_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\sensor_osus_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\sensor_read_class.cpp" />
+    <ClCompile Include="..\..\..\src\sensor_read_osus_class.cpp" />
+    <ClCompile Include="..\..\..\src\shapefile_class.cpp" />
+    <ClCompile Include="..\..\..\src\spaceball_input_class_pc.cpp" />
+    <ClCompile Include="..\..\..\src\status_overlay_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\status_overlay_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\sun_pos_class.cpp" />
+    <ClCompile Include="..\..\..\src\texture_server_class.cpp" />
+    <ClCompile Include="..\..\..\src\tiles_rtv_class.cpp" />
+    <ClCompile Include="..\..\..\src\time_conversion_class.cpp" />
+    <ClCompile Include="..\..\..\src\time_track_class.cpp" />
+    <ClCompile Include="..\..\..\src\track_analysis_class.cpp" />
+    <ClCompile Include="..\..\..\src\track_manager_class.cpp" />
+    <ClCompile Include="..\..\..\src\track_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\transform.cpp" />
+    <ClCompile Include="..\..\..\src\utilities_jfd.cpp" />
+    <ClCompile Include="..\..\..\src\vector_index_class.cpp" />
+    <ClCompile Include="..\..\..\src\vector_layer_class.cpp" />
+    <ClCompile Include="..\..\..\src\write_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\xml_class.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\Fusion3D\atrlab_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\atr_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\atr_los_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\base_jfd_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\bookmark_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\bookmark_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\BPFFile.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\buttons_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\cache_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\cad_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\cad_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\cad_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\camera4d_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\camera4d_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\clock_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\color_balance_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\csv_class.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogCadOpen.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogClockTime.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogDrawAlt.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogDrawNew.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogFileDemBuck.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogFileDemOther.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogFileScreen.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogLocJump.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogLosParms.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogMeasureElev.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogMeasureRoute.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogOptionsParms.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogPcFilter.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogPcParms.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogPcThresh.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogStereoSettings.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogVecDisplay.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogVecFly.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogVecToggle.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\dir_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\dir_monitor_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\draw_data_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\draw_data_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\draw_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\draw_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\elev_estimate_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\fastlz.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\fusion3d_viewer_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\globals_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\gps_calc_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\icon_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_2d_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_2d_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_3d_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_bpf_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_bpf_demify_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_gdal_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_geo_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_las_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_las_demify_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_mrsid_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_pnm_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_ptcloud_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_resample_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_rtv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_seq_display_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_tif_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_transformation_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_yaff_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\internals.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\interval_calc_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\keyboard_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\kml_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\kml_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\kml_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\ladar_mm_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\ladar_mm_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\los_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\los_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\map3d_index_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\map3d_lowres_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\map3d_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\map3d_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\mensuration_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\mensuration_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\menu_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\mouse_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\nato4607_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\nato4676_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\ogr_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\osus_command_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\osus_image_store_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\roi_meta_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sbet_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\script_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sensor_kml_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sensor_kml_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sensor_osus_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sensor_osus_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sensor_read_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sensor_read_osus_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\shapefile_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\spaceball_input_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\status_overlay_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\status_overlay_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\sun_pos_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\texture_server_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\tiles_rtv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\time_conversion_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\time_track_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\track_analysis_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\track_manager_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\track_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\transform.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\vector_index_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\vector_layer_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\write_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\xml_class.h" />
+    <ClInclude Include="lfusion3d_global.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="..\..\..\ui\dialogCadOpen.ui" />
+    <QtUic Include="..\..\..\ui\dialogClockTime.ui" />
+    <QtUic Include="..\..\..\ui\dialogDrawAlt.ui" />
+    <QtUic Include="..\..\..\ui\dialogDrawNew.ui" />
+    <QtUic Include="..\..\..\ui\dialogFileDemBuck.ui" />
+    <QtUic Include="..\..\..\ui\dialogFileDemOther.ui" />
+    <QtUic Include="..\..\..\ui\dialogFileScreen.ui" />
+    <QtUic Include="..\..\..\ui\dialogLocJump.ui" />
+    <QtUic Include="..\..\..\ui\dialogLosParms.ui" />
+    <QtUic Include="..\..\..\ui\dialogMeasureElev.ui" />
+    <QtUic Include="..\..\..\ui\dialogMeasureRoute.ui" />
+    <QtUic Include="..\..\..\ui\dialogOptionsParms.ui" />
+    <QtUic Include="..\..\..\ui\dialogPcFilter.ui" />
+    <QtUic Include="..\..\..\ui\dialogPcParms.ui" />
+    <QtUic Include="..\..\..\ui\dialogPcThresh.ui" />
+    <QtUic Include="..\..\..\ui\dialogStereoSettings.ui" />
+    <QtUic Include="..\..\..\ui\dialogVecDisplay.ui" />
+    <QtUic Include="..\..\..\ui\dialogVecFly.ui" />
+    <QtUic Include="..\..\..\ui\dialogVecToggle.ui" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_x64="msvc2017_64" MocOptions="" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

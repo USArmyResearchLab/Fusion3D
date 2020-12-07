@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dialogDrawAlt</class>
+ <widget class="QDialog" name="dialogDrawAlt">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>308</width>
+    <height>187</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dialogDrawAlt</string>
+  </property>
+  <widget class="QPushButton" name="okButton">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>140</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ok</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>140</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="absButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>80</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Absolute altitude</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="relButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>100</y>
+     <width>161</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Altitude relative to ground</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="altEdit">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>40</y>
+     <width>113</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Altitude (m)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>20</y>
+     <width>221</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Entries apply only to the current line or point</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>absButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogDrawAlt</receiver>
+   <slot>doAbsolute()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>139</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>relButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogDrawAlt</receiver>
+   <slot>doRelative()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>197</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>279</x>
+     <y>117</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogDrawAlt</receiver>
+   <slot>doAccept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>84</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogDrawAlt</receiver>
+   <slot>doReject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>244</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>doAbsolute()</slot>
+  <slot>doRelative()</slot>
+  <slot>doAccept()</slot>
+  <slot>doReject()</slot>
+ </slots>
+</ui>

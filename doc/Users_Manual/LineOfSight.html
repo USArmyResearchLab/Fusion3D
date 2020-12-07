@@ -1,0 +1,280 @@
+<HEAD>
+<TITLE>LINE-OF-SIGHT MENU</TITLE>
+</HEAD>
+<BODY>
+<H1>LINE-OF-SIGHT MENU</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#los-to-point">Option 1:  LOS from a Central Point on the Ground to Other Ground Points</A>
+<P>
+<LI><A HREF="#los-to-sensor">Option 2:  LOS to a Standoff Sensor at a Fixed Location</A>
+<P>
+<LI><A HREF="#los-to-sun">Option 3:  LOS to the Sun -- Used for Sun Shadow Calculations</A>
+<P>
+<LI><A HREF="#los-output">Output of LOS Mask to a TIFF and LOS Boundaries to a Shapefile</A>
+<P>
+</UL>
+
+
+
+Three types of Line-Of-Sight (LOS) algorithms have been implemented:
+The first type is from a central point on the ground to all ground points around it.
+This can be used in the case where an event happens at a particular location and you want
+to find all locations in the surrounding area from which a person could see that event.
+It can also be used for the inverse problem, visualizing which areas can be seen from a given vantage point.
+<P>
+The second type is LOS from a stationary standoff sensor to all points in a given area.
+This is used to determine which pixels are visible to a sensor and which points are obscured by nearby terrain features.
+<P>
+The third is for sun shadowing.
+One can set the day of the year and the time of day and then see the sun shadows as they would appear
+on that day at that time at that location on the earth.
+It was originally coded to help register wide-area motion imagery (WAMI) against orthophotos where sun shadows
+are a very important feature of the WAMI imagery.
+<P>
+A fourth type was implemented but is no longer available in the current Fusion3D implementation.
+It is LOS for a moving sensor and is implemented specifically for a GMTI sensor to all points in a given area.
+This is used to determine which pixels are visible to the GMTI sensor and which points are obscured by nearby terrain features.
+<P>
+
+
+<H2><A NAME="los-to-point">LOS PARAMETER MENU</A></H2>
+<BR>
+<BR>
+<BR>
+<img SRC="./LOSParmMenu.jpg" ALIGN=CENTER>
+<BR>
+<BR>
+<BR>
+
+
+
+<H2><A NAME="los-to-point">OPTION 1:  LINE-OF-SIGHT FROM A CENTRAL POINT ON THE GROUND TO OTHER GROUND POINTS</A></H2>
+
+The first LOS submenu "Calc LOS ground-to-ground" allows you to show the results of the calculation, and
+you can repeat this operation as many times as you wish.
+The submenu "Clear LOS" allows you to 
+clear the results of the last calculation when you no longer need them.
+The submenu "Save LOS to shapefile" allows you to save the LOS region outlines as polygons in Shapefile format.
+The submenu "Change LOS parameters" allows you to change important paramaters and will probably be necessary
+for a realistic calculation.
+<P>
+After the calculation is completed (which may take some time for large areas)
+all locations shadowed from the central point are darkened and tinted with a redish shade.
+A light green marker is put at the center.
+<P>
+Calculations are done to the focal point at the center of the screen, so you should first click on
+the desired point to bring it to the screen center.
+All calculations are done for DEMs only and dont include point clouds.
+<P>
+
+
+
+<H3>Algorithm Parameters</H3>
+
+The LOS Parameter submenu sets a number of parameters for this calculation.
+Calculations are done from a minimum radius to a maximum radius, both of which are adjustable from that submenu.
+It is assumed that the object at the center (say an incident) is a certain height above the ground.
+This height can be adjusted with the "Height at center loc" parameter.
+Likewise, it is assumed that someone somewhere in the surrounding area is at another height above the ground. 
+This second height can be adjusted with the "Height at perimeter loc" parameter.
+<P>
+For example, if an event happens in the street and you want to find out where a spotter might have been,
+you might pick a center height of 1m above the street.
+You might assume that a spotter would be standing somewhere in the surrounding area,
+so the height of his eyes at the perimeter locations would be be about 1.8m.
+You might also assume that the spotter would be somewhere within a 200-m radius, so you would set the 
+max radius to be 200m.
+You want this radius to be a small as possible to reduce compute times.
+<P>
+The minimum radius parameter has two main uses.
+The first is for the case such as calculating what a man standing on a roof can see.
+The LOS calculations are done to a single point and
+from any single point on the roof, the rest of the roof will obscure most of the scene.
+But you really want to know what the man can see from any nearby point on the roof where he might move
+to get a better view.
+By setting the minimum radius so as to exclude obscuration from the roof itself,
+you can get a very good approximation of this more general case.
+<P>
+The minimum radius is also meant to exclude small objects very near the center that
+could cause shadows but are not valid.
+For instance, if a car happened to be nearby an incident in the 3-D terrain map, 
+it might might throw a large shadow into the surrounding area.
+But since that car would probably not be there at the time of the event, you would want set the minimum
+radius large enough to exclude it from the calculations.
+<P>
+
+
+
+<H3>Algorithm Description</H3>
+
+To do the calculation, rays are cast from the point above the center location to the a point
+above the center of each pixel.
+If a ray passes below the level of the 3-D terrain map at any point, then the corresponding point is marked as shadowed.
+The calculations are standard, but are limited by several factors.
+First, they are point calculations and ones done at slightly different locations will have somewhat different results.
+Second, they may show shadowing from objects that only partially shadow or don't shadow at all.
+Trees are a good example of sparse objects that will throw shadows in the viewer but which one may be able to see through.
+Another example is bridges, where one may be able to see under a bridge but the viewer would show the view as completely blocked.
+So one should keep in mind these fundamental limitations.
+<P>
+
+
+
+<H2><A NAME="los-to-sensor">OPTION 2:  LINE-OF-SIGHT TO A STANDOFF SENSOR AT A FIXED LOCATION</A></H2>
+
+This type of LOS calculation is used to determine the areas that are obscured from the view of a fixed-position standoff sensor.
+The location of the fixed sensor is entered from the LOS-Parameters menu or with the tag "LOS-Sensor-RLOC" in the Parameter File.
+The sensor location is defined as offset distances in meters North and East relative to the screen center.
+<P>
+The second submenu "Calc LOS (fixed-position standoff sensor)" allows you to show the results of the sensor shadowing, and
+you can repeat this operation as many times as you wish.
+The submenu "Clear LOS" allows you to 
+clear the results of the last calculation when you no longer need them.
+The submenu "Save LOS to shapefile" allows you to save the LOS region outlines as polygons in Shapefile format.
+<P>
+After the calculation is completed,
+all locations shadowed from the sensor are darkened and tinted with a bluish shade.
+<P>
+An important limitation of the algorithm is that it assumes that the distance to the sensor is large enough that the angles to the different points in the 
+calculation square can be approximated by the angles to its center.
+Therefore, the feature should only be used for sensors at a reasonably large distance or, if the sensor is closer, for small areas on the ground.
+<P>
+
+
+<H3>Algorithm Description</H3>
+
+The algorithm works by tracing a ray from each pixel in the scene back toward the sensor
+and testing whether it intersects some other part of the terrain map.
+For sensors close to the horizon, there can be severe implementation problems,
+since potentially unbounded regions of terrain must be tested.
+Since testing for the required regions of terrain is very expensive and may extend beyond the dataset as well,
+the algorithm puts reasonable limits on the area of terrain to be tested.
+Therefore, it should be used with care for sensors very close to the horizon
+or in regions where there are very high buildings or large elevation differences that could shadow far from the 
+test region and not be captured by the LOS calculation.
+<P>
+
+
+
+<H3>Algorithm Parameters</H3>
+
+The algorithm has 5 parameters that can be adjusted.
+The calculation is done for a square area centered at the screen center.
+The first parameter is the length L of that square (so the square is of size LxL).
+The next two parameters are the azimuth and elevation of the sensor.
+It is assumed that the distance to the sensor is large enough that the angles to the different points in the 
+calculation square can be approximated by the angles to its center.
+<P>
+The fourth parameter is a height above the ground for each pixel --
+the algorithm actually calculates the shadowing for points slightly above given map elevations.
+This makes the result cleaner and less noisy, avoiding shadows from minor elevation differences in the map.
+It is also more realistic for radars, since most radar scatterers are typically above ground level.
+<P>
+The last parameter determines how far the algorithm traces rays.
+At each pixel, the algorithm follows the ray until it reaches a specified height above the original pixel elevation.
+This height difference is also used to determine how much additional area of the terrain map is read in for testing.
+<P>
+
+<H2><A NAME="los-to-sun">OPTION 3:  LINE-OF-SIGHT TO THE SUN -- USED FOR SHADOW CALCULATIONS</A></H2>
+
+LOS calculations for sun shadowing were originally designed for WAMI image registration and this option was added
+to help verify the algorithms and to aid in visualizing details of the sun shadows.
+However, by using the LOS Parameter Menu to specify a date and time, sun shadows can be calculated for any location and time.
+<P>
+The fourth submenu "Calculate Sun Shadowing" allows you to show the results of the sun shadowing, and
+you can repeat this operation for as many areas as you wish.
+The submenu "Clear Line-of-Sight" allows you to clear the results of the last calculation when you no longer need them.
+The submenu "Save Line-of-Sight" allows you to save the LOS region mask and outlines.
+<P>
+After the calculation is completed,
+all locations shadowed from the sensor are darkened and tinted with a bluish shade.
+<P>
+
+
+<H3>Algorithm Description</H3>
+
+The algorithm works by tracing a ray from each pixel in the scene back toward the sun
+and testing whether it intersects some other part of the terrain map.
+For the sun close to the horizon, there can be severe implementation problems,
+since potentially unbounded regions of terrain must be tested.
+Since testing for the required regions of terrain is very expensive and may extend beyond the dataset as well,
+the algorithm puts reasonable limits on the area of terrain to be tested.
+Therefore, it should be used with care for sensors very close to the horizon
+or in regions where there are very high buildings or large elevation differences that could shadow far from the 
+test region and not be captured by the LOS calculation.
+<P>
+
+
+
+<H3>Algorithm Parameters</H3>
+
+The algorithm has 5 parameters that can be adjusted.
+The calculation is done for a square area centered at the screen center.
+The first parameter is the length L of that square (so the square is of size LxL).
+The next two parameters are the azimuth and elevation of the sun.
+The distance to the sun is large enough and the calculation patch is small enough
+so that the angles to the different points in the 
+calculation square can be approximated by the angles to its center.
+<P>
+The fourth parameter is a height above the ground for each pixel --
+the algorithm actually calculates the shadowing for points slightly above given map elevations.
+This makes the result cleaner and less noisy, avoiding shadows from minor elevation differences in the map.
+It is also more realistic for radars, since most radar scatterers are typically above ground level.
+<P>
+The last parameter determines how far the algorithm traces rays.
+At each pixel, the algorithm follows the ray until it reaches a specified height above the original pixel elevation.
+This height difference is also used to determine how much additional area of the terrain map is read in for testing.
+<P>
+
+<H2><A NAME="los-output">OUTPUT OF LOS TO FILES</A></H2>
+
+Shadowed areas from any of the calculations above can be written to both a shapefile and a GeoTIFF file.
+The TIFF file covers the area of the shadow calculation and is binary-valued.
+It shows a value of 255 for pixels that are shadowed and 0 for pixels that are not.
+<P>
+The shapefile is a list of polygons describing the boundaries of the various shadow and non-shadow regions.
+Note that this may be very complicated with nested regions.
+For instance, a shadow region may lie within a non-shadow region which, in turn, may lie within a shadow region.
+The attributes for the shapefile are as follows:
+<PRE>
+
+	ShdFlag	Shadow Flag 0=non-shadowed (visible), 1=shadowed, per polygon
+	CntrLat	Latitude  of center of calculated area -- same for all entries
+	CntrLon	Longitude of center of calculated area -- same for all entries
+	CntrHgt	Height at center location -- same for all entries
+	PerifHgt	Height at peripheral locations -- same for all entries
+
+</PRE>
+The last 2 attributes are meaningful for the case of LOS to a center location, but not meaningful
+for sensor obscuration or sun shadows.
+<P>
+There are 3 parameters in the LOS parameter menu that determine what information is written to the shapefile.
+There are 2 switches that toggle on and off the outlines of the visible and shadow regions, respectively.
+The default is for both types of outline to be on.
+The third parameter determines whether to include shadow regions that touch the outer border of the calculations.
+This parameter is defaulted on and needs to be on for the sun shadow and sensor obscuration cases.
+Otherwise, important shadow areas would be lost.
+For the LOS to screen center, the result sometimes looks clearer if boundary shadow regions are omitted.
+You may want to try 2 sets of outputs, one with and one without, and pick the better one.
+<P>
+
+
+
+<H3>Algorithm Description</H3>
+
+The algorithm first processes visible regions, then shadowed ones.
+For each type of region, it scans through the image looking for the first pixel of the correct type; this then becomes a seed pixel.
+For each seed pixel, it finds the region surrounding that seed.
+Contiguous regions are defined by 4-neighbors (those pixels touching top-to-bottom or side-to-side, but not diagonally).
+It marks every pixel in the region with a unique region id in the mask, so the region will be excluded from further calculations.
+<P>
+Once it has found a region and marked it, it traverses the boundary of the region.
+It lays lines, each the width of a pixel as it goes until it reaches the starting location.
+The lines for each region then define a single polygon for writing to the shapefile.
+<P>
+
+
+
+

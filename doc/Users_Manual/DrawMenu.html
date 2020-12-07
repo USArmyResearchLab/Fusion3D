@@ -1,0 +1,112 @@
+<HEAD>
+<TITLE>THE DRAW MENU</TITLE>
+</HEAD>
+<BODY>
+<H1>THE DRAW MENU</H1>
+<HR>
+
+
+Using the "Draw" menu, one can define points with associated text or icons, lines, circles, and polygons.
+One can then write these features into a KML file or read previously-made vector files.
+For points, one can choose either to render the point directly as a point on the screen or to show text or an icon at the point, or both.
+Lines can be rendered either as solid or dashed.
+Polygons are rendered in wireframe only.
+<P>
+Features can be edited using the buttons at the left of the main window.
+Individual points within lines or polygons can be moved or deleted.
+Also, entire features can be moved or deleted.
+<P>
+
+
+
+<H2><A NAME="draw-mouat">CREATING AND USING MILITARY SYMBOLS</A></H2>
+
+There are 2 basically similar standards for military icons -- 2525B/C which is for the US and NATO APP6B.
+They are heirarchical and can define procedurally a large number of different icons based on different attributes.
+They span the entire universe of military things, so they tend to be pretty broad categories.
+<P>
+We have not been able to find a c++ library that creates icons and also this would require a lot of programming to
+make a rather complex menu to construct the icons.
+So we create icons external to Fusion3D and use the images in the code.
+<P>
+We have used the open-source code Microdem to generate the military symbols.
+It uses basic symbols from MAPSYMBS.COM in the form of 'fonts' so these fonts have to be loaded also or all the useful symbols dont appear.
+You access the icon composer by running Microdem, clicking the 'file' menu, the 'tools' submenu and the 'Military icon generator'.
+You should see 5 tabs, starting with the 'FR land'.  If you only see 2 starting with 'DRMS' then the MAPSYMBS.COM symbols have not been recognized.
+You can save files as BMP, JPEG, GIF, and PNG.
+<p>
+Fusion3D looks for military symbols in a subdirectory of its bin directory: bin/milSymbols.
+It requires a BMP image file for each symbol.
+One should specify a standard size in Microdem when saving symbols, but the symbols are typically different sizes,
+most larger than the specified size.
+<P>
+Fusion3D has a menu that shows all the military symbols in directory bin/milSymbols.
+One can choosed the desired symbol from this menu.
+The menu can accomodata over 100 symbols, but is fixed size.  If there are too many symbols, some symbols may not appear.
+<P>
+
+
+<H2><A NAME="chum_intro">INITIATE DRAW</A></H2>
+
+This initiates the draw process enabling draw features to be digitized.
+It adds buttons to the left of the main window to control the digitizing process.
+(Draw can also be initialized by reading a file to edit or append.)
+<P>
+To start digitizing, use the 'New Feature' button.
+Features are digitized using the middle mouse button.
+The current feature will be drawn as red and other features will be in blue.
+<P>
+
+
+<H3><A NAME="chum_intro">Draw Buttons</A></H3>
+
+One group of added buttons controls features.
+A line, polygon or circle or a point with associated icon or text is considered a feature.
+The 'New Feature' button controls the type of the feature and its parameters.
+An entire feature can be moved or deleted with these buttons.
+At any time the current feature can be changed by hitting the 'Select Feature' button and then middle-mouse
+clicking as near as possible to a point in the desired feature.
+Digitizing new points is always done by adding to the current feature.
+<P>
+Another group of buttons controls individual points within the current feature.
+Individual points can be moved or deleted.
+Points can also be added to the feature, but only at the end of the feature.
+<P>
+
+
+
+<H2><A NAME="chum_intro">READ FILE</A></H2>
+
+This reads in a new file that is appended to the draw current features.
+It can then be edited as any other draw features as described above.
+If draw digitizing has not already been initialized, reading in a file will do that initialization.
+<P>
+Vector files in a number of formats can be read including KML, KMZ, Shapefile, OSM, and some ASCII text files
+(see documentation on vector overlays).
+
+
+<H2><A NAME="chum_intro">SAVE</A></H2>
+
+Files can be saved to the KML format.
+
+<H2><A NAME="chum_intro">ADD ALTITUDE</A></H2>
+
+By default, draw features are defined at the local map elevations.
+If desired, the altitude of the current feature (only) can be modified with this submenu.
+The altitude can be defined as absolute or relative to the ground.
+<p>
+By default, altitudes are written into KML as absolute values using the value of the terrain at the point.
+<P>
+
+
+<H2><A NAME="chum_intro">CLEAR</A></H2>
+
+This clears all the current draw objects.
+If the information has not been previously saved, it will be lost.
+<P>
+
+
+
+
+
+

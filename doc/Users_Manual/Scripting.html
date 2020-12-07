@@ -1,0 +1,203 @@
+<HEAD>
+<TITLE>SCRIPT INPUTS TO PARAMETER FILE</TITLE>
+</HEAD>
+<BODY>
+<H1>SCRIPT INPUTS TO PARAMETER FILE</H1>
+<HR>
+
+Script tags provide a way of animating the display, primarily for demos.
+The user can zoom and pan on the data and also control which data sets to display.
+This is a limited scripting capability but allows the user to do most common animation processes.
+It is available only by editing the Parameter File and cant be accessed throught the menus.
+It can be started, stepped and stopped using the viewer buttons at the left of the main menu.
+<P>
+Scripting is designed so that the initial position, azimuth, elevation and zoom are set with 'Script-Set-' commands
+and then the scene is animated with 'Anim-' commands.
+The script commands are written so that the user can interrupt the script and navigate (translate, zoom or pan) and resume the script
+with the proper position and attitude.
+Other commands like toggling visibility of various map components or changing visualization parameters will not be reset by the script
+to their original settings.
+<P>
+
+
+
+<H2>INITIALIZATION TAGS</H2>
+
+The 'Script-Enabled' command must be included in the file in order to turn on the scripting.
+The command can be put anywhere in the input file -- only script commands after this tag will be interpreted and used.
+Commenting out this command is an easy way to turn off the entire script,
+and moving it behind certain script tags effectively comments out those tags.
+<P>
+The default is to initialize scripting in stop/step mode.
+The 'Script-Init-Freerun' command will initialize scripting in play mode so that the
+script will play automatically as soon as the display comes up.
+<P>
+The default is to have is to have 2 buttons for script-play and script-stop-step on
+on the button strip along the left side of the viewer.
+For those scripts that are not interactive, one can suppress these buttons
+with the 'Script-Suppress-Menus' command.
+
+<TABLE BORDER>
+<CAPTION>Script Inputs</CAPTION>
+<TR><TH>Command<TH>Description
+<TR><TD>Script-Enabled<TD>Enable scripting and Begin reading commands -- prior commands ignored
+<TR><TD>Script-End    <TD>End reading scripting commands -- commands after this are ignored
+<TR><TD>Script-Init-Freerun<TD>Initialize script as freerunning (default is single step) 
+<TR><TD>Script-Suppress-Menus<TD>For non-interactive scripts, suppress script menus/buttons
+</TABLE>
+<BR><BR><BR>
+
+
+
+<H2>OPERATION MODE TAGS</H2>
+
+The default script mode is to run forward thru all the commands once.
+<P>
+
+<TABLE BORDER>
+<CAPTION>Script Inputs</CAPTION>
+<TR><TH>Command<TH>Parm<TH>Description
+<TR><TD>Mode-Loop-Forward<TD>None<TD>Loop repeatedly forward from this tag (only part after this tag repeats)
+<TR><TD>Mode-Loop-Twoway <TD>None<TD>Loop repeatedly forward then reverse from this statement
+<TR><TD>Mode-Pause       <TD>delt<TD>Pause for specified time
+<TR><TD>Mode-Restart     <TD>delt<TD>Restart at beginning of script
+</TABLE>
+<BR><BR><BR>
+
+
+
+
+<H2>PARAMETER SETTING TAGS</H2>
+
+These commands are executed without pause.
+<P>
+
+<TABLE BORDER>
+<CAPTION>Script Inputs</CAPTION>
+<TR><TH>Group<TH>Command<TH>Parm 1<TH>Parm 2<TH>Parm 3<TH>Description
+
+<TR><TD>Nav
+<TR><TD><TD>Script-Mouse-Left<TD>loc x in UTM<TD>location y in UTM<TD>dt_clock
+<TR><TD><TD>Script-Mouse-Middle<TD>location x<TD>location y<TD>dt_clock
+
+<TR><TD>Set
+<TR><TD><TD>Script-Set-Az<TD>az angle<TD>
+<TR><TD><TD>Script-Set-El<TD>el angle<TD>
+<TR><TD><TD>Script-Set-Roll<TD>roll angle
+<TR><TD><TD>Script-Set-Zoom<TD>camera height
+<TR><TD><TD>Script-Set-Focal-Length<TD>camera focal length
+<TR><TD><TD>Script-Set-Range-Span<TD>near range<TD>far range<TD>
+<TR><TD><TD>Script-Set-Camera-Z<TD>camera z<TD>
+<TR><TD><TD>Script-Set-Tau<TD>FINE alg quality thresh<TD>
+
+<TR><TD>Vis
+<TR><TD><TD>Script-Vis-Map    <TD>vis flag 0/1<TD><TD><TD>Turn on/off 3D maps
+<TR><TD><TD>Script-Vis-Truth  <TD>vis flag 0/1<TD><TD><TD>Turn on/off truth tracks and bookmarks
+<TR><TD><TD>Script-Vis-Vector <TD>vis flag 0/1<TD><TD><TD>Turn on/off vector overlays
+
+<TR><TD>Snap
+<TR><TD><TD>Script-Snap      <TD>snap flag 0/1/<TD>output dir<TD><TD>0=screen capture off, 1=on; output directory (only read first time used)
+
+<TR><TD>Diag
+<TR><TD><TD>Script-Diag      <TD>diag flag 0/1/2<TD><TD><TD>0=Silent (default), 1=basic, 2=verbose
+</TABLE>
+<BR><BR><BR>
+<PRE>
+
+
+
+
+
+<H2>ANIMATION TAGS</H2>
+
+<TABLE BORDER>
+<CAPTION>Animation Inputs</CAPTION>
+<TR><TH>Command            <TH>Parm 1      <TH>Parm 2<TH>Parm 3<TH>Parm 4<TH>Parm 5<TH>Parm 6<TH>Parm 7<TH>Description
+<TR><TD>Anim-Flyby         <TD>waypt file  <TD>first t [0,1]<TD>last t [0,1]<TD>first zoom<TD>last zoom<TD>nsteps<TD>dt_clock<TD>
+<TR><TD>Anim-Flyby-Daz-Max <TD>Max delta az<TD><TD><TD><TD><TD><TD><TD>
+<TR><TD>Anim-Az-Zoom       <TD>first angle <TD>last angle<TD>first zoom<TD>last zoom<TD>nsteps<TD>dt_clock<TD>
+<TR><TD>Anim-Az            <TD>first angle <TD>last angle<TD>nsteps<TD>dt_clock<TD>
+<TR><TD>Anim-El            <TD>first angle <TD>last angle<TD>nsteps<TD>dt_clock<TD>
+<TR><TD>Anim-Roll          <TD>first angle <TD>last angle<TD>nangles<TD>dt_clock<TD>
+<TR><TD>Anim-Range-Near-In <TD>first range <TD>last range<TD>step inc<TD>dt_clock<TD>
+<TR><TD>Anim-Range-Near-Out<TD>first range <TD>last range<TD>step inc<TD>dt_clock<TD>
+<TR><TD>Anim-Range-Far-In  <TD>first range <TD>last range<TD>step inc<TD>dt_clock<TD>
+<TR><TD>Anim-Range-Far-Out <TD>first range <TD>last range<TD>step inc<TD>dt_clock<TD>
+<TR><TD>Anim-Zoom          <TD>first scale <TD>last scale<TD>nsteps<TD>dt_clock<TD>
+<TR><TD>Anim-Camera-Z      <TD>first z     <TD>last z    <TD>nsteps<TD>dt_clock<TD>
+<TR><TD>Anim-Tau           <TD>first Tau   <TD>last Tau  <TD>nsteps<TD>dt_clock<TD>
+</TABLE>
+<BR><BR><BR>
+<PRE>
+
+Anim-Flyby			Speed is set to 1 so that travel along the track is constant and times are equivalent to distance
+				Times are input relative to the distance/time span of the waypt file.
+
+
+Anim-Flyby-Daz-Max	Max difference is az per step (Tries to avoid abrupt changes in az), default=1 deg
+
+Anim-Tau			Adjust FINE algorithm quality threshold (equivalent to moving FINE slider).
+			
+
+
+</PRE>
+<H2>SIMPLE ANIMATION SCRIPT</H2>
+
+Following is a script that Flies to an object in the scene, circles the object to view it in detail, then fly back.
+The scene is adjusted to better view the object.
+<P>
+
+
+<PRE>
+
+# ##################################################
+# Script to fly from factory to visitor center, then zoom and pan on visitor center
+# ##################################################
+Script-Enabled		Begin executed script *********************************************************************************************
+
+# Setup
+Script-Diag			0		# 0=silent, 1=print basic diagnostics
+Script-Vis-Vector		0		# Turn off vector overlays -- tile boundaries
+Script-Vis-Truth		0		# Turn off truth/bookmarks -- bookmarks
+Script-Set-Zoom		160.
+Script-Set-Az		85.
+Script-Set-El		10.
+
+Mode-Loop-Twoway
+Mode-Pause			5.
+
+# Fly from factory to the visitors center
+Anim-Flyby 			D:/demoFredericksburg/factoryToVisitors.kml 0.0 1.0 160. 100. 900 0.05
+
+# Look at the visitors center
+Anim-El			10. 55. 200 0.02
+Anim-Az			85. 0. 200 0.02
+
+# ?? Mode-Pause			2.
+Anim-Zoom			100. 15. 300 0.02
+Mode-Pause			1.
+Script-Vis-Map		0	# Turn off map so you can see the bldg better
+Mode-Pause			5.
+
+# Look at the side of the house -- see stuff inside the house
+Anim-Az			0. 85. 300 0.02
+Mode-Pause			10.
+
+# Look at the back of the house
+Anim-Az			85. 170. 300 0.02
+Mode-Pause			5.
+
+
+Script-End			# End executed script ********************************************************************************************
+
+</PRE>
+
+
+
+<H3>Creating Tracks for Fly-Bys</H3>
+
+The first step in creating a track for a fly-by is to create a rough track using the 
+<P>
+The second step is to smooth the track.
+One way of smoothing is to use the spline method in MATLAB.
+A sample M-file for matlab is shown <A HREF="./smoothTrack.m">here</A>.

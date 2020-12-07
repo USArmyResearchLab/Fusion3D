@@ -1,0 +1,649 @@
+<HEAD>
+<TITLE>Users Manual for the Fusion3D Viewer</TITLE>
+</HEAD>
+<BODY>
+<H1>Users Manual for the Fusion3D Viewer</H1>
+<HR>
+<H3><A NAME="chum_xx">Revision 6.03, November 2020</A></H3>
+
+
+<UL>
+<LI>Tutorials
+	<UL>
+	<LI><A HREF="./Tutorials/GettingStarted/GettingStarted.ppt">Getting Started</A>
+	<LI><A HREF="./Tutorials/BasicFeatures/BasicFeatures.ppt">Basic Features</A>
+	<LI><A HREF="./Tutorials/AdvancedFeatures/AdvancedFeatures.ppt">More Advanced Features</A>
+	<LI><A HREF="./Tutorials/FalseColor/FalseColor.ppt">False Color for Terrain Texturing</A>
+	<LI><A HREF="./Tutorials/Routes/MakeRoutes.ppt">Digitizing Routes or Tracks</A>
+	<LI><A HREF="./Tutorials/Stereo/Stereo.ppt">Stereo Settings</A>
+	</UL>
+<P>
+<LI><A HREF="#chum_intro">1. Introduction to the Viewer</A>
+	<UL>
+	<LI><A HREF="#chum_intro_nav">1.1 Viewer Navigation</A>
+	<LI><A HREF="#chum_intro_menus">1.2 Viewer Menus and Buttons</A>
+	<LI><A HREF="#chum_intro_vis">1.3 Visualization Techniques</A>
+	<LI><A HREF="#chum_intro_project">1.4 Project Files</A>
+	<LI><A HREF="#chum_intro_file">1.5 The File Menu for Loading DEMs and Lidar Point Clouds</A>
+	<LI><A HREF="#chum_intro_vector">1.6 Vector Feature Overlays</A>
+	<LI><A HREF="#chum_intro_lidar">1.7 Lidar Point-Cloud Overlays</A>
+	<LI><A HREF="#chum_intro_locs">1.8 Going to Locations, Reading Locations, and Bookmarking Locations</A>
+	<LI><A HREF="#chum_intro_los">1.9 Line-of-Sight Calculations</A>
+	<LI><A HREF="#chum_intro_mensurate">1.10 Measure (Mensuration)</A>
+	<LI><A HREF="#chum_intro_draw">1.11 Drawing -- Adding Point, Line, Polygon and Circle Objects to the Scene</A></A>
+	<LI><A HREF="#chum_intro_track">1.12 Adding Tracks -- Object with Associated Timing That Can be Animated</A></A>
+	<LI><A HREF="#chum_intro_cad">1.14 Adding CAD objects to the Scene</A></A>
+	<LI><A HREF="#chum_intro_hilite">1.15 Highlighting Objects Significantly Above the Terrain</A></A>
+	<LI><A HREF="#chum_intro_stereo">1.16 Stereo</A>
+	<LI><A HREF="#chum_intro_resources">1.17 Setting Default Resources</A>
+	<LI><A HREF="#chum_intro_write">1.18 Rendering the Current Screen to a File</A>
+	<LI><A HREF="#chum_intro_clock">1.19 Clock</A>
+	<LI><A HREF="#chum_intro_help">1.20 Help and Contact Information</A>
+	<LI><A HREF="#chum_intro_restrictions">1.21 Viewer Restrictions</A>
+	<LI><A HREF="#chum_intro_ugs">1.22 Incomplete Feature -- Fusion with Unattended Ground Sensors</A></A>
+	<LI><A HREF="#chum_intro_discontinued">1.23 Discontinued Features -- GMTI, Constant Hawk and Motion Video Control</A>
+	<LI><A HREF="#chum_intro_spacenav">1.24 Discontinued Hardware -- The SpaceNavigator and SpaceMouse</A>
+	</UL>
+<P>
+<LI>2. Navigation, Menus and Buttons
+	<UL>
+	<LI><A HREF="./Users_Manual/Fusion3D_Navigation.jpg">Illustration -- Fusion3D Navigation</A>
+	<LI><A HREF="./Users_Manual/MenuMain.html">Fusion3D Menus</A>
+	<LI><A HREF="./Users_Manual/Fusion3D_Buttons.jpg">Fusion3D Buttons</A>
+	</UL>
+<P>
+<LI>Basic Features
+	<UL>
+	<LI><A HREF="./Users_Manual/FileMenu.html">File Menu -- Loading DEMs, Lidar Point Clouds and Loading/Saving Project Files</A>
+	<LI><A HREF="./Users_Manual/PointClouds.html">Point Cloud Menu -- Manipulating Point Clouds</A>
+	<LI><A HREF="./Users_Manual/VectorOverlays.html">Vector Overlays Menu</A>
+	<LI><A HREF="./Users_Manual/DrawMenu.html">Draw Menu</A>
+	<LI><A HREF="./Users_Manual/GoToLocation.html">Locations Menu -- Go to Location/Read Location and Bookmarks</A>
+	<LI><A HREF="./Users_Manual/LineOfSight.html">Line-of-Sight Menu</A>
+	<LI><A HREF="./Users_Manual/Mensuration.html">Measure (Mensuration) Menu</A>
+	<LI><A HREF="./Users_Manual/Clock.html">Clock Menu</A>
+	<LI><A HREF="./Users_Manual/Defaults.html">Defaults Menu</A>
+	<LI><A HREF="./Users_Manual/AssimpCADModels.html">CAD Menu -- CAD Formats Other Than Shapefiles</A>
+	<LI><A HREF="./Users_Manual/HelpMenu.html">Help and Contact Information</A>
+	</UL>
+<P>
+<LI>Visualization Techniques and Options
+	<UL>
+	<LI><A HREF="./Users_Manual/DisplayOptions.html">Display Options</A>
+	<LI><A HREF="./Users_Manual/Paper_EI6490A-68.doc">Symposium Paper Describing the Visualization Technique</A>
+	<LI><A HREF="./Users_Manual/LidarMappingForum2012.ppt">Presentation to Lidar Mapping Forum in 2012</A>
+	<LI><A HREF="./Users_Manual/Rendering.html">Comparison of 3-D Map Rendering Techniques</A>
+	</UL>
+<P>
+<LI>Advanced Features
+	<UL>
+	<LI><A HREF="./Users_Manual/LowResMapFiles.html">Additional Low-Resolution Files for Elevation and Texture</A>
+	<LI><A HREF="./Users_Manual/ParameterFiles.html">Project Files -- General Description</A>
+	<LI><A HREF="./Users_Manual/TaggedAscii.html">Project Files --  Definitions for All Parameters</A>
+	<LI><A HREF="./Users_Manual/Scripting.html">Scripts for Creating Simple Animations</A>
+	<LI><A HREF="./Users_Manual/Hillshading.html">Making a Hillshaded Texture Map when No Other Texture is Available </A>
+	</UL>
+<P>
+<LI><A HREF="./Users_Manual/Authority codes for Coordinate Reference Systems.mht">Coordinate System Codes (Reproduced From a Geotoolkit.org Document for Convenience)</A>
+<P>
+<LI>BuckEye, HALOE and ALIRT Programs
+	<UL>
+	<LI><A HREF="./Users_Manual/Buckeye.html">BuckEye Description and Naming Conventions</A>
+	<LI><A HREF="./Users_Manual/Haloe.html">HALOE Description and Naming Conventions</A>
+	<LI><A HREF="./Users_Manual/Alirt.html">ALIRT Description and Naming Conventions</A>
+	</UL>
+<P>
+<LI><A HREF="./Users_Manual/HelpMenu.html">Contact Information</A>
+<P>
+<LI>External Libraries -- Fusion3D uses but does not modify:  Coin3D, SoQt, Qt, GDAL, MrSID and Assimp.
+	<UL>
+	<LI><A HREF="./Users_Manual/Coin.html">Coin3D/SoQt Implementation of OpenInventor Graphics Library -- License Information</A>
+	<LI><A HREF="./Users_Manual/Qt_license.txt">Qt Library -- License Information</A>
+	<LI><A HREF="./Users_Manual/gdal_license.txt">GDAL Geospatial Data Abstraction Library -- License Information</A>
+	<LI><A HREF="./Users_Manual/MrSID_license.rtf">MrSID Raster Decode Library -- License Information</A>
+	<LI><A HREF="./Users_Manual/Assimp_license.rtf">Assimp CAD Model Import Library -- License Information</A>
+	<LI><A HREF="./Users_Manual/GNU_license_ver3.txt">GNU Leffer General Public License</A>
+	<LI><A HREF="./Users_Manual/BSD_license.html">The 3-Clause BSD License</A>
+	</UL>
+<P>
+</UL>
+
+<H2><A NAME="chum_intro">1. INTRODUCTION</A></H2>
+
+This document describes the features of the Fusion3D viewer, which is based on rasterized Digital Surface Models (DSMs).
+Its focus is on visualization of these maps and fusion with orthophotos, lidar point clouds and persistent surveillance imagery.
+The viewer uses a different rendering technique from any other available viewer
+that gives a more natural looking scene and conveys more information for the close-in views that users are often interested in.
+The rendering technique is described in a <A HREF="./Users_Manual/Paper_EI6490A-68.doc">symposium paper</A>
+and illustrated in the <A HREF="./Users_Manual/Rendering.html">following</A>.
+<P>
+This document is at the head of an HTML tree of documents and should be available from the Help Menu on the viewer.
+Contact information for the author of the viewer and this documentation,
+Dr. John F. (Jeff) Dammann, is <A HREF="./Users_Manual/HelpMenu.html">is given below</A>.
+<P>
+The viewer is optimized for DSMs and orthophotos produced by the BuckEye Program.
+However, it also works well for HALOE and ALIRT DSMs and for commercial lidar and photogramatic maps as well.
+The resolution of the BuckEye map data is typically 1 meter or less often 0.5 meter.
+The data is very high quality with little noise and very few artifacts.
+Sometimes there appear to be points hanging in space, but almost always they are from a real object
+like a light pole or tower that can only be sparsely sampled at this resolution.
+The maps are very carefully georegistered -- BuckEye claims to within 0.5 m in Northing and Easting and to within 0.3 m in elevation.
+This should be very useful for providing very accurate location information for any point selected on the map.
+Commercial lidar maps are of comparable quality depending on the purpose of the data collection.  
+Photogrametric maps are typically somewhat lower in quality but cheaper to make and available for some areas where ladar data collections are not possible.
+<P>
+The Fusion3D terrain map is built from small (typically 128-by-128 pixel) map squares that we will refer to as tiles.
+The area of interest is typically too large to fit into memory
+so we have implemented a 3-tiered level-of-detail in the map.
+If very high resolution orthophotos (typically 10 times the resolution of the DEM data) are available for the map,
+the tiles of the map nearest screen center are rendered with maximum resolution of both the DEM and the orthophoto.
+The annulus around that (or the entire area near screen center if no hi-res orthophoto is available) is rendered at the resolution
+of the DEM for both for elevation and texture.
+The area surrounding that is rendered with a lower-resolution elevation and texture.
+You will sometimes notice "tears" in the map where the low-res portion of the map does
+not quite match with the high-res elevations.
+Only a portion of the total map is rendered at any one time,
+but you can move to a new area and new portions of the map will constructed on the fly and rendered.
+<P>
+If you move short distances within the high-resolution area, that movement should be virtually instantaneous.
+If you move slightly further, new high-res tiles must be generated and old ones discarded.
+So you will see new portions of the map being generated.
+If you move large distances, then substantial portions of the map must be regenerated and 
+this may take 30 seconds or more.
+You can zoom and pan while low-resolution tiles are being created, but you may notice some hesitation in the movement.
+<P>
+There are tradeoffs between the delays for regeneration of maps and size of the area that is displayed.
+The best balance is probably a matter of personal taste and can be adjusted as described below.
+Unfortunately, the amount of memory available in the graphics card limits the size of the map displayed at any one time.
+<P>
+Please read carefully the section on Viewer Navigation, since that is the key to making the viewer a useful
+tool and not an exercise in frustration.
+It is natural to want to view the maps from something close to ground level.
+But the structure of the maps and the viewer are such that they work best at elevation angles
+close to looking straight down.
+I have found that viewing angles of 20 or 30 degrees off straight down give good depth perception but allow you to
+see and navigate best.
+<P> 
+
+
+
+
+<H3><A NAME="chum_intro_nav"></A>1.1 Viewer Navigation</H3>
+
+The 3-D map viewer is built on top of a general-purpose viewer designed to view any three-dimensional object.
+Such a general-purpose viewer can cause lots of problems when viewing terrain:
+You can lose heads-up, getting the terrain tilted on its side or even upside down.
+You can get under the ground, viewing it from below.
+When you are viewing in stereo, it is even easier to get into trouble.
+Generally, you want to keep the scene near the plane of the screen.
+When the scene gets way in front of the screen or way behind it,
+the left-eye and right-eye pictures get very far apart and
+the eyes have to work very hard to focus causing eye strain.
+<P>
+For this reason, I have designed a constrained viewer that
+(1) Keeps heads up and keeps the ground from rolling,
+(2) Separates movement across the terrain from zooming in and out,
+(3) Controls the stereo perspective, keeping the center of the scene at the 
+depth of the screen.
+The constrained viewer makes navigating the terrain much easier and reduces eye strain.
+<P>
+In the map viewer, you move across the terrain by clicking on a point with the
+left mouse button to bring that point to the center of the screen.
+As described above, some movements require generating new map segments and may cause significant delays --
+so please be patient.
+If you move short distances within the high-resolution area, that movement should be virtually instantaneous.
+If you move slightly further, new high-res tiles must be generated and old ones discarded.
+So there will be a few seconds delay as new portions of the map are generated.
+If you move large distances, then substantial portions of the map must be regenerated and 
+this may take 30 seconds or more.
+<P>
+You can zoom in or out of the scene by using either the thumbwheel labeled Dolly at the lower righthand
+side of the viewer or by rotating the mouse thumbwheel.
+You can tilt or rotate the terrain either by dragging with the right mouse button
+or by using the two thumbwheels at the bottom left of the viewer.
+The tilt angle is constrained so that you cant look backward and cant get below ground level.
+Getting below the ground can be very confusing, particularly to inexperienced users, and it not useful for most applications.
+If the user does need to see below ground level, the angle limit can be adjusted using the 'Defaults' menu. 
+<P>
+<BR>
+<BR>
+<BR>
+<img SRC="./Users_Manual/Fusion3D_Navigation.jpg" ALIGN=CENTER>
+<BR>
+<BR>
+<BR>
+If for some reason you do lose control of the viewer or navigation does not seem to be working right,
+I have provided a 'Reset' button on the left of the viewer.
+Hitting this button will get you back to the original viewer perspective.
+(If you have moved far from your initial starting point on the map, you may have to zoom out to see the 
+current map.
+You can then click at the center of the current map to get you back in business.)
+<P> 
+I have also provided a button labeled 'Nup', that reorients the map North up
+(undoing any rotations that you may have done).
+<P>
+
+
+
+
+
+
+<H3><A NAME="chum_intro_menus"></A>1.2 Viewer Menus and Buttons</H3>
+
+Pull-down menus are provided at the top of the viewer.
+Specific menus are <A HREF="./Users_Manual/Menus/MenuMain.html">described in detail here</A>.
+<P>
+The buttons on the left margin of the viewer are user-defined.
+The buttons that are always present are shown below:
+<P>
+<BR>
+<BR>
+<BR>
+<img SRC="./Users_Manual/Fusion3D_Buttons.jpg" ALIGN=CENTER>
+<BR>
+<BR>
+<BR>
+Buttons serve as shortcuts to the most frequently used operations in the viewer
+The first group of buttons toggles visibility of classes of map objects.
+The second group is for changing the way the map data is rendered.
+The different rendering options are <A HREF="./Users_Manual/DisplayOptions.html">described here</A>.
+<P>
+Additional buttons may also be added depending on the viewer options that are turned on.
+Most common are buttons to jump to bookmarks, buttons for track digitization, and clock buttons when time information is present.
+<P>
+One button that may be very helpful is the 'A1' button that toggles the secondary DEM.
+The BuckEye map files provide two elevations for each pixel --
+the highest elevation seen by the ladar and the lowest.
+Generally, these will be virtually the same. 
+However for trees and bushes, the highest elevation will typically be near the top of the vegitation.
+If the foliage is not too thick, the lowest hit will be on the ground.
+The unique Fusion3D visualization technique allows both these elevations to be viewed in the same display.
+The default in the viewer is to include both these elevations.
+The 'A1' button toggles on and off the highest elevation;
+the effect is to toggle on and off some of the trees.
+Typically, the trees are useful in the display, but there may be instances where
+you want to concentrate on the ground or buildings underneath and removing the trees may be helpful.
+<P>
+
+
+
+
+<H3><A NAME="chum_intro_vis"></A>1.3 Visualization Techniques</H3>
+
+The traditional technique drapes a continuous surface over the regularly spaced elevation values.
+This technique works well when displaying large areas or in cities with large buildings, but falls apart at small scales or for natural objects like trees.
+The 3-D Fusion Viewer technique visualizes the terrain as a set of disjoint square patches.  It is combined with an algorithm that identifies smooth areas within the scene.
+Where the terrain is smooth, such as in grassy areas, roads, parking lots and rooftops, it warps the patches to create a smooth surface.
+For trees or shrubs or other areas where objects are under-sampled, however, the patches are left disjoint.
+This has the disadvantage of leaving gaps in the data, but the human mind is very adept at filling in this missing information.
+It has the strong advantage of making natural terrain look realistic – trees and bushes look stylized but still look natural and are easy to interpret.
+Also, it does not add artifacts to the map, like filling in blank vertical walls where there are alcoves and other structure and extending bridges and overpasses down to the ground. 
+An additional advantage is it can display multiple hit surfaces an one time.
+A <A HREF="./Users_Manual/Paper_EI6490A-68.doc">symposium paper</A> describes this visualization technique in more detail.
+<P>
+
+
+<H3><A NAME="chum_intro_project"></A>1.4 Project Files</H3>
+
+Once you have loaded DEMs, lidar point clouds, vector overlays and other layers to create a scene,
+you can save the scene to a project file.
+This project file can then be loaded in future work to initialize the viewer with that scene.
+When you save a project, you write the current parameters into an ASCII file that by convention has the suffix ".s4d".
+Project files can be edited with any text editor like Wordpad.
+Under most circumstances manual editing should be unnecessary.
+However, there are some seldom-used parameters that are not available through the menus
+and can only be modified through the parameter file.
+<P>
+<A HREF="./Users_Manual/ParameterFiles.html">...More</A>
+<P>
+
+
+
+
+<H3><A NAME="chum_intro_file"></A>1.5 File Menu and Loading DEMs</H3>
+
+The file menu allows you to load Digital Surface Model (DSM) or Digital Elevation Model (DEM) maps and lidar point clouds.
+The viewer includes loading shortcuts for the BuckEye, HALOE and ALIRT programs, where you can load all files for a given tile or load multiple tiles in a single step.
+You can also load lidar point clouds in the LAS format.
+You can save the current map and associated vector overlays to a file, which can then be opened to shortcut the map loading process.
+<P>
+<A HREF="./Users_Manual/FileMenu.html">...More</A>
+<P>
+
+
+
+<H3><A NAME="chum_intro_vector"></A>1.6 Vector Overlays</H3>
+
+The Fusion3D viewer has the capability to create vector overlays that can be used to construct military scenario overlays, vehicle/people tracks or to trace simple features.
+Simple features like rivers or major roads can be useful in orienting the user in large maps.
+Using the "Draw" menu, one can define points with associated text or icons, lines, circles, and polygons.
+One can then write these features into a KML file or read previously-made KML files.
+For points, one can choose either to render the point directly as a point on the screen or to show text or an icon at the point, or both.
+Lines can be rendered either as solid or dashed.
+Polygons are rendered in wireframe only.
+<P>
+Vector overlays can be read in several different formats and superimposed on the 3D map for display.
+The KML, Shapefile, and OpenStreetMap (OSM) are implemented as well as some very specialized formats for GPS/IMU vehicle tracks.
+One common example is the KML file showing tile extent that may be automatically loaded with DEM maps.
+These files and other files outlining basic map features can often be obtained from databases or digitized locally.
+<P>
+If a vehicle/person track is entered under the "Vector Overlays" - > "Track/Route" menus, then the user can fly along the track.
+If time information is included in the track, then the viewer will use it.
+Otherwise it will assume a fixed speed and just use the distance from point to point along the track.
+Of recent interest is the 'sbet' format file that describes the movement of the vehicle collecting mobile-mapping lidar data.
+The vehicle location in time can be tracked with the viewer clock and fused with other time information.
+<P>
+Capability for showing Moving Target Indicator (MTI) data indicating locations of individual target hits has been implemented in the past.
+Since this feature has not been used recently, it has been removed.  But the functionality could be easily added if the need arises.
+<P>
+<A HREF="./Users_Manual/VectorOverlays.html">...More</A>
+<P>
+
+
+
+<H3><A NAME="chum_intro_lidar"></A>1.7 Lidar Point-Clouds</H3>
+
+You can load point-cloud data in LAS or BPF formats and fuse that data with the map DEM and orthophotos.
+The visualization approach used for Fusion3D makes the combination of DEM and point cloud much easier and more natural than other viewers.
+The viewer is not designed to display very large point clouds for large areas;
+this feature is designed to complement the lidar DEM maps for small areas where you want maximum information.
+<P>
+<P>
+<A HREF="./Users_Manual/PointClouds.html">...More</A>
+<P>
+
+
+
+
+<H3><A NAME="chum_intro_locs"></A>1.8 Going to Locations, Reading Locations, and Bookmarking Locations</H3>
+
+Under the 'Locations' menu, you can open up a locations input/output window.
+From that window you can enter the UTM, MGRS or Latitude-Longitude coordinates of a location and center the view at that location on the map.
+The window also shows the location of the center of the scene.
+Whenever you left-click a map location to screen center, the coordinates of that point are displayed in that window.
+<P>
+<A HREF="./Users_Manual/GoToLocation.html">...More</A>
+<P>
+
+
+<H3><A NAME="chum_intro_los"></A>1.9 Line-of-Sight Calculations</H3>
+
+Three types of Line-Of-Sight (LOS) algorithms have been implemented:
+The first type is from a central point on the ground to all ground points around it.
+This can be used in the case where an event happens at a particular location and you want
+to find all locations in the surrounding area from which a person could see that event.
+It can also be used for the inverse problem, visualizing which areas can be seen from a given vantage point.
+<P>
+The second LOS type is from a stationary standoff sensor to all points in a given area.
+This is used to determine which pixels are visible to a sensor and which points are obscured by nearby terrain features.
+<P>
+The third is for sun shadowing.
+This was originally implemented for WAMI (wide area motion imagery), from which it automatically gets the date and time of day.
+Sun shadows were used to register some of this imagery and this feature allows the user to visualize this shadowing.
+However, this feature can be used to visualize sun shadowing at any location and time by entering the date and time into the LOS Parameter menu.
+<P>
+<A HREF="./Users_Manual/LineOfSight.html">...More</A>.
+
+
+<H3><A NAME="chum_intro_mensurate"></A>1.10 Measure (Mensuration)</H3>
+
+The Mensuration feature allows the user to make measurements from the map.
+Measurements are always made by clicking with the middle mouse.
+The user should be careful to tilt the scene so he is looking straight down before doing mensuration.
+If the map is tilted, then the selected point may be different than it appears to the user.
+<P>
+The first option is to measure the distance, both horizontal and vertical, between two points.
+The second mode is to display location information about the single clicked point.
+The third is to measure distances along a route (see section on Tracks).
+The fourth is to show track parameters at the chosen point.
+The fifth is measure line-of-sight (LOS) distances (see section on LOS).
+The last allows the user to adjust thresholds for highlighting objects
+significantly above the terrain (see section on highlighting).
+<P>
+<A HREF="./Users_Manual/Mensuration.html">...More</A>
+<P>
+
+
+<H3><A NAME="chum_intro_draw"></A>1.11 Drawing -- Adding Point, Line, Polygon and Circle Vector Features</H3>
+
+This feature is designed to allow the user to annotate the map with general-purpose vector features.
+It includes point features with associated text or icons as well as lines and polygons.
+Circles can be generated by clicking on the center and dragging to any location on the desired circle.
+<P>
+A description of the drawing feature is described in <A HREF="./Users_Manual/DrawMenu.html">...More</A>
+<P>
+
+
+
+<H3><A NAME="chum_intro_track"></A>1.12 Adding Tracks -- Objects with Associated Timing That Can Be Animated</H3>
+
+This feature is designed to allow the user to define a vehicle track or proposed route.
+Only one such object can be defined at any time but that object can then be animated.
+An icon can be moved along the track and the camera can also be attached so the viewer can 'fly' the track.
+If timing information is included in the file, if will be used in the animation.
+Otherwise a constant speed will be assumed.
+<P>
+The feature is accessed through the VectorOverlays menu. 
+Under that menu one can digitize a track that can immediately be animated.
+<P>
+A description of the Vector Overlay menu is described in <A HREF="./Users_Manual/VectorOverlays.html">...More</A>
+<P>
+
+
+
+<H3><A NAME="chum_intro_cad"></A>1.14 Adding CAD Objects to the Scene</H3>
+
+The ability to superimpose CAD models onto the scene is a very new feature that should be considered experimental.
+It is optional in the build process.
+It is accessed through the 'CAD' menu and uses the Assimp library to parse model files.
+The Assimp library itself is mature and well-tested but the process of converting their structures to OpenInventor structures for display
+only captures a subset of a very extensive set of features.
+It has also only been tested on a small number of files.
+<P>
+The assimp library is a C++ implementation for importing CAD models in many popular formats.
+In particular, it supports Collada (.dae) and Wavefront Object (.obj).
+There is a list of about 30 other formats so it is very general.
+Other advantages are that it is self-contained and does not require loading lots of other libraries
+and that it puts data into structures that are very similar to OpenGL (and somewhat less so into OpenInventor).
+So it does not require lots of additional transformations to use it in the Fusion3D code.
+<P>
+Shapefiles also offer crude CAD modeling facilities.
+This format is accessed through the 'Vector Overlays' menu.
+We have tested some variants of Shapefiles like Multipatch shapefiles and Poly-Z shapefiles
+but have found it very difficult to develop a general-purpose display procedure.
+Some files may display well but some may not.
+Shapefile is a very old format that has been patched and augmented in a very ad-hoc way.
+Typically, not all of the information needed to visualize a complex CAD model is supplied in the file
+so some information is entered in the vector overlay menu.
+<P>
+
+
+
+
+
+<H3><A NAME="chum_intro_hilite"></A>1.15 Highlighting Objects That Are Significantly Above the Terrain</H3>
+
+This feature can be used to highlight vertical obstructions and is useful assessing possible landing zones.
+Two thresholds can be set for highlighting objects significantly above the surrounding terrain.
+Distance above the terrain is calculated for a DEM pixel by taking the difference between the first-hit and last-hit
+DEM elevation values for the pixel.
+If the difference is above the upper threshold, then the first-hit DEM pixel is highlightes in red. 
+If the difference is just above the second lower threshold, then it is highlighted in yellow.
+<P>
+This method for highlighting vertical obstructions is particularly useful because it emphasizes local differences
+and ignores gradual elevation changes.
+It also minimizes very large features like rooftops that can saturate the display.
+<P>
+The feature is turned on with the 'Hilite' button on the left of the main window.
+Thresholds can be adjusted from the 'Measure' menu.
+<P>
+
+
+
+
+ 
+<H3><A NAME="chum_intro_stereo"></A>1.16 Stereo</H3>
+
+Stereo 3-D visualization is built into the Fusion3D viewer.
+There are 2 different stereo options implemented: anaglyph and quadbuffered.
+One can switch between mono (the default) and anaglyph stereo using the 'Stereo' menu.
+However, because of basic limitations in the graphics library, it is not possible to switch on the fly between mono and raw stereo.
+To switch, one must use the 'Defaults' menu to change the default stereo setting, then restart the viewer.
+<P>
+The first, anaglyph (red-blue) stereo, is cheap and easy, requiring only a pair of inexpensive paper glasses that are common for many applications.
+However, the quality is relatively poor and the glasses are hard to use for any length of time.
+The second, quadbuffered stereo, uses the active shutter glasses from Nvidia (or equivalent) and is more expensive, but it is very high quality.
+Implementing it requires a good graphics board capable of quadbuffered stereo like the Nvidia Quadro series and a stereo-capable display.
+Stereo is currently out of favor but there are older monitors and 3D TVs that can display stereo.
+If appropriate hardware can be found, high-quality stereo makes a huge difference in the usefulness of the maps and is highly recommended.
+<P>
+
+
+
+
+<H3><A NAME="chum_intro_resources"></A>1.17 Setting Defaults</H3>
+
+You can set the default settings for several viewer parameters that have a large impact on hardware resources.
+These settings are accessed through the 'Defaults' menu.
+After you have changed the defaults, you must restart the viewer for the defaults to take effect.
+<P>
+The most important parameter is the map size since this typically determines the load on the GPU.
+The map is defaulted to a small size to accomodate minimal hardware configurations and should be increased for better hardware.
+A second setting is the number of point-cloud points that are displayed.
+This can also be increased significantly for better hardware.
+Unfortunately, limits must be set by trial and error as it is very hard to predict hardware limits
+(true of other viewers as well).
+<P>
+The last setting is the stereo display setting.
+Stereo is defaulted off since most hardware will not be able to support it, but turning it on greatly improves the map visualization.
+<P>
+<P>
+<A HREF="./Users_Manual/Defaults.html">...More</A>
+<P>
+
+
+
+<H3><A NAME="chum_intro_write"></A>1.18 Rendering the Current Screen to a File</H3>
+
+You can write the scene currently visible in the main window to a file.
+This is useful when you want to record the location of a track or other mapping information
+for inclusion in a presentation.
+It can also be used to make animations and movies.
+<P>
+<A HREF="./Users_Manual/FileMenu.html">...More</A>
+<P>
+
+
+
+
+
+
+
+<H3><A NAME="chum_intro_clock"></A>1.19 Clock</H3>
+
+The viewer clock is activated whenever time-dependent overlay data is read into the display.
+At present its main function is with track data, locating a vehicle or person on the track with time.
+It is accessed through the 'Clock' menu.
+It is also used indirectly to 'fly' a track where it is accessed through the 'Vector Overlays' menu.
+<P>
+<P>
+<A HREF="./Users_Manual/Clock.html">...More</A>
+<P>
+
+
+
+<H3><A NAME="chum_intro_help"></A>1.20 Help and Contact Information</H3>
+
+
+The help menu gives access to two features.
+The first is an About dialog that gives information on the viewer like the version number, date and who to contact with questions.
+The second provides a link to the HTML documentation tree of which this document is a part.
+<P>
+.<A HREF="./Users_Manual/HelpMenu.html">...More</A>
+<P>
+<H3><A NAME="chum_intro_restrictions"></A>1.21 Viewer Restrictions</H3>
+
+The basic coordinate system for the Fusion3D viewer is Northing and Easting in a particular projected coordinate system.
+For most large collections like BuckEye multiple-tile data collections, all tiles are defined in the same UTM zone
+even when the collection is on a zone boundary and spans multiple zones.
+However, if one combines multiple data collections in the vicinity of a zone boundary into a large map, tiles may be defined in multiple zones.
+In this case, the viewer reprojects all tiles into the zone defined by the first tile (the tile that the display is initialized in).
+This leads to distortions in the tiles in the adjacent UTM zone.
+In particular, you will note that these distorted tiles will not meet properly at tile boundaries.
+It is probably best to confine large multi-tile maps to a single UTM zone.
+However, such maps can be constructed given that one remains aware of the distortions.
+<P>
+
+
+
+<H3><A NAME="chum_intro_ugs"></A>1.22 Incomplete Feature -- Fusion with Unattended Ground Sensors (UGS)</H3>
+
+The Fusion3D viewer was used as a Common Operating Picture (COP) display for a series of field tests to demonstrate networking
+and communications among Unattended Ground Sensors (UGS) developed in several different countries.
+Because standards were still evolving and the sensors involved were different in every test,
+it was not possible to develop a general-purpose interface to UGS sensors.
+Furthermore, UGS sensors employ many different modalities and a useful display must be tailored to each modality.
+Therefore, this part of the code should be considered experimental and incomplete 
+and would have to be modified for any future application.
+<P>
+Two limited-applicability interfaces were written.
+The first implements the OSUS standard.
+The second is a KML-based interface
+
+
+
+
+
+
+
+<H3><A NAME="chum_intro_discontinued"></A>1.23 Discontinued Features</H3>
+
+The following features were previously included in Fusion3D but have not recently been used
+and have been disabled to simplify maintanance.
+They are mentioned here because they can be reenabled if desired without a great deal of new development.
+<P>
+The first feature is display of GMTI, developed to analyze obscuration and multibounce problems for GMTI sensors.
+It was also designed to fuse with Constant Hawk data to analyze coordinating these 2 sensors in tracking vehicles.
+The viewer accepted GMTI data in the NATO 4607 format and was tested on the LSRS sensor.
+<P>
+Fusing GMTI data with the terrain elevation map enables you to calculate and visualize areas obscured from the sensor at any time.
+Such calculations can be very useful when tracking vehicles to determine when a vehicle will become obscured and
+when it can be expected to emerge into the open again.
+Also, the GMTI feature can be used to investigate the problem of multiple bounces where the apparent location of the target
+is not the true location.
+In particular, the ability to visualize the vector from any GMTI hit back to the sensor makes it much easier to identify multibounce hits.
+<P>
+<A HREF="./Users_Manual/GMTI.html">...More</A>
+<P>
+The next disabled feature and the first application for the Fusion3D viewer was to the Constant Hawk in Iraq (CHI) program.
+This was a persistent surveillance program using a large field-of-view motion video sensor.
+The viewer was deployed to Iraq with CHI, but only for a short time before the program was pulled out of Iraq in the general standdown.
+The viewer includes a number of features specific to the CHI program but which could be extended to other motion video sensors.
+The primary function of the viewer for CHI was to register vehicle tracks.
+The viewer could pull in CHI video from their database and JPEG data servers, could register that video to the 3-D map and thereby register the vehicle tracks.
+<P>
+The last disabled feature allowed the Fusion3D viewer a limited ability to remotely play, pause or stop a motion video player.
+Display of motion video was not incorporated into Fusion3D as there are many capable motion video viewers.
+We chose to interface to the VLC media player, a free and open source media player.
+Fusion3D has a limited ability to remotely play, pause or stop up to 3 instances of the VLC player.
+One can also click a location on the map and issue a request to play video focused on that spot.
+<P>
+
+<H3><A NAME="chum_intro_spacenav"></A>1.24 Discontinued Hardware -- The SpaceNavigator and SpaceMouse</H3>
+
+The 3DConnexion SpaceNavigator and the newer SpaceMouse with the same functionality are excellent 3D navigation devices
+and work particularly well with the Fusion3D viewer.
+This device is inexpensive, small and provides a very flexible and intuitive interface.
+It is available in the older Window-only 32-bit implementation of the viewer but not in the newer Qt-based implementation.
+Unfortunately, it is not implemented within Qt and had to be abandoned.
+<P>
+
+
+
+
+
+
+
+
+
+

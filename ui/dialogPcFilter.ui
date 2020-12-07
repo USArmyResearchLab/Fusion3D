@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dialogPcFilter</class>
+ <widget class="QDialog" name="dialogPcFilter">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>274</width>
+    <height>229</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dialogPcFilter</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Filter type</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="noneButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>30</y>
+     <width>82</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>None</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="fineButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>50</y>
+     <width>231</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Filter on FINE algorithm quality metirc TAU</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="elevAbsButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>70</y>
+     <width>211</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Filter on elevation</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="elevRelButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>90</y>
+     <width>191</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Filter on elevation above DEM</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="minEdit">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>120</y>
+     <width>71</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="maxEdit">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>150</y>
+     <width>71</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="applyButton">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>190</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Apply</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>190</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>120</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Min filter value to process</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>150</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Max filter value to process</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>noneButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogPcFilter</receiver>
+   <slot>doNone()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>38</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>145</x>
+     <y>12</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fineButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogPcFilter</receiver>
+   <slot>doFine()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>178</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>219</x>
+     <y>35</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>elevAbsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogPcFilter</receiver>
+   <slot>doElevAbs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>63</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>22</x>
+     <y>76</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>elevRelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogPcFilter</receiver>
+   <slot>doElevRel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>72</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>27</x>
+     <y>103</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>applyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogPcFilter</receiver>
+   <slot>doApply()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>64</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogPcFilter</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>210</x>
+     <y>202</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>210</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>doNone()</slot>
+  <slot>doFine()</slot>
+  <slot>doElevAbs()</slot>
+  <slot>doElevRel()</slot>
+  <slot>doApply()</slot>
+ </slots>
+</ui>

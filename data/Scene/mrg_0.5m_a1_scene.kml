@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+  <Folder><name>mrg_0.5m_a1_test.kml</name>
+    <description>Map extents</description>
+    <LatLonBox>
+       <north>41.851937</north>
+       <south>41.848448</south>
+       <east>-74.150903</east>
+       <west>-74.155330</west>
+    </LatLonBox>
+  </Folder>
+</kml>

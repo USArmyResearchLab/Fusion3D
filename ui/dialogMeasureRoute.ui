@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dialogMeasureRoute</class>
+ <widget class="QDialog" name="dialogMeasureRoute">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>326</width>
+    <height>168</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dialogMeasureRoute</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>291</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Calculate distance along a route between chosen endpoints</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="firstButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>40</y>
+     <width>241</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pick first route endpoint (middle mouse)</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="secondButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>60</y>
+     <width>221</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pick second route endpoint</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="calcButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>80</y>
+     <width>241</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Calculate distance between two chosen points</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="offButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>100</y>
+     <width>181</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Turn off anc clear</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>130</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>firstButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogMeasureRoute</receiver>
+   <slot>doFirst()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>36</x>
+     <y>17</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>secondButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogMeasureRoute</receiver>
+   <slot>doSecond()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>68</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>33</x>
+     <y>66</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calcButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogMeasureRoute</receiver>
+   <slot>doCalc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>215</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>197</x>
+     <y>134</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>offButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogMeasureRoute</receiver>
+   <slot>doClear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>88</x>
+     <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>128</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogMeasureRoute</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>271</x>
+     <y>141</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>293</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>doFirst()</slot>
+  <slot>doSecond()</slot>
+  <slot>doCalc()</slot>
+  <slot>doClear()</slot>
+ </slots>
+</ui>

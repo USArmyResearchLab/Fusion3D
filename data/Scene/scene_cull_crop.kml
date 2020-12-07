@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns = "http://www.opengis.net/kml/2.2">
+<Document>
+  <Folder>
+    <name>D:/LidarUSA/UAV_SnoopySeriesA_A1_cull_crop</name>
+    <GroundOverlay>
+      <name>D:/LidarUSA/UAV_SnoopySeriesA_A1_cull_crop</name>
+      <LatLonBox>
+        <north>41.8519282128008</north>
+        <south>41.8504583374092</south>
+        <east>-74.1509153912998</east>
+        <west>-74.1531633664554</west>
+      </LatLonBox>
+    </GroundOverlay>
+  </Folder>
+</Document>
+</kml>

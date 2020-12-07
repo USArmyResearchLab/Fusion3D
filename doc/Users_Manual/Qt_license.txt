@@ -1,0 +1,16 @@
+Open Source Licensing of Qt
+
+Free and Open Source Software (FOSS) is software that comes with a license that gives users certain rights. In particular the right to use the software, to modify it, to obtain its source, and to pass it on (under the same terms). Notice that the term "free" is about rights, not money. The Free Software Foundation, the creator of the GNU GPL, speaks of free in this context as in "free speech", not as in "no cost".
+
+The Qt Company supports the free software concept by providing the Qt Open Source Edition, which is licensed under the GNU Lesser General Public License (LGPL) version 3. You can use this edition of Qt to create and distribute software with licenses that are compatible with this free software license.
+
+Additionally, the examples included with Qt are provided under the terms of the BSD 3-Clause "New" or "Revised" License. See also License of Qt examples.
+The support of open source with the Open Source Versions of Qt has enabled large successful software projects like KDE to thrive, with thousands of developers around the world using open source versions of Qt at no cost to themselves.
+
+The Open Source Edition can be downloaded from the Downloads page.
+More information on Free and Open Source software is available online.
+		GNU LGPL: http://www.gnu.org/
+		Open Source licensing: http://www.opensource.org/
+See Licenses Used in Qt for a collection of documents about licenses used in Qt.
+Information about Qt Commercial License Agreements is available in the Qt Licensing Overview on the Qt website.
+If you are in doubt what edition of Qt is right for your project, please contact us: http://www.qt.io/contact-us/.

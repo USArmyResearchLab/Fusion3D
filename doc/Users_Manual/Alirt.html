@@ -1,0 +1,45 @@
+<HEAD>
+<TITLE>ALIRT LIDAR DATA AND NAMING CONVENTIONS</TITLE>
+</HEAD>
+<BODY>
+<H1>ALIRT LIDAR DATA AND NAMING CONVENTIONS</H1>
+<HR>
+
+The elevation data products for this project are provided in tiles of 3 minutes by 3 minutes.  The file and folder naming convention references the southwest geographic corner of each tile in the format DDMMSShDDDMMSSe_YYYYMMDDHHMMSS_ALIRT_RRR_SSS_LL_W_CXX.ext.  
+<P>
+
+
+<H1>NAMING CONVENTIONS</H1>
+
+Alirt naming conventions are as follows:
+<P>
+
+
+
+<PRE>
+
+
+*DDMMSShDDDMMSSe – the southwest geographic corner of each tile, where D stands for degrees, M for minutes, S for seconds and h/e denotes the hemisphere as either N,S or E,W 
+*YYYYMMDDHHMMSS – this portion of the naming convention denotes the year, date and time of the mission collect.  Y stands for year, M for month, D for day, H for hour, M for minutes, and S for seconds
+*ALIRT is the name of the specific LIDAR sensor.
+*RRR -  gives the resolution of the product, either 030 for 30cm point target products or 100 for 1m wide area mapping products. 
+*SSS – data type code, for example, DSM for digital surface model or DTM for digital terrain model.
+*LL – look number.  For wide area mapping products, this will be 00
+*W – version number
+*CXX – classification and release code, u for unclassified, “fo” for for official use only
+.ext – the file format, this will be .tif for DSM and DTMs, which are in GeoTIFF format
+
+Other characteristics are as follows:
+* Classification- UNCLASSIFIED//For Official Use Only
+* Tile Size- 3 min. x 3 min.
+* Post Spacing- 1 meter
+* Units- Meters
+* Format- GeoTIFF 32-bit float point
+* Surface type- reflective surface and bare earth (DSM/DTM respectively, LIDAR sensor derived)
+* Projection- UTM
+* Datum- (Horizontal) WGS-84, (Vertical) EGM-96
+* Null Values- -10000
+
+
+
+</PRE>

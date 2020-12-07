@@ -1,0 +1,104 @@
+<HEAD>
+<TITLE>VISUALIZATION TECHNIQUES AND MAP DISPLAY OPTIONS</TITLE>
+</HEAD>
+<BODY>
+<H1>VISUALIZATION TECHNIQUES AND MAP DISPLAY OPTIONS</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#display-draped">Draped Surface Option</A>
+<LI><A HREF="#display-last">Last Hit Only Option</A>
+<LI><A HREF="#display-hilite">Highlight Vertical Obstructions Option</A>
+<LI><A HREF="#display-hires">High-Resolution Texture Option</A>
+</UL>
+
+As described in the introduction, the traditional technique drapes a continuous surface over the regularly spaced elevation values.
+This technique works well when displaying large areas or in cities with large buildings, but falls apart at small scales or for natural objects like trees.
+The Fusion3D Viewer technique visualizes the terrain as a set of disjoint square patches.
+It is combined with an algorithm that identifies smooth areas within the scene.
+Where the terrain is smooth, such as in grassy areas, roads, parking lots and rooftops, it warps the patches to create a smooth surface.
+For trees or shrubs or other areas where objects are under-sampled, however, the patches are left disjoint.
+This has the disadvantage of leaving gaps in the data, but the human mind is very adept at filling in this missing information.
+It has the strong advantage of making natural terrain look realistic – trees and bushes look stylized but still look natural and are easy to interpret.
+Also, it does not add artifacts to the map, like filling in blank vertical walls where there are alcoves and other structure
+and extending bridges and overpasses down to the ground. 
+An additional advantage is that it can display multiple hit surfaces an one time.
+A <A HREF="./Paper_EI6490A-68.doc">symposium paper</A> describes this visualization technique in more detail.
+<P>
+There are a number of options for the display, and these are described below
+<P>
+
+<H2><A NAME="display-draped">DRAPED SURFACE OPTION</A></H2>
+
+As described above, the default display uses a combination of smooth surfaces and discrete squares for rough areas like trees.
+The approach used by all the other viewers, however, is to drape a single surface over elevation points.
+This alternative visualization option is available in the 3-D Fusion Viewer.
+The user can toggle between the two techniques using the button on the left edge labeled "Drape".
+<P>
+The default visualization can show both the first-hit and last-hit surfaces simultaneously.
+The last-hit surface is always on and the first-hit surface can be toggled on and off (see below).
+The draped-surface technique, however, can show only one surface at a time.
+If the first-hit surface is turned on when the draped surface is toggled on, then
+the first-hit draped surface will be displayed.
+If the first-hit surface is turned off when the draped surface is toggled on, then
+the last-hit draped surface will be displayed.
+<P>
+
+
+
+<H2><A NAME="display-last">LAST HIT ONLY OPTION</A></H2>
+
+By default, both the first-hit and last-hit surfaces are displayed.
+The first-hit surface is only displayed at points where it differs from the last-hit surface by more than 1m.
+At these points, first-hit elevations are displayed as discrete squares.
+Since there are a relatively small number of points, like trees, where the first-hit surface is displayed,
+one can look through this surface to the last-hit surface below.
+<P>
+There are occasions, however, when the user will want to turn off the first-hit surface.
+For instance, where there is heavy tree cover, turning off the first-hit surface can greatly reduce the number 
+of hits on trees and allow the user to concentrate on the terrain below.
+The first-hit surface can be toggled on and off using the button on the left margin labeled "A1".
+<P>
+
+
+
+<H2><A NAME="display-hilite">HIGHLIGHT VERTICAL OBSTRUCTIONS OPTION</A></H2>
+
+The default visualization uses the same color overlay to texture all points.
+However there are situations where the user may want to highlight vertical obstructions --
+any points that are significantly above the surrounding areas.
+This option is toggled on and off using the button on the left margin labeled "Hilite".
+Using the default thresholds, points are highlighted in the following manner:
+<PRE>
+
+	   < 10m above surroundings	default colors
+	10 - 20m above surroundings	yellow highlight
+	   > 20m above surroundings	red highlight
+
+
+</PRE>
+The thresholds can be adjusted from the 'Measure' menu or from a tag in the Project File.
+More precisely, the algorithm measures the difference in elevation between the first-hit and last-hit surfaces at each pixel
+and highlights the pixels as described above.
+<P>
+
+
+<H2><A NAME="display-hires">HIGH-RESOLUTION TEXTURE OPTION</A></H2>
+
+For many BuckEye lidar maps (as well as some HALOE and ALIRT maps), high-resolution orthophoto images in MrSID format are also available.
+These orthophotos are typically 10-cm resolution, whereas the elevation data is typically 1-m resolution.
+Until this feature was implemented recently, the only option was to downsample the orthophoto to the elevation data resolution
+to use a texture for the elevation maps.
+Amost all other viewers we know of also have this restriction and the Fusion3D Viewer is one of the first to allow texturing the elevations
+with full-resolution orthophotos.
+<P>
+The high-resolution texture can be toggled on and off using the button labeled "Hres".
+Using medium-resolution texture (the same resolution as the elevation data) is faster,
+so when zoomed out or searching for a landmark it may be preferable to toggle the high-res texture off.
+<P>
+
+
+
+
+
+

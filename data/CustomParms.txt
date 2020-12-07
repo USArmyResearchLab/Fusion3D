@@ -1,0 +1,11 @@
+# ##################################################
+# Customized Parameters for Fusion3D 
+# ##################################################
+
+Tiles-N 70 50 4 1
+
+Map3d-Color-Scale 0  # 0=natural/abs elev, 1=blue-red/abs elev, 2=natural/rel elev, 3=blue-red/rel elev
+Stereo-On-Off off		# 'on'/'off'/'anaglyph'
+
+Mobmap-Max-NDisplay 20000000
+Camera-El-Max 85

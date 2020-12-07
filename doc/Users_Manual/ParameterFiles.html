@@ -1,0 +1,114 @@
+<HEAD>
+<TITLE>THE PROJECT FILE</TITLE>
+</HEAD>
+<BODY>
+<H1>THE PROJECT FILE</H1>
+<HR>
+
+A complete definition of all the valid Project File tags is given <A HREF="./TaggedAscii.html">here</A>
+This section describes the format for the Project File and discusses some of the most important tags.
+<P>
+The Project File is ASCII and can be edited with any text editor like Wordpad.
+It consists of a number of tags with their associated parameters.
+A tag must be a single word with no spaces, is case sensitive and must be at the beginning of a line.
+Anything else is ignored and interpreted as a comment, although comments begin with "# " by convention.
+<P>
+
+
+
+<H2><A NAME="chum_intro">Tags that Define the Map</A></H2>
+
+The most important tags are the ones that define maps.
+There are currently either 3 or 4 such tags that define each map.
+<P>
+The first tag is the reference location or map origin that initializes the viewer centered at the location defined.
+You want to specify a point approximately at the center of the area of current
+interest to minimize the movement necessary to get to desired locations.
+The tag has the following definition:
+<PRE>
+
+	Ref-LL-Deg	latitude longitude
+		latitude  = latitude of reference point in deg
+		longitude = longitude of reference point in deg (West uses negative values)
+
+</PRE>
+Note that the values are decimal degrees, not degrees-minutes-seconds as is sometimes used.
+<P>
+The second tag defines the location and naming conventions for the map.
+The tag has the following definition:
+<PRE>
+
+	Map3d-Index-Find   locName dir  prefix  suffix texture exclude
+		locName	A map name just used for documentation
+		dir     	Directory -- all relevent files in this directory and all its subdirectories will be loaded
+		prefix     Prefix of primary last-hit elevation file (will try to use all files with names fitting the pattern "prefix*suffix")
+					Choose the prefix/suffix only for the last-hit elevation -- names for the other file types will be derived.
+					The prefix can be the pattern for the entire name in which case the suffix will be ignored.
+		suffix     Suffix of primary last-hit elevation file
+		texture     Type of map data used to texture the surface 
+					"int" -- use grayscale intensity (typically from the ladar backscatter intensity)
+					"mrg" -- use color imagery (satellite or false color)
+		exclude     No. of pixels to exclude at edges of each tile
+					Buckeye tiles overlap and pixels at the edges may be corrupted, so set = 2
+					Other data sets:  set = 0
+
+
+
+</PRE>
+The prefix and suffix should be defined so as to include all desired files and no undesired ones.
+(Note:  the relevent logic is in method dir_class::read_dir_indexed.)
+<P>
+The third tag is used when MrSID files are to be used to texture the DEM map.
+<PRE>
+
+	Map3d-Index-MrSID   locName pattern index  
+		locName     A map name just used for documentation
+		pattern     Unique pattern to search for MrSID files in the directory (eg *.sid)   
+		index       Not used -- just for backward compatibility
+
+
+</PRE>
+All files matching the search pattern will be loaded from the directory specified in tag 'Map3d-Index-Find'.
+<P>
+The fourth tag is used when files are defined explicitly rather than loading all files matching search patterns.
+<PRE>
+
+	Map3d-Index-Files
+		-A2    <name> <name> ...
+		-A1    <name> <name> ...
+		-TEX    <name> <name> ...
+		-KML    <name> <name> ...
+		-END
+
+
+</PRE>
+
+
+
+
+
+
+<H2><A NAME="chum_intro">Tags for Map Size</A></H2>
+
+Another important parameter tag controls the size of the map:
+<PRE>
+
+	Tiles-N         48 36 4 1 	# Typical map sizes
+
+
+</PRE>
+The first two parameters are the halfwidth in low-resolution tiles of the map display in x and y.
+Thus, the display will be 2*48+1=97 tiles wide and 73 tiles high.
+By default, tiles are 128-by-128 pixels in size.
+The third parameter is the halfwidth in tiles of the medium-resolution portion of the map.
+Thus, a 9x9 tile area at the center of the map will be in medium resolution.
+The last parameter is is the halfwidth in tiles of the high-resolution portion of the map.
+Thus, a 3x3 tile area at the center of the map will be in high resolution.
+
+<P>
+<P>
+
+
+
+
+
