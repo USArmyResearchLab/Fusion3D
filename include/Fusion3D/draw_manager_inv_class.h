@@ -4,8 +4,7 @@
 
 /**
 Adds OpenInventor functionality to draw_manager_class.
-Adds capability to draw the objects that the class imports.
-Currently implemented to draw a single group of points connected by a single line.
+Adds capability to draw all the objects that its parent class handles..
 
 */
 class draw_manager_inv_class:public draw_manager_class{

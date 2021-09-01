@@ -37,6 +37,7 @@ class cache_class:public base_jfd_class{
 							// 1=stored good data and not being accessed
 							// 2=currently being written
 							// 3=currently being read
+	unsigned char* flag;	// Flag that can be set for each tile (reset after tile is deleted from cache)
 	unsigned char** cstore;	// Array of na=nx*ny storage arrays per tile, each of size nchar
 	int* full_index;		// Indices of tiles filled in order of being filled
 	int res_type;			// Resolution of stored data -- 1=hi, 2=med, 3=low
@@ -60,6 +61,8 @@ class cache_class:public base_jfd_class{
    
 	int init(map3d_index_class *map3d_index_in, int array_size, int res_type_in, int ntiles_cached_pad, const char *diag_name_in);
 	int query(double x, double y);
+	int set_flag(double x, double y, int val);
+	int get_flag(double x, double y);
 	unsigned char* get_ptr_for_write(double x, double y);
 	int mark_write_complete(double x, double y);
 	unsigned char* get_ptr_for_read(double x, double y);

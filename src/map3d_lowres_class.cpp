@@ -14,6 +14,7 @@ map3d_lowres_class::map3d_lowres_class()
 	data_tex = NULL;
 	data_tile = NULL;
 	dir = NULL;
+	mask_server = NULL;
 	clear_all();
 }
 
@@ -47,6 +48,16 @@ int map3d_lowres_class::clear_all()
 	return(1);
 }
 
+// ********************************************************************************
+/// Register mask_server_class to class.
+/// Register a pointer to the mask_server_class that does mask overlays like for LOS.
+// ********************************************************************************
+int map3d_lowres_class::register_mask_server(mask_server_class*	mask_server_in)
+{
+	mask_server = mask_server_in;
+	return(1);
+}
+
 // **********************************************
 /// Register dir_class that stores file names and info for DEM filesets and Point clouds.
 /// Pass a pointer to a dir_class.
@@ -58,7 +69,9 @@ int map3d_lowres_class::register_dir(dir_class *dirin)
 }
 
 // ********************************************************************************
-/// Reset class.
+/// Define lowres elevation map for DEMs.
+/// Map array is allocated outside the class and, if it needs to be made, is made outside this class.
+/// If it can be read from file, this is done in this class.
 // ********************************************************************************
 int map3d_lowres_class::register_elev_dem(double north, double west, float dx, float dy, int nx, int ny, float* elev)
 {
@@ -74,7 +87,8 @@ int map3d_lowres_class::register_elev_dem(double north, double west, float dx, f
 }
 
 // ********************************************************************************
-/// Reset class.
+/// Define lowres elevation map for PCs and populate from a file if it has already been defined and saved.
+/// If not already defined, define zero-filled array that will be populated from subsequent methods.
 // ********************************************************************************
 int map3d_lowres_class::register_elev_pc(double north, double south, double east, double west)
 {
@@ -96,7 +110,7 @@ int map3d_lowres_class::register_elev_pc(double north, double south, double east
 	string pcpathname = dir->get_ptcloud_name(0);
 	parse_filepath(pcpathname, pcfilename, dirname);
 	char ctemp[500];
-	sprintf(ctemp, "%s/lowresPC_n%.0lf_w%.0lf_nx%d_ny%d.tif", dirname.c_str(), north_elev_pc, west_elev_pc, nx_elev_pc, ny_elev_pc);
+	sprintf(ctemp, "%s/lowresPC_n%.0lf_w%.0lf_s%.0lf_e%.0lf.tif", dirname.c_str(), north_elev_pc, west_elev_pc, south, east);
 	filename_elev_pc = ctemp;
 
 	if (check_file_exists(filename_elev_pc)) {
@@ -127,7 +141,7 @@ int map3d_lowres_class::register_elev_pc(double north, double south, double east
 }
 
 // ********************************************************************************
-/// Reset class.
+/// Set parameters for lowres texture image.
 // ********************************************************************************
 int map3d_lowres_class::register_tex_dem(double north, double west, float dx, float dy, int nx, int ny, float* tex, int ibrt_ofmap)
 {
@@ -211,14 +225,27 @@ int map3d_lowres_class::make_elev_pc(float(*coords)[3], int ncoords)
 // ********************************************************************************
 int map3d_lowres_class::finish_elev_pc()
 {
+	float elev_avg = 0.;
+	int avg_n = 0;
 	if (elev_dem_flag == 1) return(1);			// Lowres elevations already defined from DEM -- skip
 	if (elev_pc_flag == 1) return(1);			// Lowres elevations already defined for PC by reading from file -- skip
 
 	for (int i = 0; i < ny_elev_pc * nx_elev_pc; i++) {
 		if (elev_pc_n[i] > 0) {
 			elev_pc[i] = elev_pc[i] / float(elev_pc_n[i]);
+			elev_avg = elev_avg + elev_pc[i];
+			avg_n++;
 		}
 	}
+	elev_avg = elev_avg / avg_n;
+
+	// Fill in empty cells with average value (so maintain reasonable value if click in empty part of PC)
+	for (int i = 0; i < ny_elev_pc * nx_elev_pc; i++) {
+		if (elev_pc[i] == 0.) {
+			elev_pc[i] = elev_avg;
+		}
+	}
+
 
 	// ***********************************
 	// Write the data so you can use it next time
@@ -475,6 +502,7 @@ int map3d_lowres_class::make_newtile_low_from_mosaic(double north_cen, double ea
 			}
 		}
 	}
+	mask_server->apply_mask_tex(data_tile, roi_n, roi_w, dx_tex, dy_tex, nx_tile, ny_tile);
 
 	// *******************************************
 	// Set diffuse colors -- pack rgba

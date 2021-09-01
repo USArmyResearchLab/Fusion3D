@@ -1,0 +1,84 @@
+<HEAD>
+<TITLE>CAD MODELS IN ASSIMP IMPORTABLE FORMATS</TITLE>
+</HEAD>
+<BODY>
+<H1>CAD MODELS IN ASSIMP IMPORTABLE FORMATS</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#assimp_intro">Introduction</A>
+<P>
+<LI><A HREF="#assimp_build">Assimp Library Build</A>
+<P>
+<LI><A HREF="#assimp_structures">Assimp Data Structures</A>
+<P>
+</UL>
+
+<H2><A NAME="assimp_intro">INTRODUCTION</A></H2>
+
+The assimp library is a C++ implementation for importing CAD models in many popular formats.
+In particular, it supports Collada (.dae) and Wavefront Object (.obj).
+There is a list of about 30 other formats so it is very general
+Other advantages are that it is self-contained and does not require loading lots of other libraries
+and that it puts data into a structure that is very similar to OpenGL so it does not require
+lots of additional transformations for use to use it.
+<P>
+
+
+
+
+
+
+<H2><A NAME="assimp_build">BUILDING ASSIMP</A></H2>
+
+Assimp provides source code and CMAKE files for building the library.
+I downloaded assimp source and CMAKE files.
+I then downloaded the latest CMAKE for windows:  cmake-3.15.4-win64-x64.
+<P>
+In the bin subdirectory, I ran the gui-based executable cmake-gui.exe.
+I specified the directory for the source code: C/assimp-3.3.1.
+I created a directory C:/assimp-3.3.1/build to build in and specified this directory to the GUI.
+I pressed "Configure", then "Generate".
+I also had to specify to target VisualStudio2017.
+This created a VisualStudio 2017 solution that appears to work -- at least for Debug.
+<P>
+I compiled the Release version 4 December 2019.
+I tried both building 'assimp' and building 'BUILD ALL' but had all sorts of linking errors.
+It was linking to a 64-bit version of GDAL, not the32-bit version.
+When I fixed this, I rebuild 'assimp' and it looks to work.
+<P>
+Code is in dir:
+
+<PRE>
+
+	C:\assimp-3.3.1\build\code\Debug
+	C:\assimp-3.3.1\build\code\Release
+
+
+</PRE>
+<H2><A NAME="assimp_structures">ASSIMP DATA STRUCTURES</A></H2>
+
+The basic data structure is a scene that corresponds to all the data for a single file.
+To start processing, one imports data from a file into the scene.
+Within the scene there are two basic substructures: meshes and materials.
+Each scene contains a number of meshes.
+Every time a new material is used for faces in the file/scene, then a new mesh is created.
+Although a given material may be used multiple times,
+every time a different material is applied to a set of faces then a new mesh is defined.
+<P>
+Some types of information, like colors and filenames for the texture, are defined in materials.
+However most is stored in the meshes.
+Vertex locations, face definitions, normals and texture coordinates are defined
+in the mesh in such a way that they can be transfered directly into OpenGL/OpenInventor structures.
+<P>
+
+
+
+
+
+
+
+
+
+

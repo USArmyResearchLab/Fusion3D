@@ -108,7 +108,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\atrlab_manager_class.cpp" />
-    <ClCompile Include="..\..\..\src\atr_class.cpp" />
     <ClCompile Include="..\..\..\src\atr_los_class.cpp" />
     <ClCompile Include="..\..\..\src\base_jfd_class.cpp" />
     <ClCompile Include="..\..\..\src\bookmark_manager_class.cpp" />
@@ -126,6 +125,7 @@
     <ClCompile Include="..\..\..\src\csv_class.cpp" />
     <ClCompile Include="..\..\..\src\dialogCadOpen.cpp" />
     <ClCompile Include="..\..\..\src\dialogClockTime.cpp" />
+    <ClCompile Include="..\..\..\src\dialogCSV.cpp" />
     <ClCompile Include="..\..\..\src\dialogDrawAlt.cpp" />
     <ClCompile Include="..\..\..\src\dialogDrawNew.cpp" />
     <ClCompile Include="..\..\..\src\dialogFileDemBuck.cpp" />
@@ -165,6 +165,7 @@
     <ClCompile Include="..\..\..\src\image_las_class.cpp" />
     <ClCompile Include="..\..\..\src\image_las_demify_class.cpp" />
     <ClCompile Include="..\..\..\src\image_mrsid_class.cpp" />
+    <ClCompile Include="..\..\..\src\image_pccsv_class.cpp" />
     <ClCompile Include="..\..\..\src\image_pnm_class.cpp" />
     <ClCompile Include="..\..\..\src\image_ptcloud_class.cpp" />
     <ClCompile Include="..\..\..\src\image_resample_class.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="..\..\..\src\map3d_lowres_class.cpp" />
     <ClCompile Include="..\..\..\src\map3d_manager_class.cpp" />
     <ClCompile Include="..\..\..\src\map3d_manager_inv_class.cpp" />
+    <ClCompile Include="..\..\..\src\mask_server_class.cpp" />
     <ClCompile Include="..\..\..\src\mensuration_manager_class.cpp" />
     <ClCompile Include="..\..\..\src\mensuration_manager_inv_class.cpp" />
     <ClCompile Include="..\..\..\src\menu_input_class.cpp" />
@@ -214,10 +216,8 @@
     <ClCompile Include="..\..\..\src\tiles_rtv_class.cpp" />
     <ClCompile Include="..\..\..\src\time_conversion_class.cpp" />
     <ClCompile Include="..\..\..\src\time_track_class.cpp" />
-    <ClCompile Include="..\..\..\src\track_analysis_class.cpp" />
     <ClCompile Include="..\..\..\src\track_manager_class.cpp" />
     <ClCompile Include="..\..\..\src\track_manager_inv_class.cpp" />
-    <ClCompile Include="..\..\..\src\transform.cpp" />
     <ClCompile Include="..\..\..\src\utilities_jfd.cpp" />
     <ClCompile Include="..\..\..\src\vector_index_class.cpp" />
     <ClCompile Include="..\..\..\src\vector_layer_class.cpp" />
@@ -226,7 +226,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\Fusion3D\atrlab_manager_class.h" />
-    <ClInclude Include="..\..\..\include\Fusion3D\atr_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\atr_los_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\base_jfd_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\bookmark_manager_class.h" />
@@ -261,6 +260,7 @@
     <QtMoc Include="..\..\..\include\Fusion3D\dialogVecDisplay.h" />
     <QtMoc Include="..\..\..\include\Fusion3D\dialogVecFly.h" />
     <QtMoc Include="..\..\..\include\Fusion3D\dialogVecToggle.h" />
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogCSV.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\dir_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\dir_monitor_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\draw_data_class.h" />
@@ -283,6 +283,7 @@
     <ClInclude Include="..\..\..\include\Fusion3D\image_las_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\image_las_demify_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\image_mrsid_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\image_pccsv_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\image_pnm_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\image_ptcloud_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\image_resample_class.h" />
@@ -305,6 +306,7 @@
     <ClInclude Include="..\..\..\include\Fusion3D\map3d_lowres_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\map3d_manager_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\map3d_manager_inv_class.h" />
+    <ClInclude Include="..\..\..\include\Fusion3D\mask_server_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\mensuration_manager_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\mensuration_manager_inv_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\menu_input_class.h" />
@@ -332,10 +334,8 @@
     <ClInclude Include="..\..\..\include\Fusion3D\tiles_rtv_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\time_conversion_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\time_track_class.h" />
-    <ClInclude Include="..\..\..\include\Fusion3D\track_analysis_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\track_manager_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\track_manager_inv_class.h" />
-    <ClInclude Include="..\..\..\include\Fusion3D\transform.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\vector_index_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\vector_layer_class.h" />
     <ClInclude Include="..\..\..\include\Fusion3D\write_manager_inv_class.h" />
@@ -348,6 +348,7 @@
   <ItemGroup>
     <QtUic Include="..\..\..\ui\dialogCadOpen.ui" />
     <QtUic Include="..\..\..\ui\dialogClockTime.ui" />
+    <QtUic Include="..\..\..\ui\dialogCSV.ui" />
     <QtUic Include="..\..\..\ui\dialogDrawAlt.ui" />
     <QtUic Include="..\..\..\ui\dialogDrawNew.ui" />
     <QtUic Include="..\..\..\ui\dialogFileDemBuck.ui" />

@@ -8,106 +8,103 @@ Virtual class that is the base class for all 3-d data.
 */
 class image_3d_class: public base_jfd_class{
  protected:
-   int n_hits_current;				// Data storage -- hit-list -- no of hits
-   short int *width_a;				// Data storage -- hit-list -- geometry 
-   short int *height_a;				// Data storage -- hit-list -- geometry 
-   float *range_a;					// Data storage -- hit-list -- geometry 
-   unsigned char *intens_a;			// Data storage -- hit-list -- intensity for greyscale
-   unsigned char *red_a;			// Data storage -- hit-list -- intensity for color scale 
-   unsigned char *grn_a;			// Data storage -- hit-list -- intensity for color scale 
-   unsigned char *blu_a;			// Data storage -- hit-list -- intensity for color scale 
-   int *smooth_flags;				// Data storage -- hit-list -- per hit, smooth flags
-   float *northa, *easta, *eleva;	// Data storage -- hit-list -- (North,East,elev) relative to ref point
+   int n_hits_current;				///< Data storage -- hit-list -- no of hits
+   short int *width_a;				///< Data storage -- hit-list -- geometry 
+   short int *height_a;				///< Data storage -- hit-list -- geometry 
+   float *range_a;					///< Data storage -- hit-list -- geometry 
+   unsigned char *intens_a;			///< Data storage -- hit-list -- intensity for greyscale
+   unsigned char *red_a;			///< Data storage -- hit-list -- intensity for color scale 
+   unsigned char *grn_a;			///< Data storage -- hit-list -- intensity for color scale 
+   unsigned char *blu_a;			///< Data storage -- hit-list -- intensity for color scale 
+   int *smooth_flags;				///< Data storage -- hit-list -- per hit, smooth flags
+   float *northa, *easta, *eleva;	///< Data storage -- hit-list -- (North,East,elev) relative to ref point
    
-   int *n_hits_a;					// Data storage -- output multi -- no of hits per image
-   float **coords3_a;				// Data storage -- output multi -- dewarped (x,y,z) for each vertex
-   unsigned char **intens_a_display;// Data storage -- output multi -- data amplitudes
-   unsigned char **red_a_display;	// Data storage -- output multi -- data color
-   unsigned char **grn_a_display;	// Data storage -- output multi -- data color
-   unsigned char **blu_a_display;	// Data storage -- output multi -- data color
+   int *n_hits_a;					///< Data storage -- output multi -- no of hits per image
+   float **coords3_a;				///< Data storage -- output multi -- dewarped (x,y,z) for each vertex
+   unsigned char **intens_a_display;///< Data storage -- output multi -- data amplitudes
+   unsigned char **red_a_display;	///< Data storage -- output multi -- data color
+   unsigned char **grn_a_display;	///< Data storage -- output multi -- data color
+   unsigned char **blu_a_display;	///< Data storage -- output multi -- data color
    
-   unsigned char *image_2d;			// Data storage -- 2-D image (for multi, last image read)
-   unsigned char *red_2d;			// Data storage -- 2-D image (for multi, last image read)
-   unsigned char *grn_2d;			// Data storage -- 2-D image (for multi, last image read)
-   unsigned char *blu_2d;			// Data storage -- 2-D image (for multi, last image read)
+   unsigned char *image_2d;			///< Data storage -- 2-D image (for multi, last image read)
+   unsigned char *red_2d;			///< Data storage -- 2-D image (for multi, last image read)
+   unsigned char *grn_2d;			///< Data storage -- 2-D image (for multi, last image read)
+   unsigned char *blu_2d;			///< Data storage -- 2-D image (for multi, last image read)
    
-   int reread_pending;				// Image logic -- Change pending -- new image (from file/Epix/etc) (0/1 default)
-   int recalc_pending;				// Image logic -- Change pending -- new parms requiring recalc (0/1 default)
-   int alloc_pending;				// Image logic -- Change pending -- new size requiring realloc (0/1 default)
-   int if_range_slices;				// Image logic -- 1 iff amp-vs-range waveforms available
-   int if_time_slices;				// Image logic -- 1 iff amp-vs-time waveforms available
-   int if_frame_slices;				// Image logic -- 1 iff image-frame-vs-time waveforms available
-   int if_2d_aux_images;			// Image logic -- 1 iff aux 2D images available
-   int if_diag_slices;				// Image logic -- 1 iff diag waveforms available
-   int seqno_frame;					// Image logic -- Increment when frame display needs update
-   int seqno_2d;					// Image logic -- Increment when 2d image display needs update
-   int iframe_current;				// Image logic -- Current frame no.
-   int frame_type;					// Image logic -- 0=unreg, 1=reg
-   int id_img;						// Image logic -- id of image -- for looking up in index
+   int reread_pending;				///< Image logic -- Change pending -- new image (from file/Epix/etc) (0/1 default)
+   int recalc_pending;				///< Image logic -- Change pending -- new parms requiring recalc (0/1 default)
+   int alloc_pending;				///< Image logic -- Change pending -- new size requiring realloc (0/1 default)
+   int if_range_slices;				///< Image logic -- 1 iff amp-vs-range waveforms available
+   int if_time_slices;				///< Image logic -- 1 iff amp-vs-time waveforms available
+   int if_frame_slices;				///< Image logic -- 1 iff image-frame-vs-time waveforms available
+   int if_2d_aux_images;			///< Image logic -- 1 iff aux 2D images available
+   int if_diag_slices;				///< Image logic -- 1 iff diag waveforms available
+   int seqno_frame;					///< Image logic -- Increment when frame display needs update
+   int seqno_2d;					///< Image logic -- Increment when 2d image display needs update
+   int iframe_current;				///< Image logic -- Current frame no.
+   int frame_type;					///< Image logic -- 0=unreg, 1=reg
+   int id_img;						///< Image logic -- id of image -- for looking up in index
    
-   float xangle_delta, yangle_delta;		// Single image parms -- Angle step sizes
-   float xangle_center, yangle_center;		// Single image parms -- Image center (for mirror offsets)
-   int num_width, num_height, num_range_orig;// Single image parms -- Size of data cube as read in
-   int ntar_per_pixel;						// Single image parms -- No of targets/hits per pixel
-   int num_range_clip;						// Single image parms -- Number of ranges at output
-   int num_time;							// Single image parms -- Number of time samples
-   int coord_type_flag;						// Single image parms -- 0=spherical(default), 1=cartesian
-   int if_crop;								// Single image parms -- 1 if input image to be cropped
-   int iw1, iw2, ih1, ih2;					// Single image parms -- Coords of cropped image
-   int reg_frames_flag;						// Single image parms -- reg frames -- 1 iff register
-   int iwr1, iwr2, ihr1, ihr2;				// Single image parms -- reg frames -- 1Coords of registration subimage
-   int reg_frames_mflag;					// Single image parms -- reg frames -- 1 iff med filter
-   int reg_frames_mhalf;					// Single image parms -- reg frames -- med filter halfwidth (pixels)
-   int reg_frames_idel;						// Single image parms -- reg frames -- max diff frame-to-frame
-   int reg_frames_iref;						// Single image parms -- reg frames -- ref image
-   int reg_frames_idiag;					// Single image parms -- reg frames -- diagnostic level (0=off)
-   int write_flag;							// Single image parms -- 0=no write, 1=write cropped
-   int n_chirps;							// Single image parms -- No. of valid chirps
-   int file_size;							// Single image parms -- Size of file (single frame) in bytes
+   float xangle_delta, yangle_delta;		///< Single image parms -- Angle step sizes
+   float xangle_center, yangle_center;		///< Single image parms -- Image center (for mirror offsets)
+   int num_width, num_height, num_range_orig;///< Single image parms -- Size of data cube as read in
+   int ntar_per_pixel;						///< Single image parms -- No of targets/hits per pixel
+   int num_range_clip;						///< Single image parms -- Number of ranges at output
+   int num_time;							///< Single image parms -- Number of time samples
+   int coord_type_flag;						///< Single image parms -- 0=spherical(default), 1=cartesian
+   int if_crop;								///< Single image parms -- 1 if input image to be cropped
+   int iw1, iw2, ih1, ih2;					///< Single image parms -- Coords of cropped image
+   int reg_frames_flag;						///< Single image parms -- reg frames -- 1 iff register
+   int iwr1, iwr2, ihr1, ihr2;				///< Single image parms -- reg frames -- Coords of registration subimage
+   int reg_frames_mflag;					///< Single image parms -- reg frames -- 1 iff med filter
+   int reg_frames_mhalf;					///< Single image parms -- reg frames -- med filter halfwidth (pixels)
+   int reg_frames_idel;						///< Single image parms -- reg frames -- max diff frame-to-frame
+   int reg_frames_iref;						///< Single image parms -- reg frames -- ref image
+   int reg_frames_idiag;					///< Single image parms -- reg frames -- diagnostic level (0=off)
+   int write_flag;							///< Single image parms -- 0=no write, 1=write cropped
+   int file_size;							///< Single image parms -- Size of file (single frame) in bytes
 
-   int n_files;					// Multi image parms -- No of files to be buffered
-   int i_file;					// Multi image parms -- Current file no
-   int n_hits_max;				// Multi image parms -- Max no of hits over all data files
+   int n_files;					///< Multi image parms -- No of files to be buffered
+   int i_file;					///< Multi image parms -- Current file no
+   int n_hits_max;				///< Multi image parms -- Max no of hits over all data files
 
-   int data_intensity_type;			// Overall parms --	0 = unread
-   						// 			5 = 8-bit grayscale
-   						// 			6 = 24-bit rgb color
-   int intens_thresh;				// Overall parms --	Intensity threshold
-   float xbb_min, xbb_max;			// Overall parms -- Bounding box (after clipping)
-   float ybb_min, ybb_max;			// Overall parms -- Bounding box (after clipping)
-   float zbb_min, zbb_max;			// Overall parms -- Bounding box (after clipping)
-   int if_clip_amp_user;			// Overall parms -- 1 if clipping output amplitudes set by user
-   float min_amp_user, max_amp_user;		// Overall parms -- Min and max clipping amplitudes set by user
-   float min_brt_vs_time, max_brt_vs_time;	// Overall parms -- Min and max of amp-vs-time waveform
-   float min_brt_vs_range, max_brt_vs_range;	// Overall parms -- Min and max of amp-vs-range waveform
-   float dheight, dwidth, drange;		// Overall parms -- Size of pixel for data in cartesian coords
-   float range_offset;				// Overall parms -- Range corresponding to first data index
-   int x_fft;					// Overall parms -- Range resolution spoiling factor, exponent_of_factor_2
-   int if_superres;				// Overall parms -- 0=no superres, 1=superres (default)
-   int version_no;				// Overall parms -- 1=default
-   int type_2d;					// Overall parms -- How to calc 2-d image
-   							// 0 = use same peak as for 3-d image
-   							// 1 = use avg signal over chirp
-   int type_peak_display;			// Overall parms -- How to use peaks
-   							// 0 = use all peaks
-   							// 1 = use only largest peak within range bounds
+   int data_intensity_type;			///< Overall parms --	0 = unread, 5 = 8-bit grayscale, 6 = 24-bit rgb color
+   int intens_thresh;				///< Overall parms --	Intensity threshold
+   float xbb_min, xbb_max;			///< Overall parms -- Bounding box (after clipping)
+   float ybb_min, ybb_max;			///< Overall parms -- Bounding box (after clipping)
+   float zbb_min, zbb_max;			///< Overall parms -- Bounding box (after clipping)
+   int if_clip_amp_user;			///< Overall parms -- 1 if clipping output amplitudes set by user
+   float min_amp_user, max_amp_user;		///< Overall parms -- Min and max clipping amplitudes set by user
+   float min_brt_vs_time, max_brt_vs_time;	///< Overall parms -- Min and max of amp-vs-time waveform
+   float min_brt_vs_range, max_brt_vs_range;	///< Overall parms -- Min and max of amp-vs-range waveform
+   float dheight, dwidth, drange;		///< Overall parms -- Size of pixel for data in cartesian coords
+   float range_offset;				///< Overall parms -- Range corresponding to first data index
+   int x_fft;					///< Overall parms -- Range resolution spoiling factor, exponent_of_factor_2
+   int if_superres;				///< Overall parms -- 0=no superres, 1=superres (default)
+   int version_no;				///< Overall parms -- 1=default
+   int type_2d;					///< Overall parms -- How to calc 2-d image
+   							///< 0 = use same peak as for 3-d image
+   							///< 1 = use avg signal over chirp
+   int type_peak_display;			///< Overall parms -- How to use peaks
+   							///< 0 = use all peaks
+   							///< 1 = use only largest peak within range bounds
 
    
-   int diag_level;					// 0 -- no diagnostics, 1 min diagnostics, 2 more, etc
-   char *diag_filename;				// Diagnostic output filename
+   int diag_level;					///< 0 -- no diagnostics, 1 min diagnostics, 2 more, etc
+   char *diag_filename;				///< Diagnostic output filename
    
-   int if_know_sensor_pos;				// Sensor loc -- 1 iff can get sensor loc from data
-   float x_sensor, y_sensor, z_sensor;	// Sensor loc -- loc in m in world coordinates
+   int if_know_sensor_pos;				///< Sensor loc -- 1 iff can get sensor loc from data
+   float x_sensor, y_sensor, z_sensor;	///< Sensor loc -- loc in m in world coordinates
    
-   float* aux_image;				// Aux 2d -- image
-   int aux_nx, aux_ny;				// Aux 2d -- Image dimensions
-   float aux_dx, aux_dy;			// Aux 2d -- Image pixel dimensions
-   int aux_imax;					// Aux 2d -- Pixel no. of max signal
-   float aux_fmax;					// Aux 2d -- Max signal value
+   float* aux_image;				///< Aux 2d -- image
+   int aux_nx, aux_ny;				///< Aux 2d -- Image dimensions
+   float aux_dx, aux_dy;			///< Aux 2d -- Image pixel dimensions
+   int aux_imax;					///< Aux 2d -- Pixel no. of max signal
+   float aux_fmax;					///< Aux 2d -- Max signal value
    
-   float range_calc_min, range_calc_max;	// Range -- lims for current calcs
-   int range_calc_flag;						// Range -- 1 iff lims have been set 
-   float hxx[38];							// False color -- red-to-blue hue array
+   float range_calc_min, range_calc_max;	///< Range -- lims for current calcs
+   int range_calc_flag;						///< Range -- 1 iff lims have been set 
+   float hxx[38];							///< False color -- red-to-blue hue array
 
    // Private methods
    int interp(int x[],float y[],int n, float cof[]);
@@ -195,7 +192,6 @@ class image_3d_class: public base_jfd_class{
    int get_height();
    int get_width();
    int get_ntar_per_pixel();
-   int get_n_chirps();
    int get_voxel_size(float &dheight_out, float &dwidth_out, float &drange_out);
    int set_intensity_type(int type);	// 5 for unsigned char data, 6 for 3-unsigned char rgb
    int get_intensity_type();		// 5 for unsigned char data, 6 for 3-unsigned char rgb
@@ -222,8 +218,6 @@ class image_3d_class: public base_jfd_class{
    int get_iframe_current();
    int set_frame_type(int frame_type_in);
    int set_id(int id);
-
-   int set_diag_file(char *filename, int diag_level_in);
 
    int get_depth_orig();
    int get_depth_clip();

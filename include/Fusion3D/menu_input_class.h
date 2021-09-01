@@ -4,6 +4,14 @@
 #include <QtCore/QUrl>
 
 
+/**
+Manages main menus at the top of the Fusion3D main window.
+
+Simple menu items, like printing out 'About' messages, are implemented from within this class.
+More complex menu items -- those requiring additional menus -- are implemented using additional classes.
+Names for these classes start with 'dialog' then a designator for the main menu they fall under (like 'Vec' for vector)
+and finally the submenu (like 'Display' for toggle display).
+*/
 class menu_input_class :public QMainWindow
 {
 private:
@@ -64,6 +72,8 @@ private slots:
 	void losSensor();
 	void losSun();
 	void losClear();
+	void losRay();
+	void losRayClear();
 	void losSaveShp();
 	void losSaveMask();
 	void losLoadMask();
@@ -72,7 +82,6 @@ private slots:
 	void measureDist();
 	void measurePts();
 	void measureRoute();
-	void measureLos();
 	void measureParms();
 	void measureClear();
 	void measureElev();

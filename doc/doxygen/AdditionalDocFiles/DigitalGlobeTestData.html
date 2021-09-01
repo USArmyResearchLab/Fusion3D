@@ -1,0 +1,92 @@
+<HEAD>
+<TITLE>DIGITAL GLOBE TEST MAPS AND USERS GUIDE</TITLE>
+</HEAD>
+<BODY>
+<H1>DIGITAL GLOBE TEST MAPS AND USERS GUIDE</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#dg-general">General</A>
+<LI><A HREF="#dg-use">Using the Site</A>
+<LI><A HREF="#dg-notes">Notes</A>
+<LI><A HREF="#dg-data">Sample Datasets</A>
+<LI><A HREF="#dg-issues">Issues</A>
+<P>
+</UL>
+
+
+
+
+<H2><A NAME="dg-general">GENERAL</A></H2>
+
+The Digital Globe site EVWHS is run by Digital Globe under a contract to NGA.
+It is designed to be the repository for EO imagery specifically for the US Government.
+<P>
+Digital Globe has 2 websites that one can login through.
+Use only the EVWHS one that allows a CAC login, not the other one with no CAC (see below).
+<P>
+
+
+
+<H2><A NAME="dg-use">USING THE WEBSITE</A></H2>
+<PRE>
+
+	URL:  https://evwhs.digitalglobe.com/myDigitalGlobe/login
+		The right one allows CAC login
+		dont use the login site that only has password login
+
+	Login		CAC
+
+	Navigate:	you can enter a place name at the upper left to go directly to a spot
+
+	AOI: 	Use book icon at right
+		'Draw Rectangle option' can define an area very simply
+		'Enter WKT' option allows you to specify lat-lon for AOI corners -- good for matching DEM tiles
+			left-hand rule polygon (xl yh, xh yh, xh yl, xl yl, xl yh)
+			Example for Kaunas Lithuania that was tested
+				POLYGON(( 23.5 55.0 , 24.0 55.0 , 24.0 54.4 , 23.5 54.5 , 23.5 55.0 ))
+	
+	Dataset: Use advanced option
+		Make sure to use 'projected' coordinate system rather than 'geographic'
+		Get MrSID format
+
+	Download:	
+
+
+</PRE>
+<H2><A NAME="dg-notes">DIGITAL GLOBE NOTES</A></H2>
+<PRE>
+
+	World View 2 (WV2) has 50cm resolution
+	World View 3 (WV3) has 33cm resolution
+
+</PRE>
+
+
+
+<H2><A NAME="dg-issues">DIGITAL GLOBE ISSUES</A></H2>
+<H3><A NAME="dg-issues-resolution">Resolution</A></H3>
+
+One always gets the resolution of the data -- one cant reduce resolution.
+Therefore, it is very difficult to get low-res data for a very large area.
+<P>
+
+
+<H3><A NAME="dg-issues-names">Filename Conventions</A></H3>
+
+Determining file types from their GRiD filenames is going to be much more difficult than it was for BuckEye.
+And it may never be feasible to find an algorithm that works reliably -- doesn't get broken by the next dataset.
+I have put off working on this indefinitely.
+<P>
+At the moment, GRiD does not have a unified filename convention.
+Currently they put an indication of the security classification at the front but then just go with the convention of the contributor.
+The original idea was to be able to get the original filename from the GRiD name but this doesn't seem to be working out.
+<P>
+NGA has been tasked with determining the filename conventions in the future.
+The have not reached a conclusion and there is no documentation yet.
+If and when they decide on a convention, this may not be retroactively applied to current files.
+<P>
+
+
+
+

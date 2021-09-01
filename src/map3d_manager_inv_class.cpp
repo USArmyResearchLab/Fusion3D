@@ -1902,7 +1902,9 @@ int map3d_manager_inv_class::make_newtile_low(double north_cen, double east_cen,
    int tex_flag;
    int ny_tile = tiles_rtv->get_tiles_ny();
    int nx_tile = tiles_rtv->get_tiles_nx();
-   
+   double tile_w = east_cen - width_tile / 2.;
+   double tile_n = north_cen + height_tile / 2.;
+
    // *****************************************************
    // Does tile intersect the map
    // *****************************************************
@@ -1932,7 +1934,7 @@ int map3d_manager_inv_class::make_newtile_low(double north_cen, double east_cen,
    map3d_index->set_roi_size(height_tile, width_tile);
    int ny_read = map3d_index->get_n_rows_roi();
    int nx_read = map3d_index->get_n_cols_roi();
-   map3d_index->calc_roi_intersections();
+   //map3d_index->calc_roi_intersections();	// Should have been deleted 13 May 2021
    map3d_index->calc_roi_intersections_safe(north_cen, east_cen, nx_read, ny_read, enclosed_tileno, tile_no, tile_w1, tile_w2, tile_h1, tile_h2);
 
    // ****************************************
@@ -1949,13 +1951,15 @@ int map3d_manager_inv_class::make_newtile_low(double north_cen, double east_cen,
 	  tex_flag = texture_server->get_texture(north_cen, east_cen, height_tile, width_tile, 3, mrsid_nclasses-1, mrsid_store_tex_low);
 	  if (tex_flag == 1) {			// Intersection with rgb texture or entirely off map (filled with gray color)
 		 mrsid_texture_flag = 1;
-		 map3d_index->apply_mask_amp(mrsid_store_tex_low, width_tile, mrsid_xRes_low, mrsid_yRes_low, mrsid_nxlow, mrsid_nylow);
+		 mask_server->apply_mask_tex(mrsid_store_tex_low, tile_n, tile_w, mrsid_xRes_low, mrsid_yRes_low, mrsid_nxlow, mrsid_nylow);
+		 //map3d_index->apply_mask_amp(mrsid_store_tex_low, width_tile, mrsid_xRes_low, mrsid_yRes_low, mrsid_nxlow, mrsid_nylow);
 	  }
 	  else if (tex_flag == 2) {		// Intersection with all-gray texture so want to add hues based on elevation
 		 map3d_index->get_elev_to_given(north_cen, east_cen, nx_read, ny_read, enclosed_tileno, tile_no, tile_w1, tile_w2, tile_h1, tile_h2, 2, 0, 1, tile_a2, NULL);
 		 texture_server->make_falsecolor_texture(north_cen, east_cen, tile_a2, mrsid_store_tex_low, 3, GL_mobmap_cscale->getValue(), rainbow_rmin, rainbow_rmax, brt0);
 		 mrsid_texture_flag = 1;
-		 map3d_index->apply_mask_amp(mrsid_store_tex_low, width_tile, mrsid_xRes_low, mrsid_yRes_low, mrsid_nxlow, mrsid_nylow);
+		 mask_server->apply_mask_tex(mrsid_store_tex_low, tile_n, tile_w, mrsid_xRes_low, mrsid_yRes_low, mrsid_nxlow, mrsid_nylow);
+		 //map3d_index->apply_mask_amp(mrsid_store_tex_low, width_tile, mrsid_xRes_low, mrsid_yRes_low, mrsid_nxlow, mrsid_nylow);
 	  }
    }
 
@@ -1971,14 +1975,16 @@ int map3d_manager_inv_class::make_newtile_low(double north_cen, double east_cen,
 			   mrg_store_tex_med_a2[3*iout+2] = data_texture[3*iv+2];
 		    }
 	     }
-	     map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_tile, ndown_lowres*dx, ndown_lowres*dy, n_texture_low, n_texture_low);
+		 mask_server->apply_mask_tex(mrg_store_tex_med_a2, tile_n, tile_w, ndown_lowres*dx, ndown_lowres*dy, n_texture_low, n_texture_low);
+		 //map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_tile, ndown_lowres*dx, ndown_lowres*dy, n_texture_low, n_texture_low);
       }
       else {										// False color from .int file
          data_texture = map3d_index->get_int();
          //data_a2 = map3d_index->get_elev(2, 0, 1);
 		 map3d_index->get_elev_to_given(north_cen, east_cen, nx_read, ny_read, enclosed_tileno, tile_no, tile_w1, tile_w2, tile_h1, tile_h2, 2, 0, 1, tile_a2low, NULL);
 		 make_falsecolor_texture(tile_a2low, data_texture, mrg_store_tex_med_a2, nx_tile, ny_tile, ndown_lowres, north_cen, east_cen);
-	     map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_tile, ndown_lowres*dx, ndown_lowres*dy, n_texture_low, n_texture_low);
+		 mask_server->apply_mask_tex(mrg_store_tex_med_a2, tile_n, tile_w, ndown_lowres*dx, ndown_lowres*dy, n_texture_low, n_texture_low);
+		 //map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_tile, ndown_lowres*dx, ndown_lowres*dy, n_texture_low, n_texture_low);
       }
    }
 
@@ -2105,7 +2111,8 @@ int map3d_manager_inv_class::make_newtile_med(double north_cen, double east_cen,
 		    cache_MrSID_med->mark_write_complete(east_cen, north_cen);
 		    mrsid_texture_flag = 1;
 	        texture_server->make_falsecolor_texture(north_cen, east_cen, data_a2_ptr, mrsid_ptr, 2, GL_mobmap_cscale->getValue(), rainbow_rmin, rainbow_rmax, brt0);
-	     }
+			mask_server->apply_mask_tex(mrsid_ptr, tile_n, tile_w, mrsid_xRes_med, mrsid_yRes_med, mrsid_nxmed, mrsid_nymed);
+		 }
 	     else {
 		    cache_MrSID_med->mark_stored(east_cen, north_cen, 3);
 	     }
@@ -2115,24 +2122,28 @@ int map3d_manager_inv_class::make_newtile_med(double north_cen, double east_cen,
 		 mrsid_texture_flag = 1;
 	  }
 	  if (mrsid_texture_flag) {
-	     map3d_index->apply_mask_amp(mrsid_ptr, width_tile, mrsid_xRes_med, mrsid_yRes_med, mrsid_nxmed, mrsid_nymed);
+		  //mask_server->apply_mask_tex(mrsid_ptr, tile_n, tile_w, mrsid_xRes_med, mrsid_yRes_med, mrsid_nxmed, mrsid_nymed);
+		  //map3d_index->apply_mask_amp(mrsid_ptr, width_tile, mrsid_xRes_med, mrsid_yRes_med, mrsid_nxmed, mrsid_nymed);
 	  }
    }
 
    if (!mrsid_texture_flag || display_a1_hilite_flag) {
       if (mrg_int_flag == 2) {	// RGB from .mrg file
          data_texture_a2 = map3d_index->get_mrg();
-	     map3d_index->apply_mask_amp(data_texture_a2, width_read, dx, dy, nx_read, ny_read);
+		 mask_server->apply_mask_tex(data_texture_a2, tile_n, tile_w, dx, dy, nx_read, ny_read);
+		 //map3d_index->apply_mask_amp(data_texture_a2, width_read, dx, dy, nx_read, ny_read);
 		 data_texture_a1 = data_texture_a2;
       }
       else {
          data_texture_int = map3d_index->get_int();
 	     make_falsecolor_texture(data_a2_ptr, data_texture_int, mrg_store_tex_med_a2, nx_read, ny_read, 1, north_cen, east_cen);
-	     map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_read, dx, dy, nx_read, ny_read);
+		 mask_server->apply_mask_tex(mrg_store_tex_med_a2, tile_n, tile_w, dx, dy, nx_read, ny_read);
+		 //map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_read, dx, dy, nx_read, ny_read);
 	     data_texture_a2 = mrg_store_tex_med_a2;
 		 if (display_a1_flag >=0) {
 	        make_falsecolor_texture(data_a1_ptr, data_texture_int, mrg_store_tex_med_a1, nx_read, ny_read, 1, north_cen, east_cen);
-	        map3d_index->apply_mask_amp(mrg_store_tex_med_a1, width_read, dx, dy, nx_read, ny_read);
+			mask_server->apply_mask_tex(mrg_store_tex_med_a1, tile_n, tile_w, dx, dy, nx_read, ny_read);
+			//map3d_index->apply_mask_amp(mrg_store_tex_med_a1, width_read, dx, dy, nx_read, ny_read);
 	        data_texture_a1 = mrg_store_tex_med_a1;
 		 }
 		 else {
@@ -2382,20 +2393,23 @@ int map3d_manager_inv_class::make_newtile_hi(double north_cen, double east_cen, 
 	  if (display_a1_hilite_flag && display_a1_flag >=0) data_dem = data_a1_ptr;
       if (mrg_int_flag == 2) {	// RGB from .mrg file
          data_texture = map3d_index->get_mrg();
-	     map3d_index->apply_mask_amp(data_texture, width_read, dx, dy, nx_read, ny_read);
+		 mask_server->apply_mask_tex(data_texture, tile_n, tile_w, dx, dy, nx_read, ny_read);
       }
       else {
          data_texture = map3d_index->get_int();
 	     make_falsecolor_texture(data_dem, data_texture, mrg_store_tex_med_a2, nx_read, ny_read, 1, north_cen, east_cen);
-	     map3d_index->apply_mask_amp(mrg_store_tex_med_a2, width_read, dx, dy, nx_read, ny_read);
+		 mask_server->apply_mask_tex(mrg_store_tex_med_a2, tile_n, tile_w, dx, dy, nx_read, ny_read);
 	     data_texture = mrg_store_tex_med_a2;
       }
    }
    
    if (valid_MrSID_flag == 1) {
 	   data_vhi = cache_MrSID_hi->get_ptr_for_read(east_cen, north_cen);
-	   map3d_index->apply_mask_amp(data_vhi, width_tile, mrsid_xRes_hi, mrsid_yRes_hi, mrsid_nxhi, mrsid_nyhi);
-	   //texture_server->make_falsecolor_texture(north_cen, east_cen, data_a2, data_vhi, 1, GL_mobmap_cscale->getValue(), rainbow_rmin, rainbow_rmax, brt0);
+	   int flag_colored = cache_MrSID_hi ->get_flag(east_cen, north_cen);
+	   if (texture_server->is_all_gray() && flag_colored %2 == 0) {		// If all texture images are grayscale (no color images) AND tile not yet false colored
+		   texture_server->make_falsecolor_texture(north_cen, east_cen, data_a2_ptr, data_vhi, 1, GL_mobmap_cscale->getValue(), rainbow_rmin, rainbow_rmax, brt0);
+		   cache_MrSID_hi->set_flag(east_cen, north_cen, 1);	// Only want to mod a tile once --Mark tile as modified
+	   }
    }
    int ny_tilet = tiles_rtv->get_tiles_ny();
    int nx_tilet = tiles_rtv->get_tiles_nx();
@@ -2417,8 +2431,11 @@ int map3d_manager_inv_class::make_newtile_hi(double north_cen, double east_cen, 
    SoDB::writelock();
    lastBase->removeAllChildren();
 
-   if (display_a1_flag != 1 && display_draped_flag) {           // First-hits off, display-draped -- Drape over last-hit surface
+   if (display_a1_flag != 1 && display_draped_flag && valid_MrSID_flag == 1) {           // First-hits off, draped, MrSID -- Drape over last-hit surface
       make_page_draped_mrsid(north_cen, east_cen, height_tile, width_tile, data_a2_ptr, data_vhi, lastBase, mrsid_nxhi, mrsid_nyhi);
+   }
+   else if (display_a1_flag != 1 && display_draped_flag && valid_MrSID_flag == 3) {			// First-hits off, draped, Mrg only -- Drape over last-hit surface
+	   make_page_draped_mrg(north_cen, east_cen, height_tile, width_tile, data_a2_ptr, data_texture, lastBase);
    }
    else if (display_draped_flag) {                          // First-hits on,  display-draped -- Dont use last hit 
    }
@@ -2438,8 +2455,11 @@ int map3d_manager_inv_class::make_newtile_hi(double north_cen, double east_cen, 
    }
    else if (display_a1_flag == 0 && display_draped_flag)  {				// When draping, always retile when toggling a1 surface, so dont need it
    }
-   else if (display_a1_flag == 1 && display_draped_flag) {			// First-hits on, display-draped -- Drape over first-hit surface
-      make_page_draped_mrsid(north_cen, east_cen, height_tile, width_tile, data_a1_ptr, data_vhi, firstBase, mrsid_nxhi, mrsid_nyhi);
+   else if (display_a1_flag == 1 && display_draped_flag && valid_MrSID_flag == 1) {			// First-hits on, draped, MrSID -- Drape over first-hit surface
+	   make_page_draped_mrsid(north_cen, east_cen, height_tile, width_tile, data_a1_ptr, data_vhi, firstBase, mrsid_nxhi, mrsid_nyhi);
+   }
+   else if (display_a1_flag == 1 && display_draped_flag && valid_MrSID_flag == 3) {			// First-hits on, draped, Mrg only -- Drape over first-hit surface
+	   make_page_draped_mrg(north_cen, east_cen, height_tile, width_tile, data_a1_ptr, data_texture, firstBase);
    }
    else if (display_a1_hilite_flag || valid_MrSID_flag == 3){		// First-hit surface for med-res -- Use this option for hiliting or if no valid MrSID texture
       make_page_first(north_cen, east_cen, height_tile, width_tile, n_cushion, data_a1_ptr, data_a2_ptr, data_texture, th_first_last, display_a1_hilite_flag, firstBase);
@@ -2988,7 +3008,12 @@ int map3d_manager_inv_class::update_mrsid_next(int iMrSID)
       //if (get_texture_mrsid(nc, ec, tile_height, tile_width, tex_ptr, mrsid_nx, iMrSID)) {
 	  if (texture_server->get_texture(nc, ec, tile_height, tile_width, 1, iMrSID, tex_ptr)) {
 	      cached_flag = 1;
-      }
+		  float dxhi = texture_server->get_resx_hi();
+		  float dyhi = texture_server->get_resx_hi();
+		  int nxhi = texture_server->get_nx_hi();
+		  int nyhi = texture_server->get_ny_hi();
+		  mask_server->apply_mask_tex(tex_ptr, nc+0.5*tile_height, ec-0.5*tile_width, dxhi, dyhi, nxhi, nyhi); // Uses ul corner
+	  }
 	  else {
 	      cached_flag = 3;
 	  }
@@ -3455,7 +3480,8 @@ void map3d_manager_inv_class::los_cb()
 	int los_flag = GL_los_flag->getValue();
 
    if (los_flag == 0) {                       // Clear LOS
-	  texture_server->clear_all_masks();
+	   mask_server->clear_all();
+	   texture_server->clear_all_masks();
  	  mask_flag = 0;                             // Turn masking off for retile
 	  force_retile_hi_flag = 1;                     // Force retile to include mask
 	  force_retile_med_flag = 1;                     // Force retiling to exclude mask
@@ -3464,7 +3490,7 @@ void map3d_manager_inv_class::los_cb()
 	  int nn = sqrt(float(ntiles_med));
 	  if (ntiles_hi > ntiles_med) nn = sqrt(float(ntiles_hi));
 	  float med_width = (nn - 5) * nx_tile * dx; 
-	  float los_width = GL_los_rmax->getValue();
+	  float los_width = 2.0 * GL_los_rmax->getValue();
 	  if (los_width > med_width) force_retile_low_flag = 1;
 	  if (cache_MrSID_hi  != NULL) cache_MrSID_hi->force_new_store();
 	  if (cache_MrSID_med != NULL) cache_MrSID_med->force_new_store();
@@ -3478,14 +3504,15 @@ void map3d_manager_inv_class::los_cb()
 	  int nn = sqrt(float(ntiles_med));
 	  if (ntiles_hi > ntiles_med) nn = sqrt(float(ntiles_hi));
 	  float med_width = (nn - 5) * nx_tile * dx; 
-	  float los_width = GL_los_rmax->getValue();
+	  float los_width = 2.0 * GL_los_rmax->getValue();
 	  if (los_width > med_width) force_retile_low_flag = 1;
 	  if (cache_MrSID_hi  != NULL) cache_MrSID_hi->force_new_store();
 	  if (cache_MrSID_med != NULL) cache_MrSID_med->force_new_store();
    }
 
 	// Read LOS mask
-	else if (los_flag == 7) {                  
+	else if (los_flag == 7) { 
+		/*	Experimental for reading in masks -- more complex like multiple towers
 		int nmask = dir->get_nfiles_mask();
 		for (int imask=0; imask<nmask; imask++) {
 			string name = dir->get_mask_name(imask);
@@ -3504,10 +3531,11 @@ void map3d_manager_inv_class::los_cb()
 		int nn = sqrt(float(ntiles_med));
 		if (ntiles_hi > ntiles_med) nn = sqrt(float(ntiles_hi));
 		float med_width = (nn - 5) * nx_tile * dx; 
-		float los_width = GL_los_rmax->getValue();
+		float los_width = 2.0 * GL_los_rmax->getValue();
 		if (los_width > med_width) force_retile_low_flag = 1;
 		if (cache_MrSID_hi  != NULL) cache_MrSID_hi->force_new_store();
 		if (cache_MrSID_med != NULL) cache_MrSID_med->force_new_store();
+		*/
    }
    else {                                     // Do nothing here
       return;

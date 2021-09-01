@@ -1,0 +1,158 @@
+<HEAD>
+<TITLE>IMPROVED IMPLEMENTATION OF LOW-RES TILES TO ENABLE LARGER MAPS</TITLE>
+</HEAD>
+<BODY>
+<H1>IMPROVED IMPLEMENTATION OF LOW-RES TILES TO ENABLE LARGER MAPS</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#large-map-general">General</A>
+<LI><A HREF="#large-map-size">Reducing Lowres Map Size</A>
+<LI><A HREF="#large-map-speed">Speeding Up Rendering of Lowres Tiles</A>
+<LI><A HREF="#large-map-implement">Implementation</A>
+</UL>
+
+<H2><A NAME="large-map-general">GENERAL</A></H2>
+
+We are using larger and larger maps for current applications -- much larger than the viewer was originally designed for.
+A particularly stressing case was the map of Wosan North Korea that ARCIC required that spanned about 100km by 60km.
+The requirements for the size of the medium-res and high-res portions of the map have not changed much but
+the requirements for the low-res portion of the map have increased dramatically.
+Users have expressed a desire to see the entire map for context and to see where to refocus the display.
+<P>
+This presents a problem for the Fusion3D viewer both in the speed of creating the low-res tiles
+and also in the amount of memory these tiles use.
+The memory requirements appear to stress both the limits on RAM and also the graphics memory limits.
+<P>
+Low-res tiles are treated by default exactly like the higher-res tiles:
+They are read into memory on the fly, one by one, as needed and they are structured exactly the same as the other tiles.
+This has the advantage of a simple uniform structure and accomodates a virtually unlimited map size (since only a limited area is ever processed).
+It has the disadvantage that textures are read, clipped and downsampled for each tile.
+This is bad for MrSID which has structures to deal with clipping and downsampling.
+It is very bad for GeoTiff which must be read full-resolution and has very limited capability for speeding up clipping.
+<P>
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="large-map-size">REDUCING LOW-RES MAP SIZE</A></H2>
+
+This is the harder problem to solve.
+The basic issue is that higher-res tiles are in the center of the display and the low-res tiles must form an anulus around this higher-res area.
+So a rectangle of low-res tiles in the center must be omitted so they exactly complement the hi-res tiles.
+<P>
+Combining individual tiles into larger meshes may reduce size somewhat but this approach wouldn't work around the high-res region.
+<P>
+It appears that the construction of low-res tiles is about as efficient as possible and that significant size advantages are not feasible.
+<P>
+
+
+
+
+
+
+
+
+<H2><A NAME="large-map-speed">SPEEDING UP RENDERING OF LOW-RES TILES</A></H2>
+
+The speed problem is primarily due to reading texture from a file for each tile.
+For the Wosan map (see below) there are about 400x200 tiles (at the larger 256x256 tile size) or about 80,000 tiles.
+Since we only have GeoTiff texture files, the textures must be read full-resolution, then clipped and downsampled for each tile.
+<P>
+The fix we have implemented is to use a single fully downsampled texture file for all tiles.
+If the downsampling is sufficiently large, then the texture file for a very large map is still relatively small
+(the texture for Wosan is only about 17MB).
+The file is read once and stored, and then applied to every tile.
+<P>
+The speedup is not implemented by default and requires some preprocessing to implement it for each particular map.
+It was not made default because it requires preprocessing -- something we have tried hard to avoid and is otherwise not required by the viewer.
+This would be annoying if the user were taking a quick look at a map.
+It does save rendering time even for a small map but may not be worth the additional effort.
+Also, the speedup is not implemented by default because there may be some maps that are so large in area (perhaps with large gaps)
+that a single texture file would be too big.
+Finally, making the downsampled texture mosaic is much more difficult when only grayscale texture is available.
+Creating a false-color texture (where hues are obtained from elevation) is more difficult outside the default viewer data structure
+and has not been implemented.
+<P>
+
+
+
+
+<H3><A NAME="large-map-implement">Implementing the Speedup for a Given Map</A></H3>
+
+<PRE>
+
+	1.  Create a downsampled GeoTiff texture tile that spans the entire map.
+		
+		Use the ARL utility 'mosaicr' to create the GeoTiff (see documentation on mosaicr)
+		Or any other utility to produce a GeoTiff that is the right downsampled resolution and spans the entire map
+
+	2.  Give the texture file the correct name in the correct directory required by Fusion3D
+
+		The name must be in the same directory as the downsampled elevation file generated automatically by the viewer
+		Names for the lowres elevations have been improved so they contain information about their location
+			Then when the viewer finds a lowres elevation file it knows that it is the correct one
+			This has not yet been done for the texture files
+		For now, the name must be in the form [place]_lowres_texture.tif
+
+		e.g.
+
+			Downsampled elevation Geotiff:	lowresDEM_n4316165_w316372_nx217_ny231_rcm6400.tif
+			Downsampled texture GeoTiff:	dc2016_lowres_texture.tif
+
+	3.  If a texture file exists with the proper name in the proper location, the viewer will use it.
+		Otherwise it will use the default slower method to render the low-res tiles.
+
+
+
+</PRE>
+
+
+
+
+
+
+<H2><A NAME="large-map-implement">IMPLEMENTATION</A></H2>
+
+<H3><A NAME="large-map-implement">Test Data Set</A></H3>
+
+<PRE>
+
+	Directory:				D:/wosan
+	Project File:			wosanTestBig.s4d
+	Texture GeoTiff			wosan_lowres_texture.tif
+
+		downsampled by 32	resulting in 3255x1760 pixels (~104km x 56 km) ~17MB
+
+	Elevation 256x256		wosan_lowres_elev.dat
+	Elevation 128x128		wosan_lowres_elev_128tile.dat
+
+
+</PRE>
+
+
+
+<H3><A NAME="large-map-implement">Implementation Details</A></H3>
+<PRE>
+
+	map3d_lowres_class does the processing:
+
+	1.  If texture file with right name is found, flag lowresMosaicTextureFlag is set in map3d_manager_inv_class
+
+	2.  Texture is read once from file and stored in memory in map3d_lowres_class
+
+	3.  If lowresMosaicTextureFlag is set, low-res tiles are made in map3d_lowres_class::make_newtile_low_from_mosaic
+
+
+
+
+
+
+
+</PRE>

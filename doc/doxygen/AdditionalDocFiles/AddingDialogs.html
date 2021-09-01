@@ -1,0 +1,427 @@
+<HEAD>
+<TITLE>ADDING DIALOGS USING QT AND MICROSOFT FOUNDATION CLASSES</TITLE>
+</HEAD>
+<BODY>
+<H1>ADDING DIALOGS USING QT AND MICROSOFT FOUNDATION CLASSES</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#qt">QT</A>
+	<UL>
+	</UL>
+<LI><A HREF="#mfc_modal">Microsoft Foundation Classes</A>
+	<UL>
+	<LI><A HREF="#mfc_modal">Modal where user must respond before control is returned</A>
+	<P>
+	<LI><A HREF="#mfc_modeless">Modeless where user can do other things while menu on screen</A>
+	<P>
+	<LI><A HREF="#mfc_tasks">Specific tasks</A>
+	</UL>
+<P>
+</UL>
+
+<H2><A NAME="qt">QT</A></H2>
+
+The basic process of adding a dialog/menu in Qt is as follows:
+<PRE>
+
+	Add Class and menu form
+		Project -> Add Qt Class -> Qt GUI Class
+		Fill in class name 	
+		Select 'Multiple Inheritance'
+		Set Parent class to QDialog (rather than QWidget)
+
+		This defines 3 new files
+			.cpp	-- implements slots
+			.h -- includes 'Q_OBJECT' and slot definitions
+			.ui -- defines the menu look and function
+		
+	Qt processes that are partially hidden by Visual Studio
+		Uic'ing -- compiles .ui
+			From .ui that describes menu created ui_class-name.h to implement menu	
+		Moc'ing -- adds Qt-specific code to VS
+			Processes class-name.h file with 'Q_OBJECT' to make moc_class-name.obj 
+				This .obj is added to build to implement Qt-specific
+
+	Create menu form
+		Open the .ui file with Qt Designer
+		Drag and drop menu items from the Widget box at left onto the menu
+			Rename the item to give it a meaningful name
+		Define connections between signals from menu to slots in the associated new class
+			Select 'Edit Signals Slots' from menu bar at top of window to switch to this mode
+			Drag mouse from signaling object to anyplace on menu
+			Select a action from left side of popup menu
+			Probably want to define a new slot so choose 'Edit' from right side of popup
+				Click '+' and define new slot (eg doAccept() -- make sure to include '()')
+				Convention is to start every slot name with 'do'
+		Save the menu (File -> Save)
+		Compile the ui file (right-click the ui file -> compile)
+			This creates a ui_class-name.h file
+
+	Add functionality to the new dialog class
+		ui_class-name.h file will show up missing
+			Right click on it and 'Open Document' will cause VS to recognize it
+		Copy from previous dialogs to define Slots and other methods
+
+	Move new files to proper areas 
+		The new files for the dialog will be defined internally to the Visual Studio solution
+		Want the files to be in the main Fusion3D tree
+			.cpp file in Fusion3D/src
+			.h file in Fusion3D/include/Fusion3D
+			.ui file in Fusion3D/ui
+
+	
+		
+
+	
+			
+
+</PRE>
+
+
+<H2><A NAME="mfc_modal">MFC MODAL -- USER MUST RESPOND BEFORE CONTROL RETURNED TO MAIN</A></H2>
+<H3>MAKE NEW SUBMENU AND TEMPLATE FOR ASSOCIATED IMPLEMENTATION CLASS</H3>
+<PRE>
+
+1)	Open Visual Studio and click “View” followed by “Resource View”
+2)	In the Resource View, expand Map3DViewer.rc and right-click on “Dialog” followed by “Insert Dialog”
+3)	Resize the dialog box.
+4)	Right-click on the dialog box, select properties, and rename the Caption to something meaningful.
+5)	Rename the ID appropriately. I have been using the convention of “IDD_xxx_DIALOG where you place the name of the dialog in the “xxx” such as IDD_CLOCK_DIALOG”. In this example, I will use “IDD_TEST_MODAL_DIALOG”.
+6)	Open the Toolbox by click the “View” menu item followed by “Toolbox”
+7)	Add a Slider and an Edit Control to the dialog.
+8)	For the edit control, right-click on it and select “Add Variable…” and enter name such as “cEdit”.
+9)	Right-click on the edit control and click “Add Event handler…”.
+10)	In the “Message type:” box, select EN_KILLFOCUS to capture the event when the user releases focus on the field. Notice the code that is generated.
+11)	Change the Caption for the static control.
+12)	For the slider, rename the ID to something meaningful such as IDC_MODAL_SLIDER. Do the same for the other controls (Edit and button).
+13)	Right-click on the dialog box and use “Add class…”. Enter the new class name such as “dialog_modal” and click “Finish”.
+14)	For the slider control, right-click on it and select “Add Variable…” and enter name such as “cSlider”. Notice the code that is generated from this step.
+15)	If you want to generate events from you controls, then you use the “Add Event Handler…”.
+16)	Right-click on the slider and click “Add Event handler…”.
+17)	In the “Message type:” box, select NM_CUSTDRAW to capture the event when the user releases the mouse after sliding. Notice the method that is generated.
+18)	In the “Message type:” box, select NM_RELEASEDCAPTURE to capture the event when the user releases the mouse after sliding.
+19a)	Make sure that the new dialog_... class can find resource.h where IDD_ and IDC_ resources are -- add #include "internals.h" or equivalent.
+19b)  Probably want to add the new class to internals.h
+19c)	Build the project and make sure you have no errors.
+
+
+</PRE>
+<H3>ADD NEW SUBMENU TO MAIN MENU</H3>
+<PRE>
+
+20)	Open Resource View and click on Map3DViewer.rc
+21)	Click on “Menu” followed by double-clicking “IDR_MENU”.
+22)	Where it says “Add Menu”, type in “Test”
+23)	Click on “Test” and enter “Modal Test” menu item.
+24)	Open up the properties inspector for the “Modal Test” menu item.
+25)	Enter “IDM_MODAL_TEST_MENU” for the ID
+26)	Open menu_input_sw_class.cpp
+27)	Find “menu_input_sw_class::WinProcMenu(…) method.
+28)	Somewhere in the switch clause inside this method add code that looks Like this:
+	case IDM_MODAL_TEST_MENU:
+		modalTest();
+		break;
+29)	Somewhere above the class::WinProcMenu(…) method, add code that looks like this:
+	void menu_input_sw_class::modalTest()
+	{
+		modalDialog = new dialog_modal(NULL, this);
+		modalDialog->DoModal();
+	}
+30)	In Internal.h place the following line in the #if defined(COIN_LIBRARIES) clause
+	#include "dialog_modal.h"
+31)	Place the following declaration and method in menu_input_sw_class.h
+	class dialog_modal; (near the top where the other dialogs are declared)
+	dialog_modal* modalDialog; (in public)
+	void modalTest();
+
+
+</PRE>
+<H3>PROCESS INPUTS FROM SUBMENU</H3>
+<PRE>
+
+32)	Create a method to capture all events from the edit controls in the dialog. In dialog_modal.cpp, declare the following method:
+// this is used for modal dialog only
+BOOL dialog_modal::PreTranslateMessage(MSG* pMsg) 
+{
+	if(pMsg->message==WM_KEYDOWN)
+	{
+		if(pMsg->wParam==VK_RETURN || pMsg->wParam==VK_ESCAPE || pMsg->wParam==VK_TAB)
+		{
+			int idCtrl = this->GetFocus()->GetDlgCtrlID();
+			if ( idCtrl == IDC_EDIT1 )
+			{
+				OnEnKillfocusEdit ();
+				pMsg->wParam=NULL ;
+			}
+		}
+	} 
+	return CDialog::PreTranslateMessage(pMsg);
+}
+33)	In dialog_modal.h, declare the above method.
+virtual BOOL PreTranslateMessage(MSG* pMsg);
+
+
+34)	Place a reference of the menu_input_sw_class in your dialog_modal.h so you can send messages back as a callback:
+#include "menu_input_sw_class.h"
+class menu_input_sw_class;
+35)	Declare the menu_input_sw_class in dialog_modal.h:
+Public:
+menu_input_sw_class* menuInputSWClass;
+
+36)	Add code to take the value out of the edit control an send it back to menu_input_sw_class. To do this, place the following code in OnEnKillfocusEdit() method:
+CString string;
+cEdit.GetWindowText(string);
+menuInputSWClass->modalTestCB(ToFloat(string));
+
+37)	Create a method ToFloat(string) to convert a cString to a float:
+float dialog_modal::ToFloat(CString str)
+{
+		double dvar;
+		_stscanf(str, _T("%lf"), &dvar);
+		return dvar;
+}
+
+38)	Declare  it as a private method in dialog_modal.h:
+private:
+		float ToFloat(CString str);
+
+39)	In menu_input_sw_class.cpp,  declare the callback:
+void menu_input_sw_class::modalTestCB(float value)
+{
+				//SoSFFloat* GL_xxx =
+					(SoSFFloat*)SoDB::getGlobalField("YYY");
+				//GL_xxx->setValue(value);
+}
+		
+40)	In menu_input_sw_class.h, declare the callback method:
+void modalTestCB(float value);
+41)	Build and run. When you change a value in the text field, the callback should get executed.
+42)	You can add a method in dialog_non_modal.cpp to do any initialization of the dialog before it is displayed by adding an OnInitDialog method as follows:
+BOOL dialog_non_modal::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+
+	// define a private float variable called xxx
+	CString str;
+	str.Format(_T("%4.2f"), xxx);
+	cSlider.SetPos((int)( xxx *100));
+
+	cEdit.SetWindowText(str);
+	cEdit.SetLimitText(5);
+	return TRUE;
+}
+
+
+******************************************************************************************************************************************************
+******************************************************************************************************************************************************
+******************************************************************************************************************************************************
+******************************************************************************************************************************************************
+
+</PRE>
+<H2><A NAME="mfc_modeless">MODELESS -- USER CAN DO OTHER THINGS WHILE MENU ON SCREEN</A></H2>
+<H3>MAKE NEW SUBMENU AND TEMPLATE FOR ASSOCIATED IMPLEMENTATION CLASS</H3>
+<PRE>
+
+1)	Open Visual Studio and click “View” followed by “Resource View”
+2)	In the Resource View, expand Map3DViewer.rc and right-click on “Dialog” followed by “Insert Dialog”
+3)	Resize the dialog box.
+4)	Rename the Caption to something meaningful in the Properties window.
+5)	Rename the ID appropriately. I have been using the convention of “IDD_xxx_DIALOG where you place the name of the dialog in the “xxx” such as IDD_CLOCK_DIALOG”. In this example, I will use “IDD_TEST_NONMODAL_DIALOG”.
+6)	Open the Toolbox by clicking the “View” menu item followed by “Toolbox”
+7)	Add a Static Text, a Slider, an Edit Control, and a Button to the dialog.
+8)	Change the Caption for the static control and the button.
+9)	For the slider, rename the ID to something meaningful such as IDC_NON_MODAL_SLIDER. Do the same for the other controls (Edit and button).
+10)	Right-click on the dialog box and use “Add class…”. Enter the new class name such as “dialog_non_modal” and click “Finish”.
+11)	For the slider control, right-click on it and select “Add Variable…” and enter name such as “cSlider”.
+12)	For the edit control, right-click on it and select “Add Variable…” and enter name such as “cEdit”.
+13)	For the button control, right-click on it and select “Add Variable…” and enter name such as “cButton”. Notice the code that is generated from the last 3 steps.
+14)	If you want to generate events from you controls, then you use the “Add Event Handler…”. Here are some examples:
+15)	Right-click on the slider and click “Add Event handler…”.
+16)	In the “Message type:” box, select NM_CUSTDRAW to capture the event when the user releases the mouse after sliding. Notice the method that is generated.
+17)	In the “Message type:” box, select NM_RELEASEDCAPTURE to capture the event when the user releases the mouse after sliding.
+18)	Right-click on the edit control and click “Add Event handler…”.
+19)	In the “Message type:” box, select EN_KILLFOCUS to capture the event when the user releases focus on the field. Notice the code that is generated.
+20)	Again, Right-click on the edit control and click “Add Event handler…”.
+21)	In the “Message type:” box, select EN_SETFOCUS to capture the event when the user places focus on the field.
+22)	Right-click on the button control and click “Add Event handler…”.
+23)	In the “Message type:” box, select BN_CLICKED to capture the event when the user clicks the button.
+24a)	Make sure that the new dialog_... class can find resource.h where IDD_ and IDC_ resources are -- add #include "internals.h" or equivalent.
+24b)  Probably want to add the new class to internals.h
+24c)	Build the project and make sure you have no errors.
+
+
+
+</PRE>
+<H3>ADD NEW SUBMENU TO MAIN MENU</H3>
+<PRE>
+
+25)	Open Resource View and click on Map3DViewer.rc
+26)	Click on “Menu” followed by double-clicking “IDR_MENU”.
+27)	Click on “Test” and enter “Non Modal Test” menu item.
+28)	Open up the properties inspector for the “Non Modal Test” menu item (right-click on “Non Modal Test” and select Properties).
+29)	Enter “IDM_NON_MODAL_TEST_MENU” for the ID
+30)	Open menu_input_sw_class.cpp
+31)	Find “menu_input_sw_class::WinProcMenu(…) method.
+32)	Somewhere in the switch clause inside this method add code that looks Like this:
+	case IDM_NON_MODAL_TEST_MENU:
+		nonModalTest();
+		break;
+33)	Somewhere above the class::WinProcMenu(…) method, add code that looks like this:
+void menu_input_sw_class::nonModalTest()
+{
+				nonModalDialog = new dialog_non_modal();
+				nonModalDialog->Create(IDD_TEST_NONMODAL_DIALOG);
+				nonModalDialog->ShowWindow(SW_SHOWNORMAL);
+				nonModalDialog->UpdateData(0);
+}
+34)	In Internal.h place the following line in the #if defined(COIN_LIBRARIES) clause
+	#include "dialog_non_modal.h"
+
+35)	Place the following declaration and method in menu_input_sw_class.h
+	class dialog_non_modal; (near the top where the other dialogs are declared)
+	dialog_non_modal* nonModalDialog; (in public)
+	void nonModalTest();
+
+</PRE>
+<H3>PROCESS INPUTS FROM SUBMENU</H3>
+<PRE>
+
+36)	For each edit control in your dialog box, you need to write some code as shown in the following. If you don’t then you will hear a beep when you hit return while editing the control.
+37)	For the edit control, add a class to dialog_non_modal.h file:
+class NonModalEditControl : public CEdit
+{
+	DECLARE_DYNAMIC(NonModalEditControl);
+protected:
+	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg UINT OnGetDlgCode();
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+};
+38)	In the dialog_non_modal.cpp file add the control’s implementation:
+IMPLEMENT_DYNAMIC(NonModalEditControl, CEdit)
+BEGIN_MESSAGE_MAP(NonModalEditControl, CEdit)
+	ON_WM_GETDLGCODE()
+	ON_WM_CHAR()
+END_MESSAGE_MAP()
+UINT NonModalEditControl::OnGetDlgCode()
+{
+	// Assure we will receive Enter key
+	return CEdit::OnGetDlgCode() | DLGC_WANTALLKEYS;
+}
+void NonModalEditControl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	if (nChar == '\r')
+	{
+		dialog_non_modal* dialog = (dialog_non_modal *)GetParent();
+		dialog->OnEnKillfocusNonModalEdit();
+		return;
+	}
+	CEdit::OnChar(nChar, nRepCnt, nFlags);
+}
+39)	Rename the edit control to the class you created above:
+	“CEdit cEdit;” to “NonModalEditControl cEdit;”
+40)	Place a reference of the menu_input_sw_class in your dialog_non_modal.h so you can send messages back as a callback:
+#include "menu_input_sw_class.h"
+class menu_input_sw_class;
+41)	Declare the menu_input_sw_class in dialog_non_modal.h:
+Public:
+menu_input_sw_class* menuInputSWClass;
+42)	Add code to take the value out of the edit control an send it back to menu_input_sw_class. To do this, place the following code in OnEnKillfocusNonModaledit() method:
+CString string;
+cEdit.GetWindowText(string);
+menuInputSWClass->nonModalTestCB(ToFloat(string));
+
+43)	Create a method ToFloat(string) to convert a cString to a float:
+float dialog_non_modal::ToFloat(CString str)
+{
+	double dvar;
+	_stscanf(str, _T("%lf"), &dvar);
+	return dvar;
+}
+
+44)	Declare  it as a private method in dialog_non_modal.h:
+private:
+	float ToFloat(CString str);
+
+45)	In menu_input_sw_class.cpp,  declare the callback:
+void menu_input_sw_class::nonModalTestCB(float value)
+{
+//SoSFFloat* GL_xxx =(SoSFFloat*)SoDB::getGlobalField("YYY");
+	//GL_xxx->setValue(value);
+}
+		
+46)	In menu_input_sw_class.h, declare the callback method:
+void nonModalTestCB(float value);
+47)	Build and run. When you change a value in the text field, the callback should get executed.
+48)	You can add a method in dialog_non_modal.cpp to do any initialization of the dialog before it is displayed by adding an OnInitDialog method as follows:
+BOOL dialog_non_modal::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+
+	// define a private float variable called xxx
+	CString str;
+	str.Format(_T("%4.2f"), xxx);
+	cSlider.SetPos((int)( xxx *100));
+
+	cEdit.SetWindowText(str);
+	cEdit.SetLimitText(5);
+	return TRUE;
+}
+
+
+
+
+</PRE>
+<H2><A NAME="mfc_tasks">SPECIFIC TASKS</A></H2>
+<H3>Sliders</H3>
+<PRE>
+
+To initialize parameters like slider limits, create a new method like below in the new dialog implementation class.
+This method is called automatically whenever the dialog box is opened.
+
+  BOOL dialog_hilite_thesholds::OnInitDialog() 
+  {
+	CDialog::OnInitDialog();
+	CHiliteTh1SliderCtrl.SetRangeMin(0);
+	CHiliteTh1SliderCtrl.SetRangeMax(20);
+	CHiliteTh2SliderCtrl.SetRangeMin(0);
+	CHiliteTh2SliderCtrl.SetRangeMax(40);
+	return TRUE;
+  }
+
+To display current slider value, you must add a static text variable to the menu at the right of the slider.
+Then fill in the auto-defined method below:
+
+  void dialog_hilite_thesholds::OnNMCustomdrawHilite1(NMHDR *pNMHDR, LRESULT *pResult)
+  {
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	float pos = 0.1 * float(CHiliteTh1SliderCtrl.GetPos());
+	char* text = new char[8];
+	sprintf(text,"%4.1f",pos);
+	CThresh1Val.SetWindowText(convertCharPtrToLPCTSTR(text));
+	*pResult = 0;
+  }
+
+
+</PRE>
+
+<H3>Radio Buttons</H3>
+<PRE>
+
+To set up radio buttons, use msdn doc <A HREF="./Grouping Radio Buttons on a Dialog Box.mht">"Grouping Radio Buttons on a Dialog"</A>
+
+	Make sure to configure the associated variable as int as they describe.
+
+To selectively disable some options:
+
+	GetDlgItem(IDC_RADIO2)->EnableWindow(FALSE); // where IDC_RADIO2 is the resource name associated with the specific button you want to disable
+
+
+</PRE>
+
+
+
+

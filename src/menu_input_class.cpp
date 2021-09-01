@@ -123,11 +123,11 @@ int menu_input_class::makeMain()
 	// ****************************
 	QMenu * pcMenu = menuBar()->addMenu(tr("&Point Cloud"));
 
-	QAction *pcParmsAct = new QAction(tr("&Point Cloud Parameters"), this);
+	QAction *pcParmsAct = new QAction(tr("&Set PC Color Parameters"), this);
 	connect(pcParmsAct, &QAction::triggered, this, &menu_input_class::pcParms);
 	pcMenu->addAction(pcParmsAct);
 
-	QAction *pcFilterAct = new QAction(tr("&Filter Parameters"), this);
+	QAction *pcFilterAct = new QAction(tr("&Set PC Filtering Parameters"), this);
 	connect(pcFilterAct, &QAction::triggered, this, &menu_input_class::pcFilter);
 	pcMenu->addAction(pcFilterAct);
 
@@ -244,9 +244,17 @@ int menu_input_class::makeMain()
 	connect(losSunAct, &QAction::triggered, this, &menu_input_class::losSun);
 	losMenu->addAction(losSunAct);
 
-	QAction *losClearAct = new QAction(tr("&Clear"), this);
+	QAction *losClearAct = new QAction(tr("&Clear LOS Overlay"), this);
 	connect(losClearAct, &QAction::triggered, this, &menu_input_class::losClear);
 	losMenu->addAction(losClearAct);
+
+	QAction *losMeasure = new QAction(tr("&Draw LOS ray from Scene Center to Point (Use Middle Mouse)"), this);
+	connect(losMeasure, &QAction::triggered, this, &menu_input_class::losRay);
+	losMenu->addAction(losMeasure);
+
+	QAction *losMeasureClear = new QAction(tr("&Turn Off and Clear LOS ray"), this);
+	connect(losMeasureClear, &QAction::triggered, this, &menu_input_class::losRayClear);
+	losMenu->addAction(losMeasureClear);
 
 	QAction *losSaveShpAct = new QAction(tr("&Save LOS to Shapefile"), this);
 	connect(losSaveShpAct, &QAction::triggered, this, &menu_input_class::losSaveShp);
@@ -285,10 +293,6 @@ int menu_input_class::makeMain()
 	//QAction *measureParmsAct = new QAction(tr("&Measure Route Parameters at Point (Use Middle Mouse)"), this);
 	//connect(measureParmsAct, &QAction::triggered, this, &menu_input_class::measureParms);
 	//mesMenu->addAction(measureParmsAct);
-
-	QAction *measureLosAct = new QAction(tr("&Measure LOS from Scene Center to Point (Use Middle Mouse)"), this);
-	connect(measureLosAct, &QAction::triggered, this, &menu_input_class::measureLos);
-	mesMenu->addAction(measureLosAct);
 
 	QAction *measureElevAct = new QAction(tr("&Highlight Elevation Thresholds"), this);
 	connect(measureElevAct, &QAction::triggered, this, &menu_input_class::measureElev);
@@ -459,9 +463,9 @@ void menu_input_class::fileLas()
 	SoSFInt32* GL_open_flag = (SoSFInt32*)SoDB::getGlobalField("Open-File");
 
 	QFileDialog dialog(this);
-	dialog.setFileMode(QFileDialog::ExistingFile);	// Single existing file
+	dialog.setFileMode(QFileDialog::ExistingFiles);	// Multiple existing files
 	dialog.setAcceptMode(QFileDialog::AcceptOpen);	// Open vs Save
-	dialog.setNameFilter(tr("LAS or BPF Files (*.las *.bpf)"));
+	dialog.setNameFilters({ tr("LAS or BPF Files (*.las *.bpf)"),  tr("CSV files EXPERIMENTAL (*.csv)") });
 	dialog.setWindowTitle(tr("Open Input Point-Cloud Files"));
 	dialog.setViewMode(QFileDialog::Detail);
 	QStringList fileNames;
@@ -773,18 +777,25 @@ void menu_input_class::losClear()
 	GL_los_flag->setValue(0);
 }
 
+void menu_input_class::losRay()
+{
+	cout << "To losRay" << endl;
+	SoSFInt32* GL_mousem_new = (SoSFInt32*)SoDB::getGlobalField("Mouse-Mid-New");
+	GL_mousem_new->setValue(26);
+}
+
+void menu_input_class::losRayClear()
+{
+	cout << "To losRay" << endl;
+	SoSFInt32* GL_mousem_new = (SoSFInt32*)SoDB::getGlobalField("Mouse-Mid-New");
+	GL_mousem_new->setValue(20);
+}
+
 void menu_input_class::losSaveShp()
 {
 	cout << "To locSaveShp" << endl;
 	SoSFInt32* GL_los_flag = (SoSFInt32*)SoDB::getGlobalField("LOS-Flag");
 	SoSFString *GL_filename = (SoSFString*)SoDB::getGlobalField("Filename");
-	int istate = GL_los_flag->getValue();
-	if (istate != 6 && istate != 5) {			// Cant save from any other state
-		base_jfd_class *oops = new base_jfd_class();
-		oops->warning(1, "Cant save LOS from this state -- no action");
-		return;
-	}
-
 	QFileDialog dialog(this);
 	//dialog.setFileMode(QFileDialog::ExistingFile);	// Single existing file
 	dialog.setAcceptMode(QFileDialog::AcceptSave);	// Open vs Save
@@ -805,13 +816,6 @@ void menu_input_class::losSaveMask()
 	cout << "To losSaveMask" << endl;
 	SoSFInt32* GL_los_flag = (SoSFInt32*)SoDB::getGlobalField("LOS-Flag");
 	SoSFString *GL_filename = (SoSFString*)SoDB::getGlobalField("Filename");
-	int istate = GL_los_flag->getValue();
-	if (istate != 6 && istate != 5) {			// Cant save from any other state
-		base_jfd_class *oops = new base_jfd_class();
-		oops->warning(1, "Cant save LOS from this state -- no action");
-		return;
-	}
-
 	QFileDialog dialog(this);
 	//dialog.setFileMode(QFileDialog::ExistingFile);	// Single existing file
 	dialog.setAcceptMode(QFileDialog::AcceptSave);	// Open vs Save
@@ -880,13 +884,6 @@ void menu_input_class::measureRoute()
 	cout << "To measureRoute" << endl;
 	dialogMeasureRoute* dialog = new dialogMeasureRoute(this);
 	dialog->show();
-}
-
-void menu_input_class::measureLos()
-{
-	cout << "To measureLos" << endl;
-	SoSFInt32* GL_mousem_new = (SoSFInt32*)SoDB::getGlobalField("Mouse-Mid-New");
-	GL_mousem_new->setValue(26);
 }
 
 void menu_input_class::measureParms()
@@ -1081,8 +1078,8 @@ void menu_input_class::helpAbout()
 {
 	cout << "To helpAbout" << endl;
 	QMessageBox msgBox;
-	QString msg = "Fusion3D Version 6.04_Qt\n";
-	msg.append("19 Nov 2020\n\n");
+	QString msg = "Fusion3D Version 6.09_Qt\n";
+	msg.append("24 Aug 2021\n\n");
 	msg.append("Copyright 2020 Army Research Lab\n");
 	msg.append("Licensed under the Apache License, Version 2.0 (the 'License');\n");
 	msg.append("you may not use this file except in compliance with the License.\n");

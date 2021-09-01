@@ -4,6 +4,13 @@
 #include "ui_dialogFileDemBuck.h"
 
 class map3d_index_class;
+/**
+Qt dialog for opening with one command an entire set of map files whose naming conventions are well defined like BuckEye.
+\n
+Qt menu that handles BuckEye, Haloe and Alirt files.
+It takes advantage of their naming conventions to facilitate opening an entire dataset including DSMs, texture files and KML extents.
+All tiles in a given directory can be opened with one command.
+*/
 
 class dialogFileDemBuck : public QDialog, public Ui::dialogFileDemBuck
 {

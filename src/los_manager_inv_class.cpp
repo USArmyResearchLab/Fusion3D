@@ -64,9 +64,6 @@ int los_manager_inv_class::register_inv(SoSeparator* classBase_in)
 
    GL_filename     = (SoSFString*) SoDB::getGlobalField("Filename");
    GL_busy         = (SoSFInt32*)  SoDB::getGlobalField("Busy");
-   GL_mti_sensor_north = (SoSFFloat*)  SoDB::getGlobalField("MTI-Sensor-North");
-   GL_mti_sensor_east  = (SoSFFloat*)  SoDB::getGlobalField("MTI-Sensor-East");
-   GL_mti_sensor_elev  = (SoSFFloat*)  SoDB::getGlobalField("MTI-Sensor-Elev");
    GL_clock_time     = (SoSFFloat*)  SoDB::getGlobalField("Clock-Time");
    GL_clock_date     = (SoSFString*) SoDB::getGlobalField("Clock-Date");
 
@@ -94,16 +91,14 @@ int los_manager_inv_class::make_scene_3d()
 	GL_los_amin->setValue(los_amin);
 	GL_los_amax->setValue(los_amax);
 	GL_los_sensorEl->setValue(los_sensor_elev);
-	GL_los_sensorE->setValue(los_sensor_erel);
-	GL_los_sensorN->setValue(los_sensor_nrel);
+	GL_los_sensorE->setValue(los_sensor_lon);
+	GL_los_sensorN->setValue(los_sensor_lat);
 
 	// Hardwired defaults
 	GL_los_ovis->setValue(1);
 	GL_los_oshad->setValue(1);
 	GL_los_bound->setValue(1);
 	GL_los_pshad->setValue(0.);
-
-	atr_los->preread();
 	return (1);	
 }
 
@@ -180,12 +175,12 @@ void los_manager_inv_class::los_cbx(void *userData, SoSensor *timer)
 }
 
 // ********************************************************************************
-// Actual callback
+/// Actual callback.  Calculate LOS or load or save LOS files
 // ********************************************************************************
 void los_manager_inv_class::los_cb()
 {
 	float x_lookat, y_lookat, diam_calc;
-	double xt, yt;
+	//double xt, yt;
 	clock_t start_time, elapsed_time;	// Timing
 
 	if (n_data <= 0) return;
@@ -195,35 +190,48 @@ void los_manager_inv_class::los_cb()
 	}
 
 	int los_flag = GL_los_flag->getValue();
-	if (los_flag == 0) {								// Update display, do nothing here
+
+	// ****************************************
+	// Clear All -- both mask and any stuff associated with ray
+	// Clear sensor/line/text here -- mask clearing in map3d_manager_inv_class::los_cb()
+	// ****************************************
+	if (los_flag == 0) {								
+		sensorBase->removeAllChildren();
+		lineBase->removeAllChildren();
+		lookedAtBase->removeAllChildren();
 	}
 	
 	// ****************************************
 	// LOS from ground 
 	// ****************************************
 	else if (los_flag == 1) {
-		atr_los->set_type(1);				// Set type=local where ray traced all the way from pt1 to pt2
 		x_lookat = camera_manager->get_cg_x();
 		y_lookat = camera_manager->get_cg_y();
 		xpt1 = x_lookat;
 		ypt1 = y_lookat;
-		xt = x_lookat + gps_calc->get_ref_utm_east();
-		yt = y_lookat + gps_calc->get_ref_utm_north();
-		los_rmin = GL_los_rmin->getValue();
-		los_rmax = GL_los_rmax->getValue() / 2.0f;
-		los_rmax = float(2 * (int(los_rmax) / 2));	// Want regions to be reasonably regular
-		los_cenht = GL_los_cenht->getValue();
-		los_perht = GL_los_perht->getValue();
-		los_amin = GL_los_amin->getValue();
-		los_amax = GL_los_amax->getValue();
-		atr_los->set_parm(0, yt);
-		atr_los->set_parm(1, xt);
-		atr_los->set_parm(0, los_rmin);
-		atr_los->set_parm(1, los_rmax);
-		atr_los->set_parm(2, los_cenht);
-		atr_los->set_parm(3, los_perht);
-		atr_los->set_parm(4, los_amin);
-		atr_los->set_parm(5, los_amax);
+		los_eye_e = x_lookat + gps_calc->get_ref_utm_east();
+		los_eye_n = y_lookat + gps_calc->get_ref_utm_north();
+		float dx = map3d_index->get_res_roi();
+		float dy = map3d_index->get_res_roi();
+
+		// Put the sensor at the center of closest pixel
+		int itt = int((los_eye_e - map3d_index->map_w) / dx + .001);
+		los_eye_e = map3d_index->map_w + itt * dx + 0.5 * dx;
+		itt = int((map3d_index->map_n - los_eye_n) / dy + .001);
+		los_eye_n = map3d_index->map_n - itt * dy - 0.5 * dy;
+
+		get_parms_from_menu();									// Update parms from menu
+		int nxr = los_rmax / dx;
+		int nyr = los_rmax / dy;
+
+		// Allign mask pixels, map pixels by adding half pixel to get from center to outer edge of pixel
+		double mask_n = los_eye_n + nyr * dy + 0.5 * dy;		
+		double mask_w = los_eye_e - nxr * dx - 0.5 * dx;
+		mask_server->register_mask_tex(mask_n, mask_w, dx, dy, 2*nxr, 2*nyr);
+		unsigned char *maskt = mask_server->get_mask_tex();
+		atr_los->set_parms_mask(mask_n, mask_w, dx, dy, 2 * nxr, 2 * nyr);
+		atr_los->set_parms_ground(los_eye_n, los_eye_e, los_rmin, los_rmax, los_cenht, los_perht, los_amin, los_amax);
+		atr_los->register_mask(maskt);
 
 
 		// If multithreading, get exclusive use
@@ -238,9 +246,9 @@ void los_manager_inv_class::los_cb()
 		// Call to map database -- potential multithreading problem
 		start_time = clock();
 		SoDB::writelock();
-		atr_los->make_atr();
+		atr_los->make_mask_ground();
 		elapsed_time = clock() - start_time;
-		cout << "  Elapsed time for LOS calc " << elapsed_time << endl;
+		cout << "  Elapsed time for LOS calc " << elapsed_time / CLOCKS_PER_SEC << endl;
 
 		// If multithreading, relinquish exclusive
 		if (GL_busy->getValue() > 0) {
@@ -262,60 +270,59 @@ void los_manager_inv_class::los_cb()
 	//	Actual mask display is done in map3d_manager_inv_class which generally deals with pixel overlays
 	// ****************************************
 	else if (los_flag == 7) {
-		warning(1, "LOS parms that generated mask are not carried in input file");
-		//char temp[300];
-		//strcpy(temp, GL_filename->getValue().getString());
-		//xpt1 = float(xt - gps_calc->get_ref_utm_east());
-		//ypt1 = float(yt - gps_calc->get_ref_utm_north());
-		//SoDB::writelock();
-		//draw_los_sensor();
-		//SoDB::writeunlock();
-		//refresh_pending = 1;
-		//refresh();
-   }
+		warning(1, "Using LOS parms from LOS parms menu -- no LOS parms in file");
+		int nmask = dir->get_nfiles_mask();
+		string name = dir->get_mask_name(nmask - 1);
+		mask_server->read_file(name);
+		mask_server->get_mask_parms_tex(mask_north, mask_west, mask_dx, mask_dy, mask_nx, mask_ny);
+		mask = mask_server->get_mask_tex();
+		GL_los_flag->setValue(6);
+
+		// Currently, dont know generating parms from file so must assume current parms from menu and eye at center of mask
+		los_eye_e = mask_west + 0.5 * mask_dx * mask_nx;
+		los_eye_n = mask_north - 0.5 * mask_dy * mask_ny;
+		xpt1 = los_eye_e - gps_calc->get_ref_utm_east();
+		ypt1 = los_eye_n - gps_calc->get_ref_utm_north();
+		get_parms_from_menu();
+
+		// Draw post at the center of the input mask at the height given by the LOS parms menu
+		SoDB::writelock();
+		draw_los_sensor();
+		SoDB::writeunlock();
+	}
 
 	// ****************************************
 	// Write polygons to shapefile
 	// ****************************************
 	else if (los_flag == 5) {
-		// Transfer operational parms from Global, if they are defined
-		if (GL_los_ovis != NULL) atr_los->set_parm(7, GL_los_ovis->getValue());
-		if (GL_los_oshad != NULL) atr_los->set_parm(8, GL_los_oshad->getValue());
-		if (GL_los_bound != NULL) atr_los->set_parm(9, GL_los_bound->getValue());
+		// Transfer operational parms from Global OIV and mask server
+		get_parms_from_menu();
+		mask_server->get_mask_parms_tex(mask_north, mask_west, mask_dx, mask_dy, mask_nx, mask_ny);
+		mask = mask_server->get_mask_tex();
+		if (mask == NULL) {
+			warning(1, "Cant save outlines -- no mask defined -- do nothing");
+		}
+		else {
+			atr_los->set_parms_outline(GL_los_ovis->getValue(), GL_los_oshad->getValue(), GL_los_bound->getValue());
+			atr_los->set_parms_mask(mask_north, mask_west, mask_dx, mask_dy, mask_nx, mask_ny);
+			atr_los->register_mask(mask);
+			atr_los->set_parms_ground(los_eye_n, los_eye_e, los_rmin, los_rmax, los_cenht, los_perht, los_amin, los_amax);
 
-		// Write to file
-		char filename_output[300];
-		strcpy(filename_output, GL_filename->getValue().getString());
-		if (strcmp(filename_output, "") == 0) strcpy(filename_output, "temp.shp");
-		cout << "To save LOS as Shapefile " << filename_output << endl;
-		atr_los->write_polygons(filename_output);
+			// Write to file
+			char filename_output[300];
+			strcpy(filename_output, GL_filename->getValue().getString());
+			if (strcmp(filename_output, "") == 0) strcpy(filename_output, "temp.shp");
+			cout << "To save LOS as Shapefile " << filename_output << endl;
+			atr_los->write_polygons(filename_output);
+		}
 	}
 
 	// ****************************************
 	// Write mask to GeoTiff
 	// ****************************************
 	else if (los_flag == 8) {
-		char filename_output[300];
-		strcpy(filename_output, GL_filename->getValue().getString());
-		xt = atr_los->get_mask_cen_east();				// Mask may not be centered at look point
-		yt = atr_los->get_mask_cen_north();
-		int nxm = atr_los->get_mask_nx();
-		int nym = atr_los->get_mask_ny();
-		float pixel_size = map3d_index->get_res_roi();
-		int nlen = int(2. * los_rmax / pixel_size);
-		unsigned char *los_mask = atr_los->get_los_mask();
-		unsigned char *los_maskr = new unsigned char[nym * nxm];
-		for (int i = 0; i<nym * nxm; i++) {
-			los_maskr[i] = 255 * los_mask[i];
-		}
-		image_tif_class *image_tif = new image_tif_class(gps_calc);
-		image_tif->set_tiepoint(atr_los->get_mask_cen_north() + 0.5 * nym * pixel_size, atr_los->get_mask_cen_east() - 0.5 * nxm * pixel_size);
-		image_tif->set_data_res(pixel_size, pixel_size);
-		image_tif->set_data_size(nym, nxm);
-		image_tif->set_data_array_uchar(los_maskr);
-		image_tif->write_file(filename_output);
-		delete[] los_maskr;
-		delete image_tif;
+		string name = GL_filename->getValue().getString();
+		mask_server->write_file(name);
 	}
 
 	// ***********************************************************
@@ -324,59 +331,66 @@ void los_manager_inv_class::los_cb()
 	// GMTI sensor (los_flag == 4) no longer functional since processing GMTI files no longer works 
 	// ***********************************************************
 	else if (los_flag == 3 || los_flag == 4) {
-		float xs, ys, dx, dy, dz, dh, az_sun, el_sun;
+		float xs, ys, zs, dxs, dys, dzs, dhs, az_sun, el_sun;
 		x_lookat = camera_manager->get_cg_x();
 		y_lookat = camera_manager->get_cg_y();
-		xt = x_lookat + gps_calc->get_ref_utm_east();
-		yt = y_lookat + gps_calc->get_ref_utm_north();
-		// float elev_diff_sun = 30.;	// Follow ray this dist above test-pixel elevation
+		los_eye_e = x_lookat + gps_calc->get_ref_utm_east();
+		los_eye_n = y_lookat + gps_calc->get_ref_utm_north();
+		float dx = map3d_index->get_res_roi();
+		float dy = map3d_index->get_res_roi();
+
+		// Put the sensor at the center of closest pixel
+		int itt = int((los_eye_e - map3d_index->map_w) / dx + .001);
+		los_eye_e = map3d_index->map_w + itt * dx + 0.5 * dx;
+		itt = int((map3d_index->map_n - los_eye_n) / dy + .001);
+		los_eye_n = map3d_index->map_n - itt * dy - 0.5 * dy;
+
+		get_parms_from_menu();
+		int nxr = los_rmax / dx;
+		int nyr = los_rmax / dy;
+
+		// Allign mask pixels, map pixels by adding half pixel to get from center to outer edge of pixel
+		double mask_n = los_eye_n + nyr * dy + 0.5 * dy;
+		double mask_w = los_eye_e - nxr * dx - 0.5 * dx;
+		mask_server->register_mask_tex(mask_n, mask_w, dx, dy, 2 * nxr, 2 * nyr);
+		unsigned char *maskt = mask_server->get_mask_tex();
+		atr_los->set_parms_mask(mask_n, mask_w, dx, dy, 2 * nxr, 2 * nyr);
 
 		if (los_flag == 3) {
-			double lat, lon, north, east;
-			float elevt;
-			lon = GL_los_sensorE->getValue();		// Rel to screen center (calc center)
-			lat = GL_los_sensorN->getValue();		// Rel to screen center (calc center)
-			if (lat == 0. || lon == 0.) {
+			double north, east;
+			if (los_sensor_lat == 0. || los_sensor_lon == 0.) {
 				warning(1, "Must enter fixed standoff sensor latlon from LOS parameters menu -- No calculation");
 				return;
 			}
-			elevt = GL_los_sensorEl->getValue();		// Rel to screen center (calc center)
-			gps_calc->ll_to_proj(lat, lon, north, east);
-			dx = float(east - xt);
-			dy = float(north - yt);
-			dz = elevt - map3d_lowres->get_lowres_elev_at_loc(north, east);
-			cout << "Sensor dE =" << dx << " dN =" << dy << " dH=" << dz << endl;
+			gps_calc->ll_to_proj(los_sensor_lat, los_sensor_lon, north, east);
+			dxs = float(east  - los_eye_e);
+			dys = float(north - los_eye_n);
+			dzs = los_sensor_elev - map3d_lowres->get_lowres_elev_at_loc(los_eye_n, los_eye_e);
+			cout << "Sensor dE =" << dxs << " dN =" << dys << " dH=" << dzs << endl;
 		}
 		else {												// GMTI sensor (los_flag == 4) no longer functional 
-			xs = GL_mti_sensor_east->getValue();		// Rel to ref pt
-			ys = GL_mti_sensor_north->getValue();		// Rel to ref pt
-			dz = GL_mti_sensor_elev->getValue();		// Rel to ref pt
-			if (xs == 0.) {
-				warning(1, "GMTI must be read in and turned on for this LOS calc");
-				return;
-			}
-			dx = xs - x_lookat;
-			dy = ys - y_lookat;
-			cout << "Sensor dE =" << xs << " dN =" << ys << " dH=" << dz << endl;
+			//xs = GL_mti_sensor_east->getValue();		// 
+			//ys = GL_mti_sensor_north->getValue();		// 
+			//zs = GL_mti_sensor_elev->getValue();		// 
+			//if (xs == 0.) {
+			//	warning(1, "GMTI must be read in and turned on for this LOS calc");
+			//	return;
+			//}
+			//dx = xs - x_lookat;
+			//dy = ys - y_lookat;
+			//cout << "Sensor dE =" << xs << " dN =" << ys << " dH=" << dz << endl;
 		}
-		dh = sqrt(dx*dx + dy*dy);
-		los_rmin = GL_los_rmin->getValue();
-		diam_calc = GL_los_rmax->getValue();
-		diam_calc = float(2 * (int(diam_calc) / 2));	// Want regions to be reasonably regular
-		los_rmax = diam_calc / 2.0f;
+		dhs = sqrt(dxs*dxs + dys*dys);
+		diam_calc = 4.0 * los_rmax;
 
-		az_sun = 180.0f * atan2(dy, dx) / 3.1415927f;
-		el_sun = 180.0f * atan2(dz, dh) / 3.1415927f;
+		az_sun = 180.0f * atan2(dys, dxs) / 3.1415927f;
+		el_sun = 180.0f * atan2(dzs, dhs) / 3.1415927f;
 		cout << "Sensor Az=" << az_sun << " El=" << el_sun << endl;
 
-		atr_los->set_type(2);		// Set type 2 for standoff where ray traced just far enough
-		atr_los->set_parm(0, yt);
-		atr_los->set_parm(1, xt);
-		atr_los->set_parm(0, los_rmin);	// Want accurate shadow, elevation noise may be a problem
-		atr_los->set_parm(1, los_sensor_delev);
-		atr_los->set_ref_size(diam_calc);
-		atr_los->set_roi_size(diam_calc);
-		atr_los->set_sun_angles(az_sun, el_sun);
+		//az_sun = -60.;		// KLUGE ********** test parms only
+		//el_sun = 40.;		// KLUGE ********** test parms only
+		atr_los->set_parms_standoff(los_eye_n, los_eye_e, los_rmin, diam_calc, los_sensor_delev, az_sun, el_sun);
+		atr_los->register_mask(maskt);
 
 		// If multithreading, get exclusive use
 		if (GL_busy->getValue() > 0) {
@@ -388,10 +402,10 @@ void los_manager_inv_class::los_cb()
 		}
 
 		// Call to map database -- potential multithreading problem
-		atr_los->read_a2_image(yt, xt);
-		atr_los->set_roi_loc(yt, xt);
+		float guard_dist_max = los_rmax;					// Limit size of DEM read to double the size of the mask
+		atr_los->read_a2_image_for_standoff(guard_dist_max);
 		SoDB::writelock();
-		atr_los->make_atr();
+		atr_los->make_mask_standoff();
 		SoDB::writeunlock();
 
 		// If multithreading, relinquish exclusive
@@ -419,6 +433,7 @@ void los_manager_inv_class::los_cb()
 		//char ctemp[100];
 		//strcpy(ctemp, "02007-09-27 T 14:38:15.000Z");		// KLUGE for lubbock ******************************************
 
+		get_parms_from_menu();
 		if (strcmp("", GL_clock_date->getValue().getString()) == 0) {
 			warning(1, "Must have time and date from either LOS parms menu or CH track for this calc");
 			return;
@@ -455,22 +470,29 @@ void los_manager_inv_class::los_cb()
 
 		x_lookat = camera_manager->get_cg_x();
 		y_lookat = camera_manager->get_cg_y();
-		xt = x_lookat + gps_calc->get_ref_utm_east();
-		yt = y_lookat + gps_calc->get_ref_utm_north();
-		los_rmin = GL_los_rmin->getValue();
-		diam_calc = GL_los_rmax->getValue();
-		diam_calc = float(2 * (int(diam_calc) / 2));	// Want regions to be reasonably regular
-		los_rmax = diam_calc / 2.0f;
+		los_eye_e = x_lookat + gps_calc->get_ref_utm_east();
+		los_eye_n = y_lookat + gps_calc->get_ref_utm_north();
+
+		// Put the sensor at the center of closest pixel
+		float dx = map3d_index->get_res_roi();
+		float dy = map3d_index->get_res_roi();
+		int itt = int((los_eye_e - map3d_index->map_w) / dx + .001);
+		los_eye_e = map3d_index->map_w + itt * dx + 0.5 * dx;
+		itt = int((map3d_index->map_n - los_eye_n) / dy + .001);
+		los_eye_n = map3d_index->map_n - itt * dy - 0.5 * dy;
+
+		diam_calc = 4.0 * los_rmax;
 		float elev_diff_sun = 30.;	// Follow ray this dist above test-pixel elevation
 
-		atr_los->set_type(2);		// Set type 2 for standoff where ray traced just far enough
-		atr_los->set_parm(0, yt);
-		atr_los->set_parm(1, xt);
-		atr_los->set_parm(0, los_rmin);	// Want accurate shadow, elevation noise may be a problem
-		atr_los->set_parm(1, elev_diff_sun);
-		atr_los->set_ref_size(diam_calc);
-		atr_los->set_roi_size(diam_calc);
-		atr_los->set_sun_angles(az_sun, el_sun);
+		atr_los->set_parms_standoff(los_eye_n, los_eye_e, los_rmin, diam_calc, elev_diff_sun, az_sun, el_sun);
+		//atr_los->set_type(2);		// Set type 2 for standoff where ray traced just far enough
+		//atr_los->set_parm(0, yt);
+		//atr_los->set_parm(1, xt);
+		//atr_los->set_parm(0, los_rmin);	// Want accurate shadow, elevation noise may be a problem
+		//atr_los->set_parm(1, elev_diff_sun);
+		//atr_los->set_ref_size(diam_calc);
+		//atr_los->set_roi_size(diam_calc);
+		//atr_los->set_sun_angles(az_sun, el_sun);
 
 		// If multithreading, get exclusive use
 		if (GL_busy->getValue() > 0) {
@@ -482,13 +504,11 @@ void los_manager_inv_class::los_cb()
 		}
 
 		// Call to map database -- potential multithreading problem
-		atr_los->read_a2_image(yt, xt);
-		atr_los->set_roi_loc(yt, xt);
+		float guard_dist_max = los_rmax;					// Limit size of DEM read to double the size of the mask
+		atr_los->read_a2_image_for_standoff(guard_dist_max);
 		SoDB::writelock();
-		atr_los->make_atr();
+		atr_los->make_mask_standoff();
 		SoDB::writeunlock();
-		//int *mask_roi = atr_los->get_shadow_mask();
-		if (diag_flag > 1) atr_los->write_diag_mask("temp_lossun.bmp");
 
 		// If multithreading, relinquish exclusive
 		if (GL_busy->getValue() > 0) {
@@ -506,10 +526,10 @@ void los_manager_inv_class::los_cb()
 	// ****************************************
 	else if (los_flag == 6) {
 	}
- }
+}
 
 // ********************************************************************************
-/// Draw the LOS sensor -- external SoDB::writelock() -- private.
+/// Draw a post at the LOS sensor -- external SoDB::writelock() -- private.
 // ********************************************************************************
 int los_manager_inv_class::draw_los_sensor()
 {
@@ -543,7 +563,7 @@ int los_manager_inv_class::draw_los_sensor()
 }
 
 // ********************************************************************************
-/// Draw a line from the LOS sensor to a selected point on the ground -- external SoDB::writelock() -- private.
+/// Draw line from the LOS sensor to selected point on the ground and print distance and angle -- external SoDB::writelock() -- private.
 // ********************************************************************************
 int los_manager_inv_class::draw_los_line(float xptt1, float yptt1, float elevt1, float xptt2, float yptt2, float elevt2)
 {
@@ -586,12 +606,57 @@ int los_manager_inv_class::draw_los_line(float xptt1, float yptt1, float elevt1,
 	SoTranslation *trans = new SoTranslation;
 	trans->translation.setValue(xptt2, yptt2, elevt2-ref_utm_elevation + 0.5f*los_perht);
 
+	// *********************************
+	// Draw text showing distance and angle
+	// **********************************
+	float dist = sqrt((xptt2 - xptt1)*(xptt2 - xptt1) + (yptt2 - yptt1)*(yptt2 - yptt1) + (elevt1 + los_cenht - elevt2 - los_perht) * (elevt1 + los_cenht - elevt2 - los_perht));
+	float angr = atan2(elevt1 + los_cenht - elevt2 - los_perht, sqrt((xptt2 - xptt1)*(xptt2 - xptt1) + (yptt2 - yptt1)*(yptt2 - yptt1)));
+	float angd = 180. * angr / 3.1415927;
+
+	SoAnnotation *textBase = new SoAnnotation;
+	SoFont*		textFont = new SoFont;	// Use default font defined in main
+	SoBaseColor *textColor = new SoBaseColor;
+	textColor->rgb.set1Value(0, 1.0, 0.0, 0.0);
+	textFont->size.setValue(27.0);
+	textFont->name.setValue("Helvetica:bold");
+	SoText2 *text = new SoText2;
+	char startLabel[100];
+
+	text->string = "";
+	sprintf(startLabel, " Dist=%.1f m", dist);
+	text->string.set1Value(1, startLabel);
+	sprintf(startLabel, " Angl=%.1f deg", angd);
+	text->string.set1Value(2, startLabel);
+
 	lookedAtBase->removeAllChildren();
 	lookedAtBase->addChild(sColor);
 	lookedAtBase->addChild(trans);
 	lookedAtBase->addChild(cube);
+	textBase->addChild(textColor);
+	textBase->addChild(textFont);
+	textBase->addChild(text);
+	lookedAtBase->addChild(textBase);
 
 	return(1);
+}
+
+// **********************************************
+/// Update parms for ground-to-ground and standoff by getting them from OIV globals set by menu.
+// **********************************************
+int los_manager_inv_class::get_parms_from_menu()
+{
+	los_rmin = GL_los_rmin->getValue();
+	los_rmax = GL_los_rmax->getValue();	
+	los_rmax = float(2 * (int(los_rmax) / 2));	// Want regions to be reasonably regular
+	los_cenht = GL_los_cenht->getValue();
+	los_perht = GL_los_perht->getValue();
+	los_amin = GL_los_amin->getValue();
+	los_amax = GL_los_amax->getValue();
+
+	los_sensor_lon  = GL_los_sensorE->getValue();		// Absolute
+	los_sensor_lat  = GL_los_sensorN->getValue();		// Absolute
+	los_sensor_elev = GL_los_sensorEl->getValue();		// Absolute
+	return (1);
 }
 
 // ********************************************************************************
@@ -605,7 +670,8 @@ void los_manager_inv_class::mousem_cbx(void *userData, SoSensor *timer)
 }
 
 // ********************************************************************************
-// Actual callback -- Draw a line from the LOS sensor to the selected point on the ground.
+/// Actual callback -- Turns on and off draw-ray and draws when armed.
+/// When armed, draws a line from the LOS sensor to the selected point on the ground and prints out distance and angle.
 // ********************************************************************************
 void los_manager_inv_class::mousem_cb()
 {
@@ -614,37 +680,30 @@ void los_manager_inv_class::mousem_cb()
 	if (n_data <= 0) return;
 
 	int val = GL_mousem_new->getValue();
-	int iflag = get_if_visible();
 
-	if (val == 26) {					// Signal turn on distance measure
-		SoDB::writelock();
+	// ****************************************
+	// Arm for ray
+	// ****************************************
+	if (val == 26) {
 		lineBase->removeAllChildren();
-		sensorBase->removeAllChildren();
 		lookedAtBase->removeAllChildren();
-		SoDB::writeunlock();
 		action_current = 1;
-		set_if_visible(1);
-		refresh();
-		return;
 	}
 
-	else if (val >= 27) {	// Signal from LOS to send distance and angle to mensuration 
-	}
-
-	else if (val >= 20) {	// Signal turn off
-		SoDB::writelock();
+	// ****************************************
+	// Clear any stuff associated with ray
+	// ****************************************
+	else if (val >= 20) {
 		lineBase->removeAllChildren();
-		sensorBase->removeAllChildren();
 		lookedAtBase->removeAllChildren();
-		SoDB::writeunlock();
 		action_current = 0;
-		set_if_visible(0);
-		refresh();
-		return;
 	}
-   
-	// Draw line from LOS center to chosen point and send distances on to mensuration manager
+
+	// ****************************************
+	// Draw line from LOS center to chosen point and print distance and angle
+	// ****************************************
 	else if (val == 1 && action_current > 0) {
+		get_parms_from_menu();
 		xpt2 = GL_mousem_east->getValue();
 		ypt2 = GL_mousem_north->getValue();
 		SoDB::writelock();
@@ -659,19 +718,9 @@ void los_manager_inv_class::mousem_cb()
 			elev2 = map3d_lowres->get_lowres_elev_at_loc(north, east);
 		}
 
-		draw_los_line(xpt1, ypt1, elev1, xpt2, ypt2, elev2);
 		draw_los_sensor();
+		draw_los_line(xpt1, ypt1, elev1, xpt2, ypt2, elev2);
 		SoDB::writeunlock();
-
-		// Calc distances to send to mensuraton
-		float dist = sqrt((xpt2 - xpt1)*(xpt2 - xpt1) + (ypt2 - ypt1)*(ypt2 - ypt1) + (elev1 + los_cenht - elev2 - los_perht) * (elev1 + los_cenht - elev2 - los_perht));
-		float angr = atan2(elev1 + los_cenht - elev2 - los_perht, sqrt((xpt2 - xpt1)*(xpt2 - xpt1) + (ypt2 - ypt1)*(ypt2 - ypt1)));
-		float angd = 180. * angr / 3.1415927;
-		SoSFFloat* GL_action_float1 = (SoSFFloat*)SoDB::getGlobalField("Action-Float1");
-		SoSFFloat* GL_action_float2 = (SoSFFloat*)SoDB::getGlobalField("Action-Float2");
-		GL_action_float1->setValue(dist);
-		GL_action_float2->setValue(angd);
-		GL_mousem_new->setValue(27);
 		refresh_pending = 1;
 		refresh();
 		return;

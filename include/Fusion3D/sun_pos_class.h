@@ -32,7 +32,6 @@
 /**
 Calculates the sun angles given a position on the earth and a date and time.
 
-intensity image.
 */
 class sun_pos_class:public base_jfd_class{
  private:

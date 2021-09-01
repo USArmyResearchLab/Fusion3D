@@ -1,0 +1,85 @@
+<HEAD>
+<TITLE>FUSION3D DISTRIBUTION CHECKLIST</TITLE>
+</HEAD>
+<BODY>
+<H1>FUSION3D DISTRIBUTION CHECKLIST</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#ps_del">Subdirectories to Delete</A>
+<P>
+<LI><A HREF="#ps_edit">Files to Verify</A>
+<P>
+<LI><A HREF="#ps_open">Open Issues</A>
+<P>
+</UL>
+
+
+
+
+<H2><A NAME="ps_del">SUBDIRECTORIES TO DELETE</A></H2>
+<PRE>
+
+	build
+	build_sowin
+	NotToOS
+
+
+
+</PRE>
+<H2><A NAME="ps_edit">FILES TO VERIFY AND EDIT</A></H2>
+<PRE>
+
+	data/CustomParms.txt
+		Make sure stereo is turned off
+		Make sure other parms are as below
+
+	
+		# ##################################################
+		# Customized Parameters for Fusion3D 
+		# ##################################################
+
+		Tiles-N 70 50 4 1
+
+		Map3d-Color-Scale 0  # 0=natural/abs elev, 1=blue-red/abs elev, 2=natural/rel elev, 3=blue-red/rel elev
+		Stereo-On-Off off		# 'on'/'off'/'anaglyph'
+
+		Mobmap-Max-NDisplay 20000000
+		Camera-El-Max 85
+
+
+
+</PRE>
+<H2><A NAME="ps_open">OPEN ISSUES</A></H2>
+<PRE>
+
+	D:\FINE\Composites/CampRoberts.s4d 
+		CRASHES -- Tau values not getting read properly (compression=2 like other files, so this should be OK)
+</PRE>
+
+<PRE>
+
+	D:\FINE\Composites/pender9.s4d 
+		Duplicating markers for targets from bookmarks and vector overlays for display
+			Include bookmarks in toggle??
+
+</PRE>
+
+<PRE>
+
+	D:\FINE\Composites/elYunque.s4d 
+		For vector overlay, point is off map and elevation is bad
+
+</PRE>
+
+<PRE>
+
+	D:\FINE\Composites/elYunque.s4d 
+		Slider for PC filter menu not getting reset
+
+</PRE>
+
+
+
+

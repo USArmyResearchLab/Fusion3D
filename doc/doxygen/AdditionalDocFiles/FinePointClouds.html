@@ -1,0 +1,219 @@
+<HEAD>
+<TITLE>POINT CLOUD DATA FOR FINE ALGORITHM AND FOPEN</TITLE>
+</HEAD>
+<BODY>
+<H1>POINT CLOUD DATA FOR FINE ALGORITHM AND FOPEN</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#ps_intro">Introduction</A>
+<P>
+<LI><A HREF="#ps_composite">Examples of FINE Algorithm Compositing Many Images</A>
+	<UL>
+	<LI><A HREF="#ps_truth">Truth Scan for Pender Scene</A>
+	<LI><A HREF="#ps_pender">Pender Composite</A>
+	<LI><A HREF="#ps_yunque">elYunque</A>
+	<LI><A HREF="#ps_haiti">Haiti</A>
+	<LI><A HREF="#ps_grid">Gridding</A>
+	</UL>
+<P>
+<LI><A HREF="#machete">Examples of Machete Images</A>
+	<UL>
+	<LI><A HREF="#machete1">First Group of Machete Images</A>
+	<LI><A HREF="#machete2">Second Group of Machete Images</A>
+	</UL>
+<P>
+</UL>
+
+<H2><A NAME="ps_intro">INTRODUCTION</A></H2>
+
+QT can convert .bpf files into LAS files.
+However, the intensity information is lost when this is done, so the resulting LAS file is location only.
+<P>
+
+
+
+<H2><A NAME="ps_composite">EXAMPLES OF COMPOSITING OF MANY IMAGES FOR TARGET-MODE DATA COLLECTS</A></H2>
+
+These images were given to me in December 2012.
+It appears they are from a test set that was given to a number of researchers to test out their compositing algorithms.
+<P>
+Stereo is useful in display of the original point cloud.
+Pender scene shows lots of detail in the canopy -- tree trunks, branches and leaves -- that is obviously real. This cant be discerned in QT mono.
+This shows that Paul's algorithm is identifying and keeping the real objects thru the noise even tho the scene is very complex.
+Looking at the Haiti scene in stereo also shows lots of infomation not visible in the mono image.
+We made a still of Haiti with anaglyph that I gave to Paul.
+<P>
+The DEMs are sometimes useful, sometimes not.
+The most useful in elYunque where it brings out buildings not evident in the point cloud.
+The least useful is Pender where the scene is too complex to pull out the targets -- the a2 surface gets the ground rather than the targets.
+Maybe this could be fixed.
+<P>
+
+
+<PRE>
+
+npu_campRoberts_highRes.bpf		Flat deserty area with test objects -- some at different heights, some not?  -- 2 triangles, squares, tent? truck
+						Gridding:  Res=0.10m, elev threshold = 2m, max intensity = 256
+						TAU limits are bad
+						Targets: big target is row of triangle struts at decreasing intervals -- should be ground-level between struts
+
+npu_elYunque_highRes.bpf		Heavy tree cover, road and path
+						Gridding:  Res=0.33m, elev threshold = 3m, max intensity = 96
+
+npu_haiti_highRes.bpf			Haiti, tents under heavy tree cover
+						Gridding:  Res=0.33m, elev threshold = 3m, max intensity = 96
+						Tau slider not helpful
+						15 looks too noisy
+
+npu_nts10_highRes.bpf			Very flat in middle with objects only in intensity, not elevation
+
+npu_nts15_highRes.bpf			Similar to previous file
+						Gridding:  Res=0.20m, elev threshold = 2m, max intensity = 256
+						Res=0.1m was tried but that was very noisy -- 0.2m is much much better
+						Targets:  intensity only -- should not show elevation difference
+
+npu_pender5_highRes.bpf			Very heavy tree cover -- only a few points below treetops
+						Gridding:  Res=0.33m, elev threshold = 3m, max intensity = 96
+						Taken at 2 altitudes
+						Targets:  First is row of square targets canted at 45 deg elev and with diminishing spacing just East of gully, north half
+							Second is elevated horizontal triangle in southwest quad west of gully
+							Third is boxes -- we could not find these objects
+							Found 9 targets from ground truth file
+
+npu_pender9_highRes.bpf			Similar to previous file
+						Gridding:  Res=0.33m, elev threshold = 3m, max intensity = 96
+						Tau slider not helpful
+
+adj_18N_Pender_Ground_Truth.bpf	Ground truth for Pender scene ~19M points taken from fixed ground-based units at several locations
+						I can find 15 objects -- stored in file 'penderTargetsEd.kml' where I have added target names to my bookmarks.
+
+
+</PRE>
+<H3><A NAME="ps_truth">Pender Truth</A></H3>
+<PRE>
+
+	Primary Point	Stereo very useful in picking out targets -- the better the data, the more stereo helps
+
+	Secondary Point:	Filtered in elevation for better vis of the ground
+
+
+</PRE>
+<H3><A NAME="ps_pender">Pender Composite</A></H3>
+I did Pender5 with a natural color scale and default color-scale limits.
+I did Pender9 with a red-blue color scale and limits that accentuate objects near the ground.
+<PRE>
+
+	Primary Point	Stereo shows that Paul's algorithm is locking onto real structure rather than just random stuff
+				You can see targets he has found
+
+	Secondary Point:	Filtered in elevation for better vis of the ground
+
+
+</PRE>
+<H3><A NAME="ps_yunque">ElYunque</A></H3>
+<PRE>
+
+	Primary Point	DEM very useful here, showing more buildings than apparent in point cloud -- sometimes less in more
+
+	Secondary Point:	Filtered in elevation relative to DEM is better but still needs work
+
+
+</PRE>
+<H3><A NAME="ps_haiti">Haiti</A></H3>
+<PRE>
+
+	Primary Point	DEM works well here -- captures about as much and is easier to see
+
+	Secondary Point:	Can see some features with entire point cloud not obvious without it
+
+
+</PRE>
+<H3><A NAME="ps_grid">Gridding</A></H3>
+
+ElYunque and Haiti represent the most typical data since they are complex and wooded and would most likely 
+require compositing.
+<P>
+
+<PRE>
+
+Size comparison -- elYunque
+	npu_elYunque_highRes.bpf	225.512 MBytes
+	dem_33cm_a1_elYunque.tif	  3.267 MBytes
+	dem_33cm_a2_elYunque.tif	  3.267 MBytes
+	int_33cm_a1_elYunque.tif	  0.822 Mbytes
+
+	DEM total = 7.356 MBytes = 3.3% size of point cloud
+
+
+Size comparison -- Haiti
+	npu_haiti_highRes.bpf		67.927 MBytes
+	dem_33cm_a1_haiti.tif		 1.216 MBytes
+	dem_33cm_a2_haiti.tif		 1.216 MBytes
+	int_33cm_a1_haiti.tif		 0.308 MBytes
+
+	DEM total = 2.74 MBytes = 4% size of point cloud
+
+
+Size comparison -- nts15
+	npu_nts15_highRes.bpf		20.005 MBytes
+	dem_20cm_a1_nts15.tif		 1.788 Mbytes
+	dem_20cm_a2_nts15.tif		 1.788 Mbytes
+	int_20cm_a1_nts15.tif		 0.452 MBytes
+
+	DEM total = 4.028 MBytes = 20% size of point cloud
+
+
+</PRE>
+The resolution of the gridding is very important.  Owing to the relatively high noise level, gridding at too fine a level causes a chaotic surface --
+smooth surfaces like test areas dont come out smooth.
+So you want to grid more conservatively that for linear sensors like Buckeye that are much less noisy.
+<P>
+
+
+<H2><A NAME="machete">FOPEN DATA FROM MACHETE PROGRAM</A></H2>
+
+I got these images from the Machete Program.
+<P>
+
+
+
+<H3><A NAME="machete1">First Group of Machete Images</A></H3>
+
+I got images about 21 February 2014.
+The images are from El Yunque.  They are for the same area images by ALIRT several years earlier.
+Unfortunately, the scene has changed dramatically -- most of the buildings in the earlier scene have caved in --
+that a comparison is impossible.
+I have Project files from both ALIRT and MACHETE.
+<P>
+
+
+
+<H3><A NAME="machete1">Second Group of Machete Images</A></H3>
+
+I received an image about 19 May 2014 -- "150145N0842013W_MACHETE1_PT_20140514_035111_000_000_025_HAG_combined.bpf".
+I put it in F:\Fopen2.
+
+<PRE>
+
+	Lat 15.03136	Lon -84.33758 (different from filename)	Honduras, Rio Platano Wildlife Preserve
+
+	Npts		55,299,955
+
+	Coord system WGS84 / UTM zone 16N
+
+	Extra Fields
+		Z Difference
+		Extrapolated
+		Confidence
+		Relative Reflectivity
+		SNR
+		Filtered
+
+
+</PRE>
+
+
+
+

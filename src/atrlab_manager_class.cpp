@@ -1,7 +1,7 @@
 #include "internals.h"
 
 // **********************************************
-/// Constructor
+/// Constructor.
 // **********************************************
 
 atrlab_manager_class::atrlab_manager_class(int n_data_max_in)
@@ -9,17 +9,12 @@ atrlab_manager_class::atrlab_manager_class(int n_data_max_in)
 {
    n_data_max  		= n_data_max_in;
    n_data     		= 0;
-   id			= 0;
-   
    refresh_pending	= 1;	// Change pending -- any kind
    reread_pending	= 1;	// Change pending -- new image (from file/Epix/etc)
    recalc_pending	= 1;	// Change pending -- new parms, image must be recalculated
    
    mode_current = 0;		// Default to search mode
    mode_previous = 0;
-   
-   time_battlefield_cur = -99;
-   time_battlefield_flag = 0;	
 
    cg_world_x		= 0.;
    cg_world_y		= 0.;
@@ -31,15 +26,11 @@ atrlab_manager_class::atrlab_manager_class(int n_data_max_in)
    if_rotated		= 0;
    camera_height_old 	= -99.;
    
-   seed 		= 331;
-   draw_standoff	= 10;
-   
    mon_onoff_a		= new int*[70];
    state_onoff_a	= new int[70];
    if_visible		= 1;
    n_onoff		= 0;
    vis_changed_by_method= 0;
-   purpose		= 0;	// Undefined
    
    count_a		= new int*[70];
    old_count_a		= new int[70];
@@ -56,18 +47,18 @@ atrlab_manager_class::atrlab_manager_class(int n_data_max_in)
    dir				= NULL;
    clock_input		= NULL;
    map3d_index		= NULL;
+   mask_server		= NULL;
    map3d_lowres		= NULL;
    vector_index 	= NULL;
    image_3d			= NULL;
    camera_manager	= NULL;
    icon				= NULL;
    if_new_icon		= 0;
-   nframes		= 1;
    diag_flag		= 0;
 }
 
 // **********************************************
-/// Destructor
+/// Destructor.
 // **********************************************
 atrlab_manager_class::~atrlab_manager_class()
 {
@@ -141,6 +132,16 @@ int atrlab_manager_class::register_vector_index(vector_index_class *index)
 }
 
 // ********************************************************************************
+/// Register mask_server_class to class.
+/// Register a pointer to the mask_server_class that does mask overlays like for LOS.
+// ********************************************************************************
+int atrlab_manager_class::register_mask_server(mask_server_class*	mask_server_in)
+{
+	mask_server = mask_server_in;
+	return(1);
+}
+
+// ********************************************************************************
 /// Register map3d_lowres_class to class.
 /// Register a pointer to the map3d_lowres_class that does lowres DEM calculations.
 // ********************************************************************************
@@ -160,16 +161,6 @@ int atrlab_manager_class::register_viewer(fusion3d_viewer_class *myViewer_in)
 {
 	myViewer = myViewer_in;
 	return(1);
-}
-
-// ********************************************************************************
-/// Return the purpose of the data in this class.
-/// Used for cadmodels (or any other object) where objects can be used for different purposes.
-/// @return Purpose 1=truthing, 2=2-d map, 3=3-d map, 4=comparison with sar data, 5=comparison with ladar data
-// ********************************************************************************
-int atrlab_manager_class::get_purpose()
-{
-   return purpose;
 }
 
 // **********************************************
@@ -198,7 +189,8 @@ int atrlab_manager_class::report_status()
 }
 
 // **********************************************
-/// Set mode. 
+/// Set mode -- used for cases where the camera tracks a moving object.
+/// The camera can track a vehicle or person as it moves along a route or track.
 // **********************************************
 int atrlab_manager_class::set_mode(int mode_current_in)
 {
@@ -368,15 +360,6 @@ int atrlab_manager_class::get_n_data()
 }
 
 // **********************************************
-/// Return the number of frames of data.
-/// Typically, the number of frames of video data or included in a vehicle track.
-// **********************************************
-int atrlab_manager_class::get_nframes()
-{
-   return nframes;
-}
-
-// **********************************************
 /// Set refresh pending flag.
 /// Setting this flag causes this object to be redrawn with updated data.
 // **********************************************
@@ -480,21 +463,6 @@ int atrlab_manager_class::read_tagged(const char* filename)
 int atrlab_manager_class::refresh()
 {
    cout << "atrlab_manager_class::refresh:  Default -- ignore" << endl;
-   return(0);
-}
-
-// ********************************************************************************
-/// Update clock time -- Virtual, so just ignore.
-// ********************************************************************************
-int atrlab_manager_class::update_time(int i_tic_in, float time_in)
-{
-   time_battlefield_cur = time_in;
-   if (time_battlefield_cur == -99.) {	// Reinit
-      time_battlefield_flag = 0;	
-   }
-   else {
-      time_battlefield_flag = 1;
-   }
    return(0);
 }
 

@@ -64,7 +64,6 @@ class camera4d_manager_inv_class:public camera4d_manager_class{
       int get_focal_length(float &focal_length);
       int set_focal_length(float focal_length);
       
-      int update_time(int i_tic_in, float time_in);
       int refresh();
 	  int clear_all() override;
 };

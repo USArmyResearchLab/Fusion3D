@@ -2,6 +2,8 @@
 #define _draw_data_class_h_	
 #ifdef __cplusplus
 
+class map3d_index_class;
+
 /**
 Stores data on points, lines, polygons and symbols for map overlays.
 
@@ -35,8 +37,6 @@ A symbol for a point is defined by associating an index into a list of symbols
 \n
 Symbols are defined by the names of their image files.  Only BMP files are implemented so far.\n
 */
-class map3d_index_class;
-
 class draw_data_class:public base_jfd_class{
    
    protected:
@@ -60,27 +60,27 @@ class draw_data_class:public base_jfd_class{
 	   std::vector<string> assimpUniqueTexNames;	///< Assimp -- list of unique texture files
 
 	   time_conversion_class *time_conversion;		///< Helper class -- convert time formats
-	   interval_calc_class *interval_calc;			///< Helper class 
-	   map3d_index_class *map3d_index;				///< Helper class used to calc ground level at a point
-	   map3d_lowres_class*	  map3d_lowres;		///< Helper class -- does low-res calculations
+	   interval_calc_class	*interval_calc;			///< Helper class 
+	   map3d_index_class	*map3d_index;			///< Helper class used to calc ground elevation at a point
+	   map3d_lowres_class	*map3d_lowres;			///< Helper class -- does low-res calculations
 
 	   // Private methods
 	   int calc_elev(float xin, float yin, float zin, int altMode, float &zout);
 	   int assign_tex_file_index(int iMaterial, string filename);
 
    public:
-	   std::vector<std::vector<float> > pbx;			///< Polygon
-	   std::vector<std::vector<float> > pby;			///< Polygon
-	   std::vector<std::vector<float> > pbz;			///< Polygon
+	   std::vector<std::vector<float> > pbx;			///< Polygon -- Location
+	   std::vector<std::vector<float> > pby;			///< Polygon -- Location
+	   std::vector<std::vector<float> > pbz;			///< Polygon -- Location
 	   std::vector<int> pbfill;							///< Polygon -- Fill (-1=unknown, 0=no, 1=yes)
 	   std::vector<int> pbAltMode;						///< Polygon -- KML altitude mode: 0=clamp-to-ground (default), 1=relative-to-ground, 2=absolute
 	   std::vector<string> pbname;						///< Polygon -- Name ("" for no name)
 	   std::vector<float> pbtime;						///< Polygon -- time 
 
-	   std::vector<std::vector<float> > plx;			///< LineString
-	   std::vector<std::vector<float> > ply;			///< LineString
-	   std::vector<std::vector<float> > plz;			///< LineString
-	   std::vector<std::vector<float> > pltime;			///< LineString
+	   std::vector<std::vector<float> > plx;			///< LineString -- Location
+	   std::vector<std::vector<float> > ply;			///< LineString -- Location
+	   std::vector<std::vector<float> > plz;			///< LineString -- Location
+	   std::vector<std::vector<float> > pltime;			///< LineString -- Time (used for object moving along a route)
 	   std::vector<int> plAltMode;						///< LineString -- KML altitude mode: 0=clamp-to-ground (default), 1=relative-to-ground, 2=absolute
 	   std::vector<string> plname;						///< LineString -- Name ("" for no name)
 	   std::vector<int> pldash;							///< LineString -- 0=solid line, 1=dashed line 
@@ -88,9 +88,9 @@ class draw_data_class:public base_jfd_class{
 	   std::vector<int> pltimeISymbol;					///< LineString -- No. of symbol associated with object moving along the line -- negative for no symbol
 	   std::vector<int> pltimeIModel;					///< LineString -- No. of model associated with object moving along the line -- negative for no model
 
-	   std::vector<float> ppx;							///< Points
-	   std::vector<float> ppy;							///< Points
-	   std::vector<float> ppz;							///< Points
+	   std::vector<float> ppx;							///< Points -- Location
+	   std::vector<float> ppy;							///< Points -- Location
+	   std::vector<float> ppz;							///< Points -- Location
 	   std::vector<int> ppAltMode;						///< Points -- KML altitude mode: 0=clamp-to-ground (default), 1=relative-to-ground, 2=absolute
 	   std::vector<int> drawPtFlag;						///< Points -- Draw pt (dot) on map: 0=no (only name or symbol if defined), 1=yes
 	   std::vector<int> ppISymbol;						///< Points -- No. of symbol associated with point -- negative for no symbol

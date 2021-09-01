@@ -1,0 +1,33 @@
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<H1>PCCONVERT CODE FOR CONVERTING POINT-CLOUD FILES IN ASCII FORMAT TO LAS FORMAT</H1>
+<HR>
+
+<H2><A NAME="convert_intro">INTRODUCTION</A></H2>
+
+This code is no longer maintained.
+The code works but will probably never be needed again.
+However, it is there if ever we need it or want to lift something from it.
+<P>
+The code was originally written to convert ascii point-cloud files to LAS format for several maps of Lithuania.
+This map was made for ARCIC for a wargaming exercise in May 2018.
+The point-cloud data was given to us in ASCII format (owing to miscommunication or mistake).
+We did not have time to go through the requesting process again, so I coded the conversion.
+Unfortunately, the data provided was for bare earth, so the map was never used.
+<P>
+The code reads each input file and creates a corresponding file in LAS format.
+<P>
+
+
+
+<H2><A NAME="convert_run">CONVERTING</A></H2>
+
+As with the gridder program, a virtually unlimited number of point-cloud files can be input.
+However, due to a basic limitation in the Windows utilities, only a limited number can be chosen at a time.
+They must be chosen in groups of about 150 at most.
+If more than this number must be chosen, several groups can be chosen consecutively and the result will be the sum of all the input groups.
+<P>
+An output file is created from each input file, so the process can be done in batches as large as desired.
+<P>

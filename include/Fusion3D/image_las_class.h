@@ -151,6 +151,9 @@ class image_las_class:public image_ptcloud_class{
    int cullTimeFlag;						///< Cull -- 1 iff cull outside time interval
    double startTime, stopTime;				///< Cull -- Crop times
 
+   int thin_flag;							///< Thin -- 1 if thin
+   float thin_res;							///< Thin -- voxel size (m)
+
    int amp_min_raw, amp_max_raw;			///< Min,max amplitudes of raw data
    
    float xyunits_to_m;								///< Convert -- x- and y-units to m on output
@@ -183,22 +186,20 @@ class image_las_class:public image_ptcloud_class{
 
    int udata_flag;								///< Use udata -- Store udata and make available for output
 
-   int decimate_flag;							///< Decimate -- 1 iff decimation turned on
-   int decimate_n[361];							///< Decimate -- per 1-deg angular regions, keep only 1 out of decimate_n[ang]
-   int decimate_i[361];							///< Decimate -- per 1-deg angular regions, current count 0 <= decimate_i < decimage_n
-
    int rotang_limits_flag;						///< 1 iff there are limits on rotation angle
    float rotang_min, rotang_max;				///< Mobile mapping -- limits to rotation angle (sar)
 
+#ifndef NO_MAP3D
    map3d_index_class *map3d_index;				///< Helper class used to cull points near DEM
+#endif
 
    // Private methods
-   int read_block(int nInput, int nSkipInput, int &nOutput);
+   int read_block(int nInput, int &nOutput);
    int write_block(int nmax);
-   int transfer_persistent(int nIn, int iOutStart, int &nOut, int nSkip);
+   int transfer_persistent(int nIn, int iOutStart, int &nOut);
    int write_header_adjustments(int ifile_in);
-   int cull_near_dsm(int nIn, int &nOut);
-   int clip_extent(int nIn, int &nOut);
+   int clip_block(int nIn, int &nOut);
+   int thin_all(int &nWrite);
    int amp_rescale(int nIn);
    int print_record(int irec);
    int read_var_record();
@@ -213,13 +214,9 @@ class image_las_class:public image_ptcloud_class{
    image_las_class();
    ~image_las_class();
    
-   int register_map3d_index_class(map3d_index_class *map3d_index_in);
    int set_udata_flag(int flag);
    int set_rotang_limits(float angmin, float angmax);
    int set_time_crop(double startTimeIn, double stopTimeIn);
-   int set_cull_near_dsm(float thresh);
-   int set_cull_only_returns();
-   int set_decimate_angular_region(int angMin, int angMax, int nDecimateMin, int nDecimateMax);
    int set_x(int i, double xin);
    int set_y(int i, double yin);
    int set_z(int i, float  zin);
@@ -234,25 +231,33 @@ class image_las_class:public image_ptcloud_class{
    int begin_write_image(string filename);
    int end_write_image();
 
+   int init_thin(float res);
    int add_block_init(int npts_block, double xmin, double xmax, double ymin, double ymax, double zmini, double zmaxi, int rgb_flag);
    int add_block_type0(double *xaf, double *yaf, double *zaf, unsigned char *iac, unsigned char *mask, float maxRange);
    
    int get_rgb_flag();
-   double get_x(int i);
-   double get_y(int i);
-   double get_z(int i);
+   double get_x(int i) override;
+   double get_y(int i) override;
+   double get_z(int i) override;
    int get_sar(int i);
    unsigned short get_intens(int i);
    unsigned short get_red(int i);
    unsigned short get_grn(int i);
    unsigned short get_blu(int i);
-   unsigned short* get_intensa();
-   unsigned short* get_reda();
-   unsigned short* get_grna();
-   unsigned short* get_blua();
+   unsigned short* get_intensa() override;
+   unsigned short* get_reda() override;
+   unsigned short* get_grna() override;
+   unsigned short* get_blua() override;
    double get_time(int i);
    unsigned char get_udata(int i);
-   int get_z_at_percentiles(float percentile1, float percentile2, float percentile3, float &z1, float &z2, float &z3, int diag_flag);
+   int get_z_at_percentiles(float percentile1, float percentile2, float percentile3, float &z1, float &z2, float &z3, int diag_flag) override;
+
+#ifndef NO_MAP3D
+   int register_map3d_index_class(map3d_index_class *map3d_index_in);
+   int set_cull_near_dsm(float thresh);
+   int set_cull_only_returns();
+   int cull_near_dsm(int nIn, int &nOut);
+#endif
 };
 
 #endif /* __cplusplus */

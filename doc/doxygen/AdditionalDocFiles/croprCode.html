@@ -1,0 +1,49 @@
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<H1>CROPR CODE FOR CROPPING POINT CLOUDS TO SPECIFIED REGION</H1>
+<HR>
+
+<H2><A NAME="cropr_intro">INTRODUCTION</A></H2>
+
+The code is a very simple one designed to reduce the size of point-cloud files.
+There are 3 options as described below: to crop a point cloud to a specified region,
+to decimate a point cloud (take every nth point) or to thin a point cloud (take only the first point in each voxel).
+As implemented, it only accepts point-cloud files in .las format.
+<P>
+When the files are selected, the total number of points in all the files and the
+total extent of the data is shown in the menu.
+
+<H3><A NAME="grid_intro">Cropping</A></H2>
+
+The user can modify the extent information in the menu as desired and the data will be cropped
+to the resulting modified parameters.
+<P>
+
+
+
+<H3><A NAME="cropr_dec">Decimating</A></H2>
+
+The menu contains a decimation ratio.
+If the value is 1 (the default) then no decimation is done.
+If it is =n larger than 1, then 1 out of every n points is transfered to the output.
+The output is every nth point starting with point 0 for each block read.
+<P>
+
+<H3><A NAME="cropr_thin">Thinning</A></H2>
+
+The bounding box of the data for each file is divided in all three dimensions into equal-sized voxels.
+Only the first hit in any voxel is transfered to the output.
+The size of the voxel is set from the menu.
+<P>
+Advantages over decimating:  Ground-based lidar usually has very different sampling densities varying from very dense
+on the ground close to the sensor and much less dense at longer ranges. So this technique compensates for this imbalance
+whereas decimating does not.
+<P>
+Disadvantages:  The resulting number of points cant be determined beforehand, so several passes may be necessary to get a reasonable number.
+If multiple files are processed, then you may want different voxel resolutions for different files.  You may want to sample more densely
+at the focal point of a data collection than the surrounding areas.
+<P>
+
+

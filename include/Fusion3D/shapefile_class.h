@@ -49,18 +49,15 @@ typedef struct {
 /// @endcond	End Doxygen exclusion
 
 /**
-Imports and exports data in Shapefile format.
+Imports and exports data in Shapefile format -- mostly superceded by ogr_class which is more general and better tested.
 
-This class is a special-purpose implementation of the Shapefile "standard".
-This is an obsolete format doing a lot more than it was designed to do and very nonstandard.
-Hence this class is awkward and specific as well.
-It was written to do specific tasks.
-It was written before I adopted the GDAL/OGR library, which has superceded some of its functions.
-Many of the Shapefile functions have been transfered to ogr_class.
-More functions should probably be transfered to this library, which should be more general.
+This class was written before we adopted the GDAL/OGR library, which has superceded most of its functions.
+The OGR implementation is more general and better maintained and tested so should be used for future work.\n
 \n
-The functions left to this class are to read and write Constant Hawk tracks, to write LOS shadow boundaries
-and to input truthing files.
+The only application of this class at this time is to write LOS shadow boundaries --
+a very complex shape that is difficult to validate.
+Therefore the application to LOS was left in this class but should probably be moved to the ogr_class if that application
+is ever reviewed.
 
 */
 class shapefile_class:public vector_layer_class{

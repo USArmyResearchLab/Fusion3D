@@ -1,0 +1,120 @@
+<HEAD>
+<TITLE>OBJECT MANAGERS</TITLE>
+</HEAD>
+<BODY>
+<H1>OBJECT MANAGERS</H1>
+<HR>
+
+Each different data type, calculation, and the camera are controlled by a manager.  All managers derive from the virtual class atrlab_manager_class.
+Some types of user input cause all managers to be updated.
+Other user inputs invoke callbacks in one or more managers.
+<P>
+
+<BR><BR><BR>
+
+
+
+<TABLE BORDER>
+<CAPTION>Current Object Managers</CAPTION>
+<TR><TH>Class                                 <TH>Function                     <TH>Assoc. Name<TH>Description
+	<TR><TD>atrlab_manager_inv_class	    <TD>Parent class for all managers<TD>unknown    <TD>Virtual class
+	<TR><TD>bookmark_manager_inv_class	    <TD>bookmarks                    <TD>bookmark   <TD>bookmarks -- points with associated labels
+	<TR><TD>cad_manager_inv_class	          <TD>CAD models                   <TD>cad        <TD>CAD models
+	<TR><TD>camera4d_manager_inv_class	    <TD>Controls camera motion	 <TD>camera     <TD>Controls user zooms, pans and translations
+	<TR><TD>draw_manager_inv_class	    <TD>Vector drawing               <TD>draw       <TD>Points with icons, lines, polygons for mil scenarios
+	<TR><TD>kml_manager_inv_class           <TD>2-D vector overlays          <TD>kml        <TD>Expanded to handle all vector overlays for display only
+	<TR><TD>ladar_mm_manager_inv_class	    <TD>Point clouds                 <TD>ladarmm    <TD>Point clouds in .las or .bpf format
+	<TR><TD>los_manager_inv_class	          <TD>Line-of-Sight calcs          <TD>los        <TD>LOS calcs, ground-to-ground, standoff sensor, MTI, sun
+	<TR><TD>map3d_manager_inv_class         <TD>3-D terrain maps 		 <TD>map3d_index<TD>DEMs/DSMs
+	<TR><TD>mensuration_manager_inv_class   <TD>Mensuration calculations	 <TD>mensurate  <TD>Mensuration calcs
+	<TR><TD>mv_manager_inv_class            <TD>Motion video 		       <TD>mv         <TD>Motion video (interface only to external player)
+	<TR><TD>sensor_kml_manager_inv_class    <TD>sensor info in KML format    <TD>sensorKML  <TD>Sensor info from field tests
+	<TR><TD>sensor_osus_manager_inv_class   <TD>sensor info in OSUS format   <TD>sensorOSUS <TD>Sensor info from field tests
+	<TR><TD>status_overlay_manager_inv_class<TD>sensor info in OSUS format   <TD>status     <TD>Sensor info from field tests
+	<TR><TD>track_manager_inv_class         <TD>Vehicle tracks -- non-CH     <TD>track      <TD>Display/input/edit tracks
+	<TR><TD>write_manager_inv_class	    <TD>Write screen to file	       <TD>write      <TD>User write and expanded to handle scene updates
+	<TR><TD>
+</TABLE>
+<BR><BR><BR>
+
+Most object managers are implemented as a base class that does all non-OpenInventor tasks and a child class that
+adds OpenInventor functionality.  The child class adds "_inv" to the class name.  For example:
+<PRE>
+
+	kml_manager_class		Reads operational parameters and handles import/export of vector overlays
+	kml_manager_inv_class	Adds OpenInventor functionality to display the imported data files
+
+
+</PRE>
+All object managers have core operations implemented in a standard set of methods are described below:
+<PRE>
+
+	read_tagged((char* filename)	-- Reads in operational parameters from the standard tagged ascii format.
+	register_inv(SoSeparator* classBase_in)	-- Initialize OpenInventor and read in any predefined files and transfer to OIV objects.
+	refresh())	-- Process any user inputs that may change the display.
+		This can respond directly to the older form of inter-class communication through fixed buffer locations
+	static void doSomething_cbx	-- Callback wrapper so callback can be used within a class
+	doSomething_cb	-- Callback that responds to a change in a OIV Global variable
+
+
+
+</PRE>
+		
+<H2>READING AND WRITING PARAMETERS</H2>
+
+Most managers read and write their own parameters.
+The exceptions are listed below.
+The vector_index_class handles the database for all vector overlays, so it makes sense to read and write these from this class rather than
+the individual managers.
+<P>
+
+
+<TABLE BORDER>
+<CAPTION>Other Classes that Read and Write Parameters</CAPTION>
+<TR>  <TH>Class<TH>Read Parms<TH>Write Parms<TH>Description
+	<TR><TD>map3d_index_class	       <TD>Yes<TD>Yes<TD>Handles tiling of DEM map
+	<TR><TD>vector_index_class	       <TD>Yes<TD>Yes<TD>Handles major parms for all vector overlays
+	<TR><TD>globals_inv_class	       <TD>Yes<TD>Yes<TD>Handles stereo parms
+	<TR><TD>clock_input_class	       <TD>Yes<TD>No <TD>Reads clock parms (no write capability for these parms)
+	<TR><TD>
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+
+
+
+<H2>SUPERCEDED OBJECT MANAGERS</H2>
+
+Some object managers were used for projects no longer of interest or developed for experiments that didn't work out.
+They were excluded from the current build but may still be useful as templates if their functions become interesting again.
+<TABLE BORDER>
+<CAPTION>Object Managers</CAPTION>
+<TR><TH>Class<TH>Function<TH>Assoc. Name<TH>No.<TH>Description
+	<TR><TD>cadmodel_manager_inv_class	 <TD>CAD models vs 3-D data       <TD>?        <TD>Older style CAD models
+	<TR><TD>ch_manager_inv_class	       <TD>Constant Hawk sensor data    <TD>ch       <TD>1<TD>Register tracks and show video overlays
+	<TR><TD>icon_manager_inv_class	 <TD>icons                        <TD>icon     <TD>1<TD>icons (markers for sensor cues)
+	<TR><TD>ladar_gr_manager_inv_class	 <TD>Ground-based stationary lidar<TD>ladar4d  <TD>N<TD>Ground-based stationary lidars with raster scans
+	<TR><TD>map_manager_inv_class	       <TD>2-D vector terrain maps	    <TD>map      <TD>1<TD>2-d vector maps
+	<TR><TD>movie_sar_manager_inv_class	 <TD>CAD models vs SAR data	    <TD>movie_sar<TD>1<TD>CAD models to compare to SAR data
+	<TR><TD>mti_manager_inv_class	       <TD>MTI sensor data		    <TD>mti      <TD>1<TD>MTI tracks
+	<TR><TD>place_point_manager_inv_class<TD>Vehicle tracks -- CH only    <TD>place    <TD>1<TD>Display and register CH tracks
+	<TR><TD>proj_manager_inv_class	  <TD>photo/video sensor data	    <TD>proj     <TD>photo/video projected onto 3-d
+	<TR><TD>roi_manager_inv_class	       <TD>Region of Interest (ROI)	    <TD>roi      <TD>1<TD>Regions of interest
+	<TR><TD>sitemodel_manager_inv_class  <TD>3-D CAD site models 	    <TD>site     <TD>1<TD>CAD models of bldgs, tel poles etc
+	<TR><TD>truth_manager_inv_class	 <TD>Ground truth	tracks	    <TD>truth    <TD>1<TD>target vehicles/people -- anything with an associated motion tracks
+	<TR><TD>
+</TABLE>
+<BR><BR><BR>
+
+The mti_manager_inv_class was written to display GMTI tracks in NATO-4607 format that were collected for the Bluegrass field test.
+It was wired to the clock to show movement of vehicles with time.
+All hits within a given time interval were displayed with most recent hits shown in larger sizes.
+The user could click on an individual hit to show diagnostics for the hit -- developed to show multi-bounce and other effects.
+<P>
+The ch_manager_inv_class was developed to register vehicle tracks and to show video overlays of tracked vehicles.
+<P>
+The truth_manager_inv_class was developed to show coordinated motion of multiple vehicles for Constant Hawk.
+There were often multiple vehicles associated with a given event and showing their mutual motion patterns helped clarify the event.
+<P>

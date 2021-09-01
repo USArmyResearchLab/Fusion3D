@@ -1,0 +1,88 @@
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<H1>LASFORMAT CODE GRIDDING AND OTHER DATA PROCESSING TASKS</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#las_intro">Introduction</A>
+<P>
+<LI><A HREF="#las_grid">Gridding</A>
+<P>
+<LI><A HREF="#las_change">Change Detection and Updating DSM Maps</A>
+<P>
+<LI><A HREF="#las_nitf">Conversion of NITF to GeoTiff</A>
+<P>
+<LI><A HREF="#las_mrsid">Cropping a MrSID Image and Writing to GeoTiff</A>
+<P>
+</UL>
+
+<H2><A NAME="las_intro">INTRODUCTION</A></H2>
+
+The code was originally written for gridding -- converting point clouds in .las format into DSMs.
+The gridding technique used by BuckEye and others was very poor for our purposes and the approach used here is much better
+(see various Dammann papers and symposium presentations).
+<P>
+The code has grown haphazerdly to encompass many other data processing jobs --
+basically anything I thought would muddle the basic Fusion3D code.
+<P>
+
+<H2><A NAME="las_grid">GRIDDING</A></H2>
+
+<H3><A NAME="las_grid">Call Format from Program Fusion3D</A></H3>
+
+Program lasFormat can be called from the Fusion3D viewer using a menu "Point Cloud" -> "Make DEM from Point Cloud".
+This option only works for
+This triggers a call to lasFormat using the following parameters:
+<PRE>
+
+C:\\Fusion3D\\bin\\lasFormat.exe
+	-igrid	Name of first input .las file
+	-igrid	Name of second input .las file, if present
+	...
+	-igrid	Name of last input .las file, if present
+	-oa2		Name of output a2-DEM file in GeoTiff (a1-DEM and intensity files are made from this using BuckEye conventions)
+			WARNING -- the name must contain the sequence '_a2_' in order to make the other output names
+	-res		Output resolution (post spacing) for DEMs
+	-tauth	Used only where the quality metric TAU is available for the point cloud, uses only points above this threshold
+	-a1th 3.0	Used iff high-noise sensor, this 
+	-imax		Max intensity for output intensity file
+
+
+
+</PRE>
+
+<H2><A NAME="las_nitf">CHANGE DETECTION AND UPDATING DSM MAPS</A></H2>
+
+See documentation on Change Detection for a description of this function.
+<P>
+
+
+
+
+
+<H2><A NAME="las_nitf">CONVERSION OF NITF FILES TO GEOTIFF FORMAT</A></H2>
+
+The program can convert a NITF .ntf file into a GeoTiff format using GDAL driver to read the NITF.
+<P>
+
+
+
+<H2><A NAME="las_mrsid">CROP MRSID IMAGE AND OUTPUT TO GEOTIFF</A></H2>
+
+The program can crop a MrSID image and output to a GeoTiff.
+Since MrSID is a proprietary format, I can read it but cannot write to it.  So it has be be GeoTiff.
+When MrSID images are converted GeoTiff, they are typically too large to process or use.
+So cropping is almost always necessary.
+<P>
+One way to crop and write is using a MrSID utility mrsidgeodecode.
+This does the reading, cropping and writing in  one operation.
+Another way is to use my MrSID classes to do the reading and writing.
+This is more coding but may be more flexible.
+<P>
+
+
+
+

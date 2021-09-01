@@ -72,9 +72,13 @@ class globals_inv_class:public base_jfd_class{
 	  SoSFFloat*		GL_mobmap_cmin;		// OIV Global -- False color for point clouds -- elevation corresponding to min hue
       SoSFFloat*		GL_mobmap_cmax;		// OIV Global -- False color for point clouds -- elevation corresponding to max hue
       SoSFInt32*		GL_mobmap_filt_type;// OIV Global -- Current filtering -- 1=none, 2=TAU, 3=elevation
-      SoSFInt32*		GL_mobmap_fine_cur;	// OIV Global -- Current setting for min TAU value displayed
+	  SoSFFloat*		GL_mobmap_filt_rmin;// OIV Global -- Filter on relative elevation -- rmin
+	  SoSFFloat*		GL_mobmap_filt_rmax;// OIV Global -- Filter on relative elevation -- rmax
+	  SoSFFloat*		GL_mobmap_filt_amin;// OIV Global -- Filter on absolute elevation -- rmin
+	  SoSFFloat*		GL_mobmap_filt_amax;// OIV Global -- Filter on absolute elevation -- rmax
       SoSFInt32*		GL_mobmap_fine_min;	// OIV Global -- Min FINE TAU value for display
       SoSFInt32*		GL_mobmap_fine_max;	// OIV Global -- Max FINE TAU value for display
+	  SoSFInt32*		GL_mobmap_fine_cur;	// OIV Global -- Current filter setting (either max range or min TAU)
 
       SoSFFloat*		GL_hilite_thresh1;	// OIV Global -- For Highlighting, threshold 1
       SoSFFloat*		GL_hilite_thresh2;	// OIV Global -- For Highlighting, threshold 1
@@ -93,9 +97,6 @@ class globals_inv_class:public base_jfd_class{
       SoSFInt32*		GL_write_ny;		// OIV Global -- Write/dump screen to file -- size of output file
 
 	  SoSFString*		GL_sensor_types;	///< OIV Global -- Sensors -- Sensor types
-	  SoSFFloat*		GL_mti_sensor_north;// OIV Global -- MTI sensor loc
-      SoSFFloat*		GL_mti_sensor_east;	// OIV Global -- MTI sensor loc
-      SoSFFloat*		GL_mti_sensor_elev;	// OIV Global -- MTI sensor loc
 
       SoSFInt32*		GL_histeq_flag;		// OIV Global -- CH -- For histogram equalization
       SoSFInt32*		GL_color_balance;	// OIV Global -- CH -- For type of color balance for terrestrial lidar

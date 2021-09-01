@@ -46,7 +46,8 @@ int vector_index_class::clear_all()
 // ********************************************************************************
 /// Add a file to the index.
 /// Sets flag that file has not yet been rendered.
-/// @param name		athname of file to be added
+/// Deletes any entries with same name as the file to be added.
+/// @param name		name of file to be added
 /// @param type		Type of file (see above)		
 /// @param redi		Color of overlay -- red [0,1]	
 /// @param grni		Color of overlay -- green [0,1]

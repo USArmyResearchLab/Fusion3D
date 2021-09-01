@@ -12,7 +12,7 @@ Point clouds are unstructured, as opposed to data from the ARL lidars which are 
 class image_ptcloud_class: public base_jfd_class{
  protected:
    
-   int data_intensity_type;			///< Metadata -- Type of intensity/color data --	0 = unread, 5 = 8-bit grayscale, 6 = 24-bit rgb color
+   int nbands;						///< Metadata -- No of associated color/intensity data bands (0 for none, 1 for grayscale, 3 for color, 4 for color+alpha)
    int tauFlag;						///< Metadata -- TAU -- 1 iff TAU (quality metric per hit) values in data
    int timeFlag;					///< Metadata -- Time -- 0 for no times, 1 for time GPS week time, 2 for time GPS standard time - 10**9
    double timeStart;				///< Metadata -- Time -- Start time
@@ -25,7 +25,6 @@ class image_ptcloud_class: public base_jfd_class{
    int bytes_per_point;				///< Metadata -- No. of bytes allocated per point
 
    int npts_read;					///< No. of points read
-   int nskip;						///< Stride for reading in case memory constraints require decimation
    float amp_min;					///< Min amplitude mapped into output [0,255]
    float amp_max;					///< Min amplitude mapped into output [0,255]
    int amp_lims_user_flag;			///< 1 iff amplitude limits set by user
@@ -43,6 +42,8 @@ class image_ptcloud_class: public base_jfd_class{
    double clip_extent_n;			///< Clip extent -- north boundary in UTM coordinates
    double clip_extent_s;			///< Clip extent -- south boundary in UTM coordinates
 
+   int decimation_n;				///< Decimate -- =1 for no decimation, =n retains only 1 of every n points
+
    double utm_cen_east, utm_cen_north;	///< Center of data
 
    // Private methods
@@ -52,13 +53,13 @@ public:
    virtual ~image_ptcloud_class();			// Must be virtual so subclass destructor called by delete
    
    // Metadata
-   int set_nskip(int nskip_in);
-   int set_amp_clip(float min_amp_user_in, float max_amp_user_in);
+   int set_decimation_n(int in);
    int set_intensity_range(float intens_min, float intens_max);
    int set_clip_extent(double xmin, double xmax, double ymin, double ymax);
 
    int get_npts_file();	
    int get_npts_read();
+   int get_nbands();
    int get_bytes_per_point();
    double get_utm_cen_east();
    double get_utm_cen_north();
@@ -73,7 +74,6 @@ public:
    // Set/get image logic
    int set_reread_pending();
    int set_recalc_pending();
-   int get_intensity_type();		// 5 for unsigned char data, 6 for 3-unsigned char rgb
    
    // Virtual
    virtual int get_type(char* type);
@@ -87,7 +87,6 @@ public:
    virtual unsigned char* get_tau();																		// For image_las_class / image_bpf_class
 
    virtual int get_z_at_percentiles(float percentile1, float percentile2, float percentile3, float &z1, float &z2, float &z3, int diag_flag);	// For image_las_class / image_bpf_class
-
 };
 
 #endif /* __cplusplus */

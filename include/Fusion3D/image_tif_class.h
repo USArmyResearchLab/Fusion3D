@@ -128,7 +128,7 @@ class image_tif_class:public image_geo_class {
    int set_data_array_uchar(unsigned char *uchar_in);
    int set_data_array_rgb(unsigned char *uchar_in);
 
-   int get_data_uchar(unsigned char* udata);
+   int get_data_all_1band_uchar_to_external(unsigned char* udata);
    double get_nodata_value();
 
 };

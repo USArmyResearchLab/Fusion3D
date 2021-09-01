@@ -11,8 +11,8 @@ Some basic geospatial parameters are in parent class image_2d_class because imag
 */
 class image_geo_class:public image_2d_inv_class {
  protected:
-   double ulx;								///< West boundary of image in m
-   double uly;								///< North boundary of image in m
+   double ulx;								///< West boundary of image in m (basic geo def for GDAL)
+   double uly;								///< North boundary of image in m (basic geo def for GDAL)
    double lrx;								///< East boundary of image in m
    double lry;								///< South boundary of image in m
 
@@ -43,6 +43,9 @@ class image_geo_class:public image_2d_inv_class {
    int set_downsample_ratio(double ratio);
    int set_output_type_uchar();
    int set_output_type_float();
+
+   double get_ulcorner_north();
+   double get_ulcorner_west();
    int get_char_int_float_flag();
    int set_translations(double north_translate_in, double east_translate_in);
    int get_coord_system_code();

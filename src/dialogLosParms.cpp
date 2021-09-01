@@ -44,7 +44,7 @@ dialogLosParms::dialogLosParms(QWidget *parent)
 	maxAngSlider->setMaximum(360);
 
 	// Set slider values
-	val = GL_los_rmax->getValue();
+	val = 2.0 * GL_los_rmax->getValue();
 	sizeSlider->setValue(val);
 	tt = QString::number(val);
 	sizeEdit->setText(tt);
@@ -183,7 +183,7 @@ int dialogLosParms::setOutputGlobals()
 
 	tt = sizeEdit->text();
 	ival = tt.toInt();
-	GL_los_rmax->setValue(float(ival));
+	GL_los_rmax->setValue(float(ival) / 2.0);
 
 	tt = minREdit->text();
 	ival = tt.toInt();

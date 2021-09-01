@@ -1,0 +1,203 @@
+<HEAD>
+<TITLE>POINT CLOUD DATA FOR FINE ALGORITHM AND FOPEN</TITLE>
+</HEAD>
+<BODY>
+<H1>POINT CLOUD DATA FOR FINE ALGORITHM AND FOPEN</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#intro">Introduction</A>
+<P>
+<LI><A HREF="#proc">Processing Steps</A>
+<P>
+<LI><A HREF="#sites">Data Sites/Scenes</A>
+	<UL>
+	<LI><A HREF="#sites-cedar">Cedar Creek Grist Mill WA USA</A>
+	<LI><A HREF="#sites-akers">Akers Mill</A>
+	<LI><A HREF="#sites-bab">Bab Al-Barqiyya</A>
+	<LI><A HREF="#sites-pamp">Submarine Pampanito</A>
+	<LI><A HREF="#sites-tikal">Tikal</A>
+	<LI><A HREF="#sites-exp">Espada</A>
+	<LI><A HREF="#sites-pav">New York Pavilion</A>
+	</UL>
+<P>
+</UL>
+
+<H2><A NAME="intro">INTRODUCTION</A></H2>
+
+Open Heritage 3D publishes a large number of 3D datasets for cultural heritage sites.
+Their mission is to provide open access to 3D cultural heritage datasets for education, research and other non-commercial uses.
+They publish data in e57 format, an open-source very general-purpose format for sharing data.
+The files may include colorized lidar scans, photogrammetric 3D points, camera images and other information.
+<P>
+I have downloaded a number of these datasets and they make very interestion viewing.
+I have focused on colorized lidar scans only.
+<P>
+The data is fundamentally different than the terrain data that the Fusion3D viewer was developed for.
+The area covered is relatively small, there is a high point density and the data is presented in local coordinates with no associated UTM.
+Finally, the data often includes enclosed scenes with data for inside walls and ceilings that combined with data for the outside of the
+walls and roofs.
+This is awkward for a terrain viewer where the navigation model is looking down from above.
+We have not made fundamental changes to generalize navigation.
+However we do allow the user to use a cutting plane in elevation that can strip off higher points
+so that the user can strip off the roof of a building and look at the inside (more below).
+<P>
+
+
+
+
+<H2><A NAME="proc">PROCESSING STEPS</A></H2>
+
+The e57 format is relatively general-purpose and complex.
+There are no ideal libraries for reading the format.
+The developers wrote a C++ library called libe57 but that library has not been maintained and there are no current binaries
+that would make experimenting with it easier.
+The most likely library looks to be PDAL which includes a e57 reader.
+This is currently maintained and looks to have a good user basis.
+<P>
+For the short term it looks like the best option is to use the LAStools utility e572las to convert the e57 files to LAS format.
+This picks up only the point cloud data so loses other data like camera images that could be combined with the point.
+
+<PRE>
+
+	Convert e57 file to one or more LAS file
+
+		e572las -v -split_scans -include_invalid -i name.e57 -o name.las 
+
+		The split_scans will create a separate file for each scan -- good for large files but probably not for smaller ones
+		The include_invalid will pick up more points for some datasets -- not sure why it thinks some points invalid that look to be good
+
+	Decimate large datasets -- Cant display all points, so decimate to the max number of points we can display and make loading much faster
+
+		cropr -- a Fusion3D utility can crop a group of files to the desired size
+
+	Filter on elevation
+
+		Point Cloud menu -> Set Filter Parameters -> Filter on Elevation
+
+	Display points only below threshold elevation
+
+		Point Cloud menu -> Filter Threshold Slider -> adjust slider to move threshold
+
+</PRE>
+<H2><A NAME="sites">DATA SITES -- SCENES</A></H2>
+<H3><A NAME="sites-cedar">Cedar Creek Grist Mill in Woodland WA USA</A></H3>
+
+The Cedar Creek Grist Mill is a historical grist mill located in Woodland, Washington listed on the National Register of Historic Places.
+The small water-powered mill was built in 1876 to produce flour, cornmeal and animal feed to settlers and U.S. Army personnel
+living around the Fort Vancouver area.
+It is the oldest working grinding mill in the state of Washington.
+Water from the creek flows through a wooden sluice bos into the mill powering the turbine at an amazing rate of 47 gallons a second.
+The mill was restored to working condition in the 1980s and is now a working museum.
+<P>
+Thinning produces much better image than decimating -- much more even coverage.
+<P>
+
+
+
+<PRE>
+
+	Original compressed size	5.88 GB
+	Sensor				Faro Focus X330
+	Collection date			May 2015
+	Decimation ratio		7
+	Thinning				res 0.008 for inside bldg (0-12), res=0.03 for other
+
+	Scenes
+		0-12 			Inside of museum	thinned 0.008 res -> ~26.7 Mhits
+		25			Inside bridge
+
+
+</PRE>
+<H3><A NAME="sites-akers">Akers Mill</A></H3>
+
+Akers Mill is an important historic componenet of the Chattahoochee River National Recreation Area (CHAT),
+managed by the National Park Service but has several immediate needs as part of ongoing management and stabilization
+including in 2013 Cyark and Clemson University collaboratied with the NPS to provide accurate 3D
+recordation of existing conditions of the Akers Mill ruins.
+<PRE>
+
+	Original compressed size	23.9 GB
+	Decimation ratio	17
+
+</PRE>
+<H3><A NAME="sites-bab">Bab Al-Barqiyya</A></H3>
+
+<PRE>
+
+	Original compressed size	88 MB
+	Decimation ratio	1 (none)
+
+</PRE>
+
+<H3><A NAME="sites-pamp">Pampanito Submarine</A></H3>
+
+This is scans of the outside (only) of a submarine in dry dock.
+There is also "photogrammetry" data -- this looks like only JPG files so was discarded.
+<P>
+
+
+<PRE>
+
+	Original compressed size	4.1 GB
+	Decimation ratio	?
+
+</PRE>
+
+<H3><A NAME="sites-tikal">Tikal</A></H3>
+
+<PRE>
+
+	Original compressed size	589 MB
+	Decimation ratio	1 (none)
+
+</PRE>
+
+
+<H3><A NAME="sites-esp">Espada</A></H3>
+
+Located along the San Antonio River in Texas, the San Antonio Missions National Historical Park encompasses five Spanish Colonial sites:
+Mission Concepcion, Mission Espada, Mission San Jose, Mission San Juan and the Espade Aqueduct.
+These outposts were originally built to expand and defend the Spanish frontier and spread Christianity to local Native American populations,
+but also acted as centers of agricultural production, weaving, iron working and carpentry.
+Today the San Antonio Missions represent the largets collection of Spanish Colonial missions in the Unites States.
+<P>
+This set is labeled SAT_ESP_Espada_registered.
+It is a particularly nice dataset with mission and fairly large area around it -- a courtyard.
+There is a fair amount of detail in part of the inside of the mission.
+<P>
+I tried a number of processing options.
+I first tried dicimation and that worked pretty well.
+The best option, though, is using the thin option in cropr to thin this the dataset to res=0.05m
+and then redo the 5 scans that are inside the mission to res=0.015m.
+(Thinning takes only the first hit in any voxel.)
+These 5 were very large files at relatively high density and they have lots of visual information.
+<PRE>
+
+	Original compressed size	21.9 GB
+	Decimation ratio	22?
+	Thin				res=0.05 for most files
+					res=0.015 for 41-45 inside the main bldg
+					~51 Mpts
+
+	32 		Main bldg roof
+	33 		Main bldg roof
+	41-45 	Main bldg inside
+</PRE>
+
+
+<H3><A NAME="sites-pav">New York Pavilion</A></H3>
+
+<PRE>
+
+	Original compressed size	GB
+	.las size			63.7 GB
+	No of scans		106
+	Thin				res=0.125 for all files
+					~50 Mpts
+</PRE>
+
+
+
+

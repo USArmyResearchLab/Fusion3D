@@ -15,26 +15,24 @@ should be able to do all navigation.
 */
 class mouse_input_class:public base_jfd_class{
 protected:
-	int								mode;			// 0=undefined, 1=translate-to-clicked, 2=rot-firstLoc, 3= rot-subsequentLoc
-	short							pxOld, pyOld;	// Previous mouse 2d location values		
-	int 							n_managers;
-	SoSeparator* 					root;
-	fusion3d_viewer_class*				myViewer;
-	camera4d_manager_inv_class* 	camera4d_manager_inv;
-	SoPerspectiveCamera*  			camera_pers;
-	int 							type_cam;	// 0 for Orthographic, 1 for Perspective
-	SoSFFloat*		GL_mousem_north;	// OIV Global -- For mouse middle click
-	SoSFFloat*		GL_mousem_east;		// OIV Global -- For mouse middle click
-	SoSFFloat*		GL_mousemr_north;	// OIV Global -- For mouse middle click
-	SoSFFloat*		GL_mousemr_east;	// OIV Global -- For mouse middle click
-	SoSFInt32*		GL_mousem_new;		// OIV Global -- For mouse middle click
-	SoSFInt32*		GL_aimpoint_flag;	// OIV Global -- For updates of camera aim point
-	SoSFFloat*		GL_camera_zoom;		// OIV Global -- For updates of camera zoom
-	SoSFFloat*		GL_camera_az;		// OIV Global -- For updates of camera azimuth
-	SoSFFloat*		GL_camera_el;		// OIV Global -- For updates of camera elevation
+	int								mode;			///< 0=undefined, 1=translate-to-clicked, 2=rot-firstLoc, 3= rot-subsequentLoc
+	short							pxOld, pyOld;	///< Previous mouse 2d location values		
+	fusion3d_viewer_class*			myViewer;		///< Pointer to OpenInventor viewer derived from SoQtFullViewer
+	camera4d_manager_inv_class* 	camera4d_manager_inv;	///< Pointer to camera manager used to get camera parameters
+	SoPerspectiveCamera*  			camera_pers;	///< Pointer to the scene SoPerspectiveCamera
 
-	SoEventCallback *mouseButtonEventCB;
-	SoEventCallback *mouseMotionEventCB;
+	SoSFFloat*		GL_mousem_north;	///< OIV Global -- For mouse middle click
+	SoSFFloat*		GL_mousem_east;		///< OIV Global -- For mouse middle click
+	SoSFFloat*		GL_mousemr_north;	///< OIV Global -- For mouse middle click
+	SoSFFloat*		GL_mousemr_east;	///< OIV Global -- For mouse middle click
+	SoSFInt32*		GL_mousem_new;		///< OIV Global -- For mouse middle click
+	SoSFInt32*		GL_aimpoint_flag;	///< OIV Global -- For updates of camera aim point
+	SoSFFloat*		GL_camera_zoom;		///< OIV Global -- For updates of camera zoom
+	SoSFFloat*		GL_camera_az;		///< OIV Global -- For updates of camera azimuth
+	SoSFFloat*		GL_camera_el;		///< OIV Global -- For updates of camera elevation
+
+	SoEventCallback *mouseButtonEventCB;	///< Callback for translations, thumbwheel zoom and picking
+	SoEventCallback *mouseMotionEventCB;	///< Callback for rotations in azimuth and elevation
 
 	int get_map_location(const SoEvent *event, float &xOutRel, float &yOutRel);
 

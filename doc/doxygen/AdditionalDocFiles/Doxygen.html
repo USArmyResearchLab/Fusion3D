@@ -1,0 +1,128 @@
+<HEAD>
+<TITLE>USING DOXYGEN TO CREATE REFERENCE MANUAL CLASS DOCUMENTATION</TITLE>
+</HEAD>
+<BODY>
+<H1>USING DOXYGEN TO CREATE REFERENCE MANUAL CLASS DOCUMENTATION</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#doxygen_intro">Configuration File</A>
+<P>
+<LI><A HREF="#doxygen_run">Running Doxygen</A>
+<P>
+<LI><A HREF="#doxygen_main">Setting Up the Main Page in internals.h</A>
+<P>
+<LI><A HREF="#doxygen_dir">Doxygen Directives</A>
+<P>
+</UL>
+
+<H2><A NAME="doxygen_intro">CONFIGURATION FILE 'DOXYFILE'</A></H2>
+
+Doxygen runs with a configuration file 'Doxyfile' that we have generated.
+This file has a lot of tag/value combinations that define how Doxygen reads and parses files.
+The most interesting tags are given below -- descriptions of the tags are in the file:
+
+<PRE>
+
+	INPUT                  = ../../src ../../include ../../apps ../../ui
+	EXAMPLE_PATH           = ./AdditionalDocFiles
+	PROJECT_NAME           = Fusion3D
+	PROJECT_NUMBER         = "Version 6.04"
+	OUTPUT_DIRECTORY       = 
+
+
+
+
+</PRE>
+<H2><A NAME="doxygen_run">RUNNING DOXYGEN USING DOXYWIZARD GUI</A></H2>
+<PRE>
+
+1.  Run Doxywizard and specify the working directory
+	This should be the base doxygen directory 'doxygen'
+
+2.  Open the config file
+	File -> Open -> select file doxygen/Doxyfile
+
+3.  Click the 'Run' tab and click 'Run Doxygen'
+
+
+</PRE>
+<H2><A NAME="doxygen_main">SETTING UP MAIN PAGE</A></H2>
+
+I configured the Doxygen main page in file internals.h:
+
+<PRE>
+
+	In internals.h
+		/** \mainpage Fusion3D 3D Terrain Viewer
+
+		\section intro_sec Introduction 
+
+		A general description of the Fusion3D 3D terrain viewer is <A HREF="../../../README.html">here</A>.
+
+		\section Index Index 
+
+		An index of general topics is
+		<A HREF="../AdditionalDocFiles/Fusion3DIndex.html">here</A>.
+		*/
+
+		/**
+		Contains all include files for program.
+		*/
+
+
+
+
+</PRE>
+<H2><A NAME="doxygen_dir">DIRECTIVES WITHIN CODE</A></H2>
+<H3><A NAME="stereo_func">Exclude Code from Doxygen</A></H3>
+<pre>
+
+/// @cond		Exclude from Doxygen
+	Excluded code
+/// @endcond	End Doxygen exclusion
+
+
+</pre>
+<H3><A NAME="stereo_func">General Doc for .h File</A></H3>
+
+The Doxygen code must immediately preceed the beginning of the class definition.
+For example
+<pre>
+
+/**
+This class presents the Overlay Transparancy Dialog to the user.
+
+This class allows the user to enter the overlay transparency parameters to
+the user. This includes the opacity percent.
+
+*/
+class dialog_adjust_overlay_transparency : public CDialog
+
+</pre>
+<H3><A NAME="stereo_func">Variable Doc for .h File</A></H3>
+
+You can put doc after each variable, but must indicate that doc is for preceding variable
+(otherwise, it will associate it with the variable on the next line).
+For example
+<pre>
+
+ protected:
+   int n_max;					///< Max no of locs that can be read/stored
+
+
+</pre>
+<H3><A NAME="stereo_func">Gotchas</A></H3>
+<PRE>
+
+Visual Studio does not put ';' after following which generates Doxygen error
+	DECLARE_DYNAMIC(dialog_route_class);
+	DECLARE_MESSAGE_MAP();
+
+
+
+</pre>
+
+
+

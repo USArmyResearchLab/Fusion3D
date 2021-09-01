@@ -8,6 +8,11 @@ class SoSFInt32;
 class SoFieldSensor;
 class SoSensor;
 
+/**
+Qt dialog for moving to a new location or reading the current location.
+\n
+Qt menu accepts and outputs location in Lat-Lon, UTM (m) or MGRS.
+*/
 class dialogLocJump : public QDialog, public Ui::dialogLocJump
 {
 	Q_OBJECT

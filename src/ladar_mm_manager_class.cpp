@@ -9,43 +9,29 @@ ladar_mm_manager_class::ladar_mm_manager_class(int n_data_max_in)
 {
 	strcpy(class_type, "ladarmm");
 	n_data_max = n_data_max_in;
+	filter_bin_is_ptr_flag = 0;
 
 	// *****************************************
 	// Alloc
 	// *****************************************
-	dec_ang_reg_a1 = new int[10];
-	dec_ang_reg_a2 = new int[10];
-	dec_ang_reg_d1 = new int[10];
-	dec_ang_reg_d2 = new int[10];
-
 	image_las = new image_las_class*[n_data_max];
 	image_bpf = new image_bpf_class*[n_data_max];
+	image_pccsv = new image_pccsv_class*[n_data_max];
 	image_ptcloud = new image_ptcloud_class*[n_data_max];
 	filter_bin = new unsigned char*[n_data_max];
 	filter_bin_n = new int*[n_data_max];
-	fine_flags = new int[n_data_max];
-	fine_tau = new unsigned char*[n_data_max];
-	fine_n = new int*[n_data_max];
-	fine_raw = new float*[n_data_max];
-	filt_zbin = new unsigned char*[n_data_max];
-	filt_zbin_n = new int*[n_data_max];
 	status_flags = new int[n_data_max];
 
 	for (int i = 0; i<n_data_max; i++) {
 		image_las[i] = NULL;
 		image_bpf[i] = NULL;
+		image_pccsv[i] = NULL;
 		image_ptcloud[i] = NULL;
 		filter_bin[i] = NULL;
 		filter_bin_n[i] = NULL;
-		fine_flags[i] = 0;
-		fine_tau[i] = NULL;
-		fine_n[i] = NULL;
-		fine_raw[i] = NULL;
-		filt_zbin[i] = NULL;
-		filt_zbin_n[i] = NULL;
 		status_flags[i] = 0;
 	}
-	
+
 	// Hues for rainbow color scheme
    hxx = new float[38];
    // hxx[ 0]=357; hxx[ 1]=358; hxx[ 2]=359; hxx[ 3]=  2; hxx[ 4]=  6; // Causes problems -- rainbow effect
@@ -64,6 +50,10 @@ ladar_mm_manager_class::ladar_mm_manager_class(int n_data_max_in)
    natHue[0]=124.; natHue[1]=106.; natHue[2]=106.; natHue[3]=80.; natHue[ 4]=68.; natHue[ 5]=58.;
    natHue[6]=48.; natHue[7]=38.; natHue[8]=38.; natHue[9]=36.; natHue[10]=36.; natHue[11]=32.; natHue[12]=.0;
 
+   dum_epsg = 32631;
+   dum_north = 5567645.;
+   dum_east = 667203.;
+
    // *******************************************************
    // Defaults 
    // *******************************************************
@@ -81,17 +71,11 @@ ladar_mm_manager_class::~ladar_mm_manager_class()
    delete[] natSat;
    delete[] natHue;
    delete[] status_flags;
-   delete[] dec_ang_reg_a1;
-   delete[] dec_ang_reg_a2;
-   delete[] dec_ang_reg_d1;
-   delete[] dec_ang_reg_d2;
    delete[] filter_bin;
    delete[] filter_bin_n;
-   delete[] fine_flags;
-   delete[] fine_n;
-   delete[] fine_raw;
    delete[] image_las;
    delete[] image_bpf;
+   delete[] image_pccsv;
    delete[] image_ptcloud;
 }
 
@@ -149,7 +133,7 @@ int ladar_mm_manager_class::read_tagged(const char* filename)
 		  rainbow_scale_user_flag = 1;
        }
        else if (strcmp(tiff_tag,"Mobmap-Offset") == 0) {
-          fscanf(tiff_fd,"%f%f%f", &translate_x, &translate_y, &translate_z);
+          fscanf(tiff_fd,"%lf%lf%f", &translate_x, &translate_y, &translate_z);
 		  translate_flag = 1;
        }
        else if (strcmp(tiff_tag,"Mobmap-Rotate") == 0) {
@@ -176,14 +160,8 @@ int ladar_mm_manager_class::read_tagged(const char* filename)
           fscanf(tiff_fd,"%lf %lf %lf %lf", &clip_extent_w, &clip_extent_e, &clip_extent_s, &clip_extent_n);
 		  clip_extent_flag = 1;
        }
-       else if (strcmp(tiff_tag,"Mobmap-Dec-Ang") == 0) {
-		  if (dec_ang_reg_n < 10) {
-			  fscanf(tiff_fd,"%d %d %d %d", &dec_ang_reg_a1[dec_ang_reg_n], &dec_ang_reg_a2[dec_ang_reg_n], &dec_ang_reg_d1[dec_ang_reg_n], &dec_ang_reg_d2[dec_ang_reg_n]);
-			  dec_ang_reg_n++;
-		  }
-		  else {
-			  warning(1, "Tag Mobmap-Dec-Ang: Too many angular regions -- region ignored");
-		  }
+       else if (strcmp(tiff_tag,"Mobmap-Decimation") == 0) {
+			  fscanf(tiff_fd,"%d", &decimation_n);
        }
        else if (strcmp(tiff_tag,"Mobmap-Write") == 0) {
           fscanf(tiff_fd,"%s", name);
@@ -191,7 +169,7 @@ int ladar_mm_manager_class::read_tagged(const char* filename)
 		  write_flag = 1;
        }
        else if (strcmp(tiff_tag,"Mobmap-Filter-Type") == 0) {
-          fscanf(tiff_fd,"%d", &filter_flag);
+          fscanf(tiff_fd,"%d", &filter_type_flag);
        }
        else if (strcmp(tiff_tag,"Mobmap-Filter-Span") == 0) {
           fscanf(tiff_fd,"%d %d", &filter_mindisp, &filter_maxdisp);
@@ -204,10 +182,22 @@ int ladar_mm_manager_class::read_tagged(const char* filename)
           fscanf(tiff_fd,"%f %f", &filt_zmin_rel, &filt_zmax_rel);
 		  filt_lims_rel_flag = 1;
        }
-       else if (strcmp(tiff_tag,"Mobmap-Diag-Level") == 0) {
-          fscanf(tiff_fd,"%d", &diag_flag);
-       }
-       else {
+	   else if (strcmp(tiff_tag, "Mobmap-Csv") == 0) {
+		   fscanf(tiff_fd, "%d %d %d %d %d %d %d %d %s", &csv_icx, &csv_icy, &csv_icz, &csv_ici, &csv_icr, &csv_icg, &csv_icb, &csv_nheader, tiff_junk);
+		   if (strcmp(tiff_junk, "space") == 0) {
+			   csv_delim = ' ';
+		   }
+		   else if (strcmp(tiff_junk, "semicolon") == 0) {
+			   csv_delim = ';';
+		   }
+		   else {
+			   csv_delim = ',';
+		   }
+	   }
+	   else if (strcmp(tiff_tag, "Mobmap-Diag-Level") == 0) {
+		   fscanf(tiff_fd, "%d", &diag_flag);
+	   }
+	   else {
 	      fgets(tiff_junk,240,tiff_fd);
        }
      } while (ntiff == 1);
@@ -217,7 +207,7 @@ int ladar_mm_manager_class::read_tagged(const char* filename)
    // If point cloud(s) defined, set up coord system if necessary
    if (n_data > 0) {
 	   sname = dir->get_ptcloud_name(0);
-	   read_input_image(0, sname, 1, 0, 0);	// Only read header to set up coord system
+	   read_input_image(0, sname, 1, 0);	// Only read header to set up coord system
    }
    return(1);
 }
@@ -246,13 +236,20 @@ int ladar_mm_manager_class::set_pc_ref_loc(image_ptcloud_class* ptc)
 			title = "No EPSG from PC or DEM";
 			epsgSuggested = 0;
 		}
-		QString request = "Enter EPSG code -- ";
+		QString request = "Enter EPSG code (Leave 0 if no geo location defined) -- ";
 		request.append(title);
 		epsgCodeNo = QInputDialog::getInt(NULL, title, request, epsgSuggested, 0, 69036405, 1, &ok, Qt::WindowFlags());
-		if (epsgCodeNo == 0) exit_safe_s("Must define a valid EPSG number -- entered", std::to_string(epsgCodeNo));
+		if (epsgCodeNo == 0) {
+			epsgCodeNo = 32631;
+			dummy_loc_flag = 1;
+		}
 #else
 		dialog_epsg_class *dialog_epsg = new dialog_epsg_class();
 		epsgCodeNo = dialog_epsg->get_epsg();
+		if (epsgCodeNo == 0) {
+			epsgCodeNo = 32631;
+			dummy_loc_flag = 1;
+	}
 #endif
 	}
 
@@ -265,19 +262,30 @@ int ladar_mm_manager_class::set_pc_ref_loc(image_ptcloud_class* ptc)
 		gps_calc->init_from_epsg_code_number(epsgCodeNo); // If coord system not defined for DEM map, define it here
 	}
 
-	double xmin, xmax, ymin, ymax, lat, lon;
-	float zmin, zmax;
+	double xmin, xmax, ymin, ymax, xcen, ycen, lat, lon;
+	float zmin, zmax, zcen;
 	ptc->get_bounds(xmin, xmax, ymin, ymax, zmin, zmax);
+	xcen = 0.5*(xmin + xmax);
+	ycen = 0.5*(ymin + ymax);
+	zcen = 0.5*(zmin + zmax);
+	if (dummy_loc_flag) {
+		translate_x = dum_east  - xcen;
+		translate_y = dum_north - ycen;
+		xcen = dum_east;
+		ycen = dum_north;
+	}
+	else {
+	}
 	if (!gps_calc->is_ref_defined()) {
 		gps_calc_class *gps_calc_local = new gps_calc_class();
 		gps_calc_local->init_from_epsg_code_number(epsgCodeNo);
-		gps_calc_local->proj_to_ll(0.5*(ymin + ymax), 0.5*(xmin + xmax), lat, lon);
+		gps_calc_local->proj_to_ll(ycen, xcen, lat, lon);
 		gps_calc->set_ref_from_ll(lat, lon);
 		gps_calc->set_scene_size(xmax - xmin, ymax - ymin);
 	}
 
 	if (gps_calc->get_ref_elevation() <= 0.) {	// lat/lon may be defined in proj file, but not elevation
-		gps_calc->set_ref_elevation(0.5*(zmin + zmax));
+		gps_calc->set_ref_elevation(zcen);
 
 		// Following should work to resize camera, but causes errors
 		//float dist = (float)fabs(xmax - xmin);
@@ -293,7 +301,7 @@ int ladar_mm_manager_class::set_pc_ref_loc(image_ptcloud_class* ptc)
 /// Read input image.
 /// Always leave file closed on exit.
 // **********************************************
-int ladar_mm_manager_class::read_input_image(int ifile, string filename, int read_header_only_flag, int nskip_loc, int diag_flag_local)
+int ladar_mm_manager_class::read_input_image(int ifile, string filename, int read_header_only_flag, int diag_flag_local)
 {
 	// **********************************
 	// If first access to file, find out what kind of file it is and alloc
@@ -302,28 +310,50 @@ int ladar_mm_manager_class::read_input_image(int ifile, string filename, int rea
 		if (filename.find(".las") != string::npos) {
 			image_las[ifile] = new image_las_class();
 			image_bpf[ifile] = NULL;
+			image_pccsv[ifile] = NULL;
 			image_ptcloud[ifile]  = image_las[ifile];
 			image_las[ifile]->set_diag_flag(diag_flag);
 		}
 		else if (filename.find(".bpf") != string::npos) {
 			image_las[ifile] = NULL;
+			image_pccsv[ifile] = NULL;
 			image_bpf[ifile] = new image_bpf_class();
 			image_ptcloud[ifile] = image_bpf[ifile];
 		}
+		else if (filename.find(".csv") != string::npos) {
+#if defined(LIBS_QT) 
+			if (csv_icx < 0) {
+				dialogCSV dialog;
+				if (dialog.exec()) {
+					cout << "exec" << endl;
+				}
+				dialog.get_csv_format(csv_icx, csv_icy, csv_icz, csv_ici, csv_icr, csv_icg, csv_icb, csv_nheader, csv_delim);
+			}
+#else
+			if (csv_icx < 0) {
+				warning_s("ladar_mm_manager_class::read_input_image:  Can't read this format without Project File tag 'Mobmap-Csv'", filename);
+				return(0);
+		}
+#endif
+			image_las[ifile] = NULL;
+			image_bpf[ifile] = NULL;
+			image_pccsv[ifile] = new image_pccsv_class();
+			image_ptcloud[ifile] = image_pccsv[ifile];
+			image_pccsv[ifile]->set_format(csv_icx, csv_icy, csv_icz, csv_ici, csv_icr, csv_icg, csv_icb, csv_nheader, csv_delim);	// Define col nos
+		}
 		else {
-			cerr << "ladar_mm_manager_class::read_input_image:  Can't read this format " << filename << endl;
-			warning(1, "ladar_mm_manager_class::read_input_image:  Can't read this format ");
+			warning_s("ladar_mm_manager_class::read_input_image:  Can't read this format ", filename);
 			return(0);
 		}
 	}
 
-	image_ptcloud[ifile]->set_diag_flag(diag_flag_local);						// Suppress diag output when just calculating no. of pts
+	image_ptcloud[ifile]->set_diag_flag(diag_flag_local);						// 
 	if (!image_ptcloud[ifile]->read_file_open(filename)) {	
-		cout << "ladar_mm_manager_class::read_input_image:  Cant open image" << endl;
+		warning_s("ladar_mm_manager_class::read_input_image:  Cant open image", filename);
 		return(0);
 	}
 	if (!image_ptcloud[ifile]->read_file_header()) {
-		cout << "ladar_mm_manager_class::read_input_image:  Cant read header" << endl;
+		warning_s("ladar_mm_manager_class::read_input_image:  Cant read header", filename);
 		return(0);
 	}
 
@@ -343,16 +373,12 @@ int ladar_mm_manager_class::read_input_image(int ifile, string filename, int rea
 	// **********************************
 	// Read data
 	// **********************************
-   image_ptcloud[ifile]->set_nskip(nskip_loc);
    if (write_flag) {
 	   image_las[ifile]->set_write_parms_before_read(1);// Write interleaved with read for large files -- no processing outside class possible
 	   image_las[ifile]->begin_write_image(outname);	
    }
+   image_ptcloud[ifile]->set_decimation_n(decimation_n);
    if (clip_extent_flag) image_ptcloud[ifile]->set_clip_extent(clip_extent_w, clip_extent_e, clip_extent_s, clip_extent_n);
-   //if (amp_clip_user_flag)   image_las[ifile]->set_amp_clip(amp_clip_min, amp_clip_max);	// Set fixed clipping range
-   for (int i=0; i<dec_ang_reg_n; i++) {
-	  image_las[ifile]->set_decimate_angular_region(dec_ang_reg_a1[i], dec_ang_reg_a2[i], dec_ang_reg_d1[i], dec_ang_reg_d2[i]);
-   }
 
    if (!image_ptcloud[ifile]->read_file_data()) {
       cout << "ladar_mm_manager_class::read_input_image:  Cant read image" << endl;
@@ -380,6 +406,18 @@ int ladar_mm_manager_class::write_parms(FILE *out_fd)
 		}
 		fprintf(out_fd, "\n");
 
+		if (csv_icx >= 0) {
+			if (csv_delim == ' ') {
+				fprintf(out_fd, "Mobmap-Csv\t%d %d %d %d %d %d %d %d space # Cols for x,y,z,inten,r,g,b; nlines header; col delim ('comma'/'space'/'semicolon')\n", csv_icx, csv_icy, csv_icz, csv_ici, csv_icr, csv_icg, csv_icb, csv_nheader, csv_delim);
+			}
+			else if (csv_delim == ';') {
+				fprintf(out_fd, "Mobmap-Csv\t%d %d %d %d %d %d %d %d semicolon # Cols for x,y,z,inten,r,g,b; nlines header; col delim ('comma'/'space'/'semicolon')\n", csv_icx, csv_icy, csv_icz, csv_ici, csv_icr, csv_icg, csv_icb, csv_nheader, csv_delim);
+			}
+			else  {
+				fprintf(out_fd, "Mobmap-Csv\t%d %d %d %d %d %d %d %d comma # Cols for x,y,z,inten,r,g,b; nlines header; col delim ('comma'/'space'/'semicolon')\n", csv_icx, csv_icy, csv_icz, csv_ici, csv_icr, csv_icg, csv_icb, csv_nheader, csv_delim);
+			}
+		}
+
 		fprintf(out_fd, "Map3d-Color-Scale %d  # 0=natural/abs elev, 1=blue-red/abs elev, 2=natural/rel elev, 3=blue-red/rel elev\n", rainbow_scale_flag);
 		if (color_balance_flag) {
 			fprintf(out_fd, "Mobmap-Color-Balance\ton\t# On applies histogram equalization\n");
@@ -391,7 +429,7 @@ int ladar_mm_manager_class::write_parms(FILE *out_fd)
 		if (rainbow_hlims_flag)    fprintf(out_fd, "Map3d-Color-Rainbow-Ranges %f %f\n", utm_rainbow_hmin, utm_rainbow_hmax);
 		if (amp_clip_user_flag)    fprintf(out_fd, "Mobmap-Amp-Clip %f %f\n", amp_clip_min, amp_clip_max);
 
-		if (intensity_type == 5) {
+		if (nbands == 1) {
 			fprintf(out_fd, "Mobmap-Bright-Min %f\n", brt0_intensity);
 		}
 		else {
@@ -403,21 +441,21 @@ int ladar_mm_manager_class::write_parms(FILE *out_fd)
 		fprintf(out_fd, "Mobmap-Max-NDisplay %d\n", ndisplay_max);
 		if (diag_flag != 0)        fprintf(out_fd, "Mobmap-Diag-Level %d\n", diag_flag);
 
-		for (int i = 0; i < dec_ang_reg_n; i++) {
-			fprintf(out_fd, "Mobmap-Dec-Ang %d %d %d %d\n", dec_ang_reg_a1[i], dec_ang_reg_a2[i], dec_ang_reg_d1[i], dec_ang_reg_d2[i]);
+		if (decimation_n > 1) {
+			fprintf(out_fd, "Mobmap-Decimation %d\t# Decimation factor (1=no decimation)\n", decimation_n);
 		}
 
 		if (cg_world_x != 0. || cg_world_y != 0. || cg_world_z != 0.) {
 			fprintf(out_fd, "Mobmap-Offset %f %f %f\n", cg_world_x, cg_world_y, cg_world_z);
 		}
 
-		if (filter_flag != 0.) {
-			fprintf(out_fd, "Mobmap-Filter-Type %d\t# 0=no filter, 1=filter to FINE alg quality metric TAU, 2=filter on elevation, 3=filter on elevation relative to smoothed DEM\n", filter_flag);
+		if (filter_type_flag != 0) {
+			fprintf(out_fd, "Mobmap-Filter-Type %d\t# 0=no filter, 1=filter on quality metric TAU, 2=filter on elev, 3=filter on elev rel to smoothed DEM\n", filter_type_flag);
 			fprintf(out_fd, "Mobmap-Filter-Span %d %d\n", filter_mindisp, filter_maxdisp);
 		}
 
-		if (filt_lims_abs_flag) fprintf(out_fd, "Mobmap-Filter-Zlims-Abs %f %f\n", filt_zmin_abs, filt_zmax_abs);
-		if (filt_lims_rel_flag) fprintf(out_fd, "Mobmap-Filter-Zlims-Rel %f %f\n", filt_zmin_rel, filt_zmax_rel);
+		if (filt_lims_abs_flag > 0 || filter_type_flag == 2) fprintf(out_fd, "Mobmap-Filter-Zlims-Abs %f %f\n", filt_zmin_abs, filt_zmax_abs); // If any override
+		if (filt_lims_rel_flag > 0) fprintf(out_fd, "Mobmap-Filter-Zlims-Rel %f %f\n", filt_zmin_rel, filt_zmax_rel);
 	}
 	fprintf(out_fd, "\n");
 	return(1);
@@ -430,69 +468,45 @@ int ladar_mm_manager_class::write_parms(FILE *out_fd)
 int ladar_mm_manager_class::bin_elevation(int ifile, int diag_flag)
 {
 	double x, y;
-	float z, z_lowres, z_point, filt_zmin_loc, filt_zmax_loc;
+	float z, z_lowres, z_point, filt_dz;
 	int i, n, ibin;
-	if (filt_zbin_type == 1 && filter_flag == 2) return(1);		// Already filtered for abs elevation
-	if (filt_zbin_type == 2 && filter_flag == 3) return(1);		// Already filtered for rel elevation
+	//if (filt_zbin_type == 1 && filter_flag == 2) return(1);		// Already filtered for abs elevation
+	//if (filt_zbin_type == 2 && filter_flag == 3) return(1);		// Already filtered for rel elevation
 
 	// Alloc for array of bin numbers for each point and array of number of points in each bin
 	n = image_ptcloud[ifile]->get_npts_read();
-	if (filt_zbin[ifile]   != NULL) delete[] filt_zbin[ifile];
-	if (filt_zbin_n[ifile] != NULL) delete[] filt_zbin_n[ifile];
-	filt_zbin[ifile] = new unsigned char[n];
-	filt_zbin_n[ifile] = new int[filter_nbins_max];
-	memset(filt_zbin_n[ifile], 0, filter_nbins_max*sizeof(int));
+	if (filter_bin[ifile]   != NULL) delete[] filter_bin[ifile];
+	if (filter_bin_n[ifile] != NULL) delete[] filter_bin_n[ifile];
+	filter_bin[ifile] = new unsigned char[n];
+	filter_bin_n[ifile] = new int[filter_nbins_max];
+	memset(filter_bin_n[ifile], 0, filter_nbins_max*sizeof(int));
 	
-	// Get elevation limits for filter
-	if (filter_flag == 3) {
-		if (filt_lims_rel_flag) {
-			filt_zmin_loc = filt_zmin_rel;
-			filt_zmax_loc = filt_zmax_rel;
-		}
-		else {
-			filt_zmin_loc = -5.;
-			filt_zmax_loc = 30.;
-		}
-	}
-	else {
-		if (filt_lims_abs_flag) {
-			filt_zmin_loc = filt_zmin_abs;
-			filt_zmax_loc = filt_zmax_abs;
-		}
-		else {
-			filt_zmin_loc = zmin_all_files;
-			filt_zmax_loc = zmax_all_files;
-		}
-	}
-	filt_nzbin = 128;
-	filt_dz = (filt_zmax_loc - filt_zmin_loc) / filt_nzbin;
-
 	// Assign bin number to each point
-	if (filter_flag == 2 || map3d_index->is_map_defined() == 0) {	// Absolute el
+	if (filter_type_flag == 2 || map3d_index->is_map_defined() == 0) {			// Absolute el ***********
+		filt_dz = (filt_zmax_abs - filt_zmin_abs) / filter_nbins_max;
 		for (i=0; i<n; i++) {
 			z = (float)image_ptcloud[ifile]->get_z(i);
-			ibin = (filt_zmax_loc - z) / filt_dz;
+			ibin = (filt_zmax_abs - z) / filt_dz;
 			if (ibin < 0) ibin = 0;
-			if (ibin >= filt_nzbin) ibin = filt_nzbin - 1;
-			filt_zbin[ifile][i] = ibin;
-			filt_zbin_n[ifile][ibin]++;
+			if (ibin >= filter_nbins_max) ibin = filter_nbins_max - 1;
+			filter_bin[ifile][i] = ibin;
+			filter_bin_n[ifile][ibin]++;
 		}
-		if (ifile == dir->get_nfiles_ptcloud()-1) filt_zbin_type = 1;	
 	}
-	else {
-		for (i=0; i<n; i++) {										// Relative el
+	else {																	// Relative el **********
+		filt_dz = (filt_zmax_rel - filt_zmin_rel) / filter_nbins_max;
+		for (i=0; i<n; i++) {
 			x =image_ptcloud[ifile]->get_x(i);
 			y =image_ptcloud[ifile]->get_y(i);
 			z_lowres = map3d_lowres->get_lowres_elev_at_loc(y, x);
 			z_point = (float)image_ptcloud[ifile]->get_z(i);
 			z = z_point - z_lowres;
-			ibin = (filt_zmax_loc - z) / filt_dz;
+			ibin = (filt_zmax_rel - z) / filt_dz;
 			if (ibin < 0) ibin = 0;
-			if (ibin >= filt_nzbin) ibin = filt_nzbin - 1;
-			filt_zbin[ifile][i] = ibin;
-			filt_zbin_n[ifile][ibin]++;
+			if (ibin >= filter_nbins_max) ibin = filter_nbins_max - 1;
+			filter_bin[ifile][i] = ibin;
+			filter_bin_n[ifile][ibin]++;
 		}
-		if (ifile == dir->get_nfiles_ptcloud()-1) filt_zbin_type = 2;
 	}
 
 	// ************************
@@ -500,7 +514,7 @@ int ladar_mm_manager_class::bin_elevation(int ifile, int diag_flag)
 	// ************************
 	if (diag_flag == 0) return(1);
 	for (ibin=0; ibin<filter_nbins_max; ibin++) {
-		fprintf(stdout, "%7.7d ", filt_zbin_n[ifile][ibin]);
+		fprintf(stdout, "%7.7d ", filter_bin_n[ifile][ibin]);
 		if (ibin%8 == 7) fprintf(stdout, "\n");
 	}
 	return(1);
@@ -515,20 +529,16 @@ int ladar_mm_manager_class::bin_tau(int ifile, int diag_flag)
 	int ibin, ipt;
 	int nTot = image_ptcloud[ifile]->get_npts_read();
 	int nBins = 256;		// Max no. of bins possible for unsigned char
-	fine_n[ifile]     = new int[nBins];
-	fine_raw[ifile]     = new float[nBins];
-	memset(fine_n[ifile], 0, nBins * sizeof(int));
+	filter_bin_n[ifile]     = new int[nBins];
+	memset(filter_bin_n[ifile], 0, nBins * sizeof(int));
 
 	// ***************************************
 	// Calcs
 	// ***************************************
-	unsigned char *taua = image_ptcloud[ifile]->get_tau();
+	filter_bin[ifile] = image_ptcloud[ifile]->get_tau();
+	filter_bin_is_ptr_flag = 1;							// filter_bin[ifile] is ptr in this case, so dont delete it
 	for (ipt=0; ipt<nTot; ipt++) {
-		fine_n[ifile][taua[ipt]]++;
-	}
-
-	for (ibin=0; ibin<nBins; ibin++) {
-		fine_raw[ifile][ibin] = image_bpf[ifile]->get_raw_tau(ibin);
+		filter_bin_n[ifile][filter_bin[ifile][ipt]]++;
 	}
 
 	// ************************
@@ -536,7 +546,7 @@ int ladar_mm_manager_class::bin_tau(int ifile, int diag_flag)
 	// ************************
 	if (diag_flag == 0) return(1);
 	for (ibin=0; ibin<nBins; ibin++) {
-		fprintf(stdout, "%7.7d ", fine_n[ifile][ibin]);
+		fprintf(stdout, "%7.7d ", filter_bin_n[ifile][ibin]);
 		if (ibin%8 == 7) fprintf(stdout, "\n");
 	}
 	return (1);
@@ -547,21 +557,16 @@ int ladar_mm_manager_class::bin_tau(int ifile, int diag_flag)
 // **********************************************
 int ladar_mm_manager_class::init_filter(int ifile)
 {
-	if (filter_flag == 0) {									// No Filtering
+	if (filter_type_flag == 0) {									// No Filtering
 		npts_filtered = npts_filtered + image_ptcloud[ifile]->get_npts_read();
 		return (1);
 	}
 
-	else if (filter_flag == 1) {								// Filtering on TAU
+	else if (filter_type_flag == 1) {								// Filtering on TAU
 		bin_tau(ifile, 1);
-		fine_tau[ifile] = image_ptcloud[ifile]->get_tau();
-		filter_bin[ifile] = fine_tau[ifile];
-		filter_bin_n[ifile] = fine_n[ifile];
 	}
-	else if (filter_flag == 2 || filter_flag == 3) {				// Filtering on elevation
+	else if (filter_type_flag == 2 || filter_type_flag == 3) {				// Filtering on elevation
 		bin_elevation(ifile, 0);
-		filter_bin[ifile] = filt_zbin[ifile];
-		filter_bin_n[ifile] = filt_zbin_n[ifile];
 	}
 
 	// For any filtering, calc no. of pts that pass filtering
@@ -587,7 +592,6 @@ int ladar_mm_manager_class::reset_all()
 	cg_world_z = 0.;
 
 	n_data = 0;
-	nskip_read = 1;					// On reading, skip to stay within max memory quota
 	npts_read = 0;;					// After reading, total no. of points read (over all files)
 	npts_filtered = 0;				// After filtering, total no. of points that pass filter
 	nskip_display = 1;				// On display, skip to stay within display quota
@@ -616,53 +620,58 @@ int ladar_mm_manager_class::reset_all()
 	rainbow_scale_user_flag = 0;
 	brt0_rgb = 0.1f;
 	brt0_intensity = 0.3f;
-	intensity_type = 0;
+	nbands = -99;
 	color_balance_flag = 0;
 	amp_clip_user_flag = 0;
 
 	cull_near_ground_flag = 0;
 	clip_extent_flag = 0;
-	dec_ang_reg_n = 0;
+	decimation_n = 1;
 	diag_level = 0;	// No output diagnostics
 	write_flag = 0;
 
-	filter_flag = 0;
+	filter_type_flag = 0;
 	filter_nbins_max = 128;
 	filter_mindisp = 0;
 	filter_mindisp_slider = 0;
 	filter_maxdisp = filter_nbins_max - 1;
-	filt_zbin_type = 0;
 	filt_lims_abs_flag = 0;
 	filt_lims_rel_flag = 0;
+	filt_zmin_abs = 0.;
+	filt_zmax_abs = 0.;
+	filt_zmin_rel = -5.;
+	filt_zmax_rel = 30.;
 
 	if_label = 0;
 	if_visible = 1;
 
+	csv_icx = -99;
+	csv_icy = -99;
+	csv_icz = -99;
+	csv_ici = -99;
+	csv_icr = -99;
+	csv_icg = -99;
+	csv_icb = -99;
+
+	dummy_loc_flag = 0;
+
 	// Clear arrays and del helper classes
 	for (i = 0; i<n_data_max; i++) {
 		if (image_ptcloud[i] != NULL) delete image_ptcloud[i];
-		// if (fine_tau[i]   != NULL) delete[] fine_tau[i];	// This is just a pointer
-		if (fine_n[i]        != NULL) delete[] fine_n[i];
-		if (fine_raw[i]      != NULL) delete[] fine_raw[i];
-		if (filt_zbin[i]     != NULL) delete[] filt_zbin[i];
-		if (filt_zbin_n[i]   != NULL) delete[] filt_zbin_n[i];
+		if (filter_bin[i]    != NULL && filter_bin_is_ptr_flag == 0) delete[] filter_bin[i];
+		if (filter_bin_n[i]  != NULL) delete[] filter_bin_n[i];
 	}
 
 	for (i = 0; i<n_data_max; i++) {
 		image_las[i] = NULL;
 		image_bpf[i] = NULL;
+		image_pccsv[i] = NULL;
 		image_ptcloud[i] = NULL;
 		filter_bin[i] = NULL;
 		filter_bin_n[i] = NULL;
-		fine_flags[i] = 0;
-		fine_tau[i] = NULL;
-		fine_n[i] = NULL;
-		fine_raw[i] = NULL;
-		filt_zbin[i] = NULL;
-		filt_zbin_n[i] = NULL;
 		status_flags[i] = 0;
 	}
-
+	filter_bin_is_ptr_flag = 0;
 	return (1);
 }
 

@@ -133,13 +133,12 @@ The display program reads input parameters from a single ascii Project file.
 
 <TR><TD>Line-Sight
 <TR><TD><TD>LOS-Parms       <TD>Basic parameters<TD>f rmin, f rmax, f cenht, fperht<TD>off<TD><A HREF="#los">[2]</A>
-<TR><TD><TD>LOS-Sensor-RLoc <TD>Fixed sensor location (in m relative to map origin)<TD>f north, f east, f elev<TD>GMTI<TD><A HREF="#los">[3]</A>
+<TR><TD><TD>LOS-Sensor-Loc  <TD>Fixed standoff sensor loc (absolute loc)<TD>f lat, f lon, f elev<TD>0,0,0<TD><A HREF="#los">[3]</A>
 <TR><TD><TD>LOS-Sensor-Delev<TD>Ray trace this elev above start pixel<TD>f elev<TD>30<TD><A HREF="#los">[4]</A>
-<TR><TD><TD>LOS-Preread     <TD>Preread a single elevation rectangle for all subsequent LOS<TD>s, n, w, e<TD>No<TD><A HREF="#los">[5]</A>
-<TR><TD><TD>LOS-Limit-North <TD>Limit all LOS calcs<TD>d north<TD>None<TD><A HREF="#los">[6]</A>
-<TR><TD><TD>LOS-Limit-South <TD>Limit all LOS calcs<TD>d south<TD>None<TD><A HREF="#los">[7]</A>
-<TR><TD><TD>LOS-Limit-East  <TD>Limit all LOS calcs<TD>d east <TD>None<TD><A HREF="#los">[8]</A>
-<TR><TD><TD>LOS-Limit-West  <TD>Limit all LOS calcs<TD>d west <TD>None<TD><A HREF="#los">[9]</A>
+<TR><TD><TD>LOS-Limit-North <TD>Limit all calcs (not fully implemented)<TD>d north<TD>None<TD><A HREF="#los">[6]</A>
+<TR><TD><TD>LOS-Limit-South <TD>Limit all calcs (not fully implemented)<TD>d south<TD>None<TD><A HREF="#los">[7]</A>
+<TR><TD><TD>LOS-Limit-East  <TD>Limit all calcs (not fully implemented)<TD>d east <TD>None<TD><A HREF="#los">[8]</A>
+<TR><TD><TD>LOS-Limit-West  <TD>Limit all calcs (not fully implemented)<TD>d west <TD>None<TD><A HREF="#los">[9]</A>
 <TR><TD><TD>LOS-Diag-Level  <TD>Level of diagnostic outputs (0=none)<TD>i flag<TD>0=none<TD><A HREF="#los">[10]</A>
 
 <TR><TD>Mensurate
@@ -982,33 +981,24 @@ It can also be used to find what a person can see from a particular location -- 
 	cenht	Height above ground at center location for ground-to-ground calculation
 	perht	Height above ground at peripheral locations for ground-to-ground calculation
 
-[3]  LOS-Sensor-RLoc 	Fixed sensor location in m relative to map origin
-	The default is to read changing sensor location of GMTI from the Nato 4607 formatted file
-	north			North of sensor (m relative to map origin)
-	east			East of sensor (m relative to map origin)
-	elev			Elevation of sensor (m relative to map origin)
+[3]  LOS-Sensor-Loc 	Fixed standoff sensor location, absolute
+	lat			Sensor lat (deg)
+	lon			Sensor lon (deg)
+	elev			Elevation of sensor (absolute m)
 
 [4]  LOS-Sensor-Delev	Ray trace upward from each pixel this distance above the pixel before truncating the ray
 	delev			Elevation in m above the pixel 
 
-[5]  LOS-Preread		For ground-to-ground LOS, this may save time rereading elevation data.
-					The first time LOS is called, reads in a fixed area that should cover all subsquent LOS calls.
-					Thereafter, all LOS calls just use this cached elevation
-	south			Southern boundary of elevation rectangle (double, UTM)
-	north			Northern boundary of elevation rectangle (double, UTM)
-	west			Western  boundary of elevation rectangle (double, UTM)
-	east			Eastern  boundary of elevation rectangle (double, UTM)
-
-[6]  LOS-Limit-North	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+[6]  LOS-Limit-North	(NOT FULLY IMPLEMENTED) Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
 	north			Limit in UTM (double)
 
-[7]  LOS-Limit-South	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+[7]  LOS-Limit-South	(NOT FULLY IMPLEMENTED) Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
 	south			Limit in UTM (double)
 
-[7]  LOS-Limit-East	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+[7]  LOS-Limit-East	(NOT FULLY IMPLEMENTED) Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
 	east			Limit in UTM (double)
 
-[9]  LOS-Limit-West	Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
+[9]  LOS-Limit-West	(NOT FULLY IMPLEMENTED) Limit LOS calculations (used to avoid using memory and calc time for uninteresting parts of map)
 	west			Limit in UTM (double)
 
 [10]  LOS-Diag-Level

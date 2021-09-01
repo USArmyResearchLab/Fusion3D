@@ -39,11 +39,9 @@ int ladar_mm_manager_inv_class::register_inv_3d(SoSeparator* classBase_in)
 		filterBase[i] = NULL;
 	}
 
-	fileTrans = new SoTranslation;
 	fileAz = new SoRotationXYZ;
 	fileEl = new SoRotationXYZ;
 	fileRoll = new SoRotationXYZ;
-	fileTrans->ref();
 	fileAz->ref();
 	fileAz->axis = SoRotationXYZ::Z;
 	fileEl->ref();
@@ -101,6 +99,10 @@ int ladar_mm_manager_inv_class::register_inv_3d(SoSeparator* classBase_in)
    GL_mobmap_cmin       = (SoSFFloat*)  SoDB::getGlobalField("Mobmap-CMin");	 // OIV Global -- False color for point clouds -- elevation corresponding to min hue
    GL_mobmap_cmax       = (SoSFFloat*)  SoDB::getGlobalField("Mobmap-CMax");	 // OIV Global -- False color for point clouds -- elevation corresponding to max hue
    GL_mobmap_filt_type  = (SoSFInt32*)  SoDB::getGlobalField("Mobmap-Filt-Type");// OIV Global -- Filter type -- 0=none, 1=TAU, 2=elevation
+   GL_mobmap_filt_amin  = (SoSFFloat*)  SoDB::getGlobalField("Mobmap-Filt-AMin");// OIV Global -- Filter on absolute elevation -- rmin
+   GL_mobmap_filt_amax  = (SoSFFloat*)  SoDB::getGlobalField("Mobmap-Filt-AMax");// OIV Global -- Filter on absolute elevation -- rmax
+   GL_mobmap_filt_rmin  = (SoSFFloat*)  SoDB::getGlobalField("Mobmap-Filt-RMin");// OIV Global -- Filter on relative elevation -- rmin
+   GL_mobmap_filt_rmax  = (SoSFFloat*)  SoDB::getGlobalField("Mobmap-Filt-RMax");// OIV Global -- Filter on relative elevation -- rmax
    GL_mobmap_fine_cur   = (SoSFInt32*)  SoDB::getGlobalField("Mobmap-Fine-Cur"); // OIV Global -- Min FINE algorithm TAU value currently displayed
    GL_mobmap_fine_min   = (SoSFInt32*)  SoDB::getGlobalField("Mobmap-Fine-Min"); // OIV Global -- Min FINE algorithm TAU value for consideration
    GL_mobmap_fine_max   = (SoSFInt32*)  SoDB::getGlobalField("Mobmap-Fine-Max"); // OIV Global -- Max FINE algorithm TAU value for consideration
@@ -124,12 +126,9 @@ int ladar_mm_manager_inv_class::make_scene_3d()
 {
 	int i, nptt = 0, ibin;
 
-	if (translate_flag) fileTrans->translation.setValue(translate_x, translate_y, translate_z);
 	if (rotate_flag)    fileAz->angle.setValue(3.1415927f * rotate_az / 180.0f);
 	if (rotate_flag)    fileEl->angle.setValue(3.1415927f * rotate_el / 180.0f);
 	if (rotate_flag)    fileRoll->angle.setValue(3.1415927f * rotate_roll / 180.0f);
-	GL_mobmap_fine_min->setValue(filter_mindisp);	// In case you have read a Parm file, transfer values from Parm file
-	GL_mobmap_fine_max->setValue(filter_maxdisp);
 	if (npts_dmax_user) {						// User override takes precedence over everything else
 		GL_mobmap_pts_dmax->  setValue(ndisplay_max);	// Triggers sensor but this only sets ndisplay_max again -- no harm
 		npts_dmax_user = 0;
@@ -168,48 +167,12 @@ int ladar_mm_manager_inv_class::make_scene_3d()
 
 	long long int npts_total = 0;
 	long long int nbytes_total = 0;
-	for (i=0; i<nfilest; i++) {
-		read_input_image(i, dir->get_ptcloud_name(i), 1, nskip_read, 0);		// 1=read header only, nskip_read not used, 0=no diagnostics
-		npts_total = npts_total + image_ptcloud[i]->get_npts_file();
-		long int bytes_per_point = image_ptcloud[i]->get_bytes_per_point();
-		nbytes_total = nbytes_total + (long long int)bytes_per_point *  (long long int)image_ptcloud[i]->get_npts_file();
-	}
-	// At this time, no. of pts read and no. of points displayed are set to same value
-	// Filtering options have not been used much, so it seems most efficient not to read a lot of extra points
-	// If points are often heavily filtered before they are displayed, we may want to read more than are displayed
-	int nskip_new = 1 + npts_total / ndisplay_max;
-	//int nskip_new = int(nbytes_total / (1000000. * (double)mbytes_max) + 1);
-
-	// If cant fit memory constraint -- must reread all files
-	if (nskip_new != nskip_read) {
-		SoDB::writelock();
-		nskip_read = nskip_new;
-		for (int i=0; i<nfilest; i++) {
-			if (image_ptcloud[i] != NULL) delete image_ptcloud[i];
-			image_ptcloud[i] = NULL;
-			cloudBase[i]->removeAllChildren();		// Need to free up memory if you are rereading
-			status_flags[i] = 0;
-		}
-		SoDB::writeunlock();
-	}
-	cout << " ****** N files=" << nfilest << ", N bytes storage=" << nbytes_total << ", read decimation factor=" << nskip_read << endl;
-
-	// **************************************************
-	// First pass -- Read any files not yet read
-	// **************************************************
-	cout << "To read point-cloud files with decimation nSkip = " << nskip_read << " ************" << endl;
-	npts_read = 0;
-	for (i=0; i<nfilest; i++) {
-		// Read image
-		if (status_flags[i] % 2 == 0) {
-			cout << "   To read " << dir->get_ptcloud_name(i) << endl;
-			if (!read_input_image(i, dir->get_ptcloud_name(i), 0, nskip_read, diag_flag)) {		// 0 = read data as well as header, nskip_read, global diagnostic level
-				cerr << "ladar_mm_manager_class::read_tagged: cant read input file " << endl;
-				exit_safe_s("ladar_mm_manager_class::read_tagged: cant read input file ", dir->get_ptcloud_name(i));
-			}
-			status_flags[i] = status_flags[i] + 1;
-			nptt = image_ptcloud[i]->get_npts_read();
-			npts_read = npts_read + nptt;
+	for (i = 0; i<nfilest; i++) {
+		if (status_flags[i] == 0) {
+			read_input_image(i, dir->get_ptcloud_name(i), 1, 1);		// 1=read header only,  1=moderate diagnostics
+			npts_total = npts_total + image_ptcloud[i]->get_npts_file();
+			long int bytes_per_point = image_ptcloud[i]->get_bytes_per_point();
+			nbytes_total = nbytes_total + (long long int)bytes_per_point *  (long long int)image_ptcloud[i]->get_npts_file();
 			double xmin, xmax, ymin, ymax;
 			float zmin, zmax;
 			image_ptcloud[i]->get_bounds(xmin, xmax, ymin, ymax, zmin, zmax);
@@ -229,6 +192,61 @@ int ladar_mm_manager_inv_class::make_scene_3d()
 				if (zmin_all_files > zmin) zmin_all_files = zmin;
 				if (zmax_all_files < zmax) zmax_all_files = zmax;
 			}
+			if (filt_lims_abs_flag != 1) {
+				filt_zmin_abs = zmin_all_files;
+				filt_zmax_abs = zmax_all_files;
+			}
+		}
+	}
+
+	// Set IOV Globals used in filter dialog
+	GL_mobmap_filt_rmin->setValue(filt_zmin_rel);
+	GL_mobmap_filt_rmax->setValue(filt_zmax_rel);
+	GL_mobmap_filt_amin->setValue(filt_zmin_abs);
+	GL_mobmap_filt_amax->setValue(filt_zmax_abs);
+	GL_mobmap_fine_min->setValue(filter_mindisp);	// In case you have read a Parm file, transfer values from Parm file
+	GL_mobmap_fine_max->setValue(filter_maxdisp);
+
+	// At this time, no. of pts read and no. of points displayed are set to same value
+	// Filtering options have not been used much, so it seems most efficient not to read a lot of extra points
+	// If points are often heavily filtered before they are displayed, we may want to read more than are displayed
+	int decimation_n_new = 1 + npts_total / ndisplay_max;
+
+	// If cant fit memory constraint -- must reread all files
+	if (decimation_n_new != decimation_n) {
+		SoDB::writelock();
+		decimation_n = decimation_n_new;
+		for (int i=0; i<nfilest; i++) {
+			if (image_ptcloud[i] != NULL) delete image_ptcloud[i];
+			image_ptcloud[i] = NULL;
+			cloudBase[i]->removeAllChildren();		// Need to free up memory if you are rereading
+			status_flags[i] = 0;
+		}
+		SoDB::writeunlock();
+	}
+	cout << " *** nFiles=" << nfilest << " nPts=" << npts_total << " Npts Max=" << ndisplay_max << " Decimation=" << decimation_n << endl;
+	cout << "    " << xmin_all_files << " < x < " << xmax_all_files << endl;
+	cout << "    " << ymin_all_files << " < y < " << ymax_all_files << endl;
+	cout << "    " << zmin_all_files << " < z < " << zmax_all_files << endl;
+
+	// **************************************************
+	// First pass -- Read any files not yet read
+	// **************************************************
+	cout << "To read point-cloud files with decimation ratiio = " << decimation_n << " ************" << endl;
+	npts_read = 0;
+	for (i=0; i<nfilest; i++) {
+		// Read image
+		if (status_flags[i] % 2 == 0) {
+			cout << "   To read " << dir->get_ptcloud_name(i) << endl;
+			if (!read_input_image(i, dir->get_ptcloud_name(i), 0, 0)) {		// 0 = read data as well as header, 0 for only critical diag
+				exit_safe_s("ladar_mm_manager_class::make_scene_3d: cant read input file ", dir->get_ptcloud_name(i));
+			}
+			status_flags[i] = status_flags[i] + 1;
+			nptt = image_ptcloud[i]->get_npts_read();
+			npts_read = npts_read + nptt;
+			double xmin, xmax, ymin, ymax;
+			float zmin, zmax;
+			image_ptcloud[i]->get_bounds(xmin, xmax, ymin, ymax, zmin, zmax);
 
 			// *********************************
 			// Set up color scale limits for absolute elevation scales
@@ -287,13 +305,13 @@ int ladar_mm_manager_inv_class::make_scene_3d()
 			}
 		}
 	}
-	cout << "Finish read pt-clouds -- decimation= " << nskip_read << ", Npts=" << npts_read << " ***" << endl;
+	cout << "Finish read pt-clouds -- decimation= " << decimation_n << ", Npts=" << npts_read << " ***" << endl;
 
 
 	// **************************************************
 	// Calculate lowres elevs if not already defined by DEM
 	// **************************************************
-	map3d_lowres->register_elev_pc(ymax_all_files, ymin_all_files, xmax_all_files, xmin_all_files);
+	map3d_lowres->register_elev_pc(ymax_all_files + translate_y, ymin_all_files + translate_y, xmax_all_files + translate_x, xmin_all_files + translate_x);
 
 	// **************************************************
 	// Second pass -- Filter any files not yet filtered
@@ -302,10 +320,9 @@ int ladar_mm_manager_inv_class::make_scene_3d()
 	for (i=0; i<nfilest; i++) {
 		if (status_flags[i] < 2) {
 			if (image_ptcloud[i]->is_tau()) {
-				fine_flags[i] = 1;
-				if (filter_flag == 0) filter_flag = 1;
+				if (filter_type_flag == 0) filter_type_flag = 1;
 			}
-			GL_mobmap_filt_type->setValue(filter_flag);
+			GL_mobmap_filt_type->setValue(filter_type_flag);
 			init_filter(i);
 		}
 	}
@@ -357,7 +374,7 @@ int ladar_mm_manager_inv_class::clear_all()
 
 	GL_rainbow_min->setValue(0.);
 	GL_rainbow_max->setValue(0.);
-	GL_mobmap_filt_type->setValue(filter_flag);
+	GL_mobmap_filt_type->setValue(filter_type_flag);
 	GL_mobmap_cscale->setValue(rainbow_scale_flag);
 	return (1);
 }
@@ -393,6 +410,35 @@ int ladar_mm_manager_inv_class::refresh()
    // ***************************************
    // Check for inputs from user interface
    // ***************************************
+   if (check_count(0)) {				// 
+	   int val = GL_mobmap_fine_cur->getValue() - 1;
+	   if (val < 0) val = 0;
+	   GL_mobmap_fine_cur->setValue(val);
+	   filter_mindisp_slider = val;			// Displays bin filter_mindisp_slider and above
+	   refresh_pending = 1;
+   }
+   else if (check_count(1)) {				// 
+	   int val = GL_mobmap_fine_cur->getValue() + 1;
+	   if (val > filter_maxdisp) val = filter_maxdisp;
+	   GL_mobmap_fine_cur->setValue(val);
+	   filter_mindisp_slider = val;			// Displays bin filter_mindisp_slider and above
+	   refresh_pending = 1;
+   }
+   else if (check_count(2)) {				// 
+	   int val = GL_mobmap_fine_cur->getValue() + 5;
+	   if (val > filter_maxdisp) val = filter_maxdisp;
+	   GL_mobmap_fine_cur->setValue(val);
+	   filter_mindisp_slider = val;			// Displays bin filter_mindisp_slider and above
+	   refresh_pending = 1;
+   }
+   if (check_count(3)) {				// 
+	   int val = GL_mobmap_fine_cur->getValue() - 5;
+	   if (val < 0) val = 0;
+	   GL_mobmap_fine_cur->setValue(val);
+	   filter_mindisp_slider = val;			// Displays bin filter_mindisp_slider and above
+	   refresh_pending = 1;
+   }
+
    // ***************************************
    // Exit if nothing changed since last redraw
    // ***************************************
@@ -412,11 +458,10 @@ int ladar_mm_manager_inv_class::refresh()
 	for (i=0; i<nfilest; i++) {
 		cubesBase->addChild(cloudBase[i]);
 		cloudBase[i]->removeAllChildren();
-		cloudBase[i]->addChild(fileTrans);
 		cloudBase[i]->addChild(fileAz);
 		cloudBase[i]->addChild(fileEl);
 		cloudBase[i]->addChild(fileRoll);
-		if (filter_flag == 0) {							// No filtering, all points in child 0
+		if (filter_type_flag == 0) {							// No filtering, all points in child 0
 			cloudBase[i]->addChild(filterBase[i][0]);
 		}
 		else {											// Filtering -- load only select children
@@ -446,7 +491,7 @@ int ladar_mm_manager_inv_class::draw_point_cloud(int ifile)
 	float ref_utm_elevation = gps_calc->get_ref_elevation();
 	
 	nRough = image_ptcloud[ifile]->get_npts_read();
-	intensity_type 	= image_ptcloud[ifile]->get_intensity_type();	// This might have been overridden since file read
+	nbands 	= image_ptcloud[ifile]->get_nbands();	// This might have been overridden since file read
 
 	// ***************************************
 	// Do color/intensity scaling
@@ -454,7 +499,7 @@ int ladar_mm_manager_inv_class::draw_point_cloud(int ifile)
 	color_balance_class *color_balance = new color_balance_class();
 	color_balance->set_balance_type(color_balance_flag);
 
-	if (intensity_type == 6) {
+	if (nbands == 3) {
 		int imin = int(255. * brt0_rgb);
 		color_balance->set_out_range(imin, 255);
 		reda = image_ptcloud[ifile]->get_reda();
@@ -481,7 +526,7 @@ int ladar_mm_manager_inv_class::draw_point_cloud(int ifile)
 	// ***************************************
 	int nmax = 0;
 	int ndisp = 0;
-	if (filter_flag == 0) {
+	if (filter_type_flag == 0) {
 		ibinStart = 0;
 		ibinEnd = 0;
 		nmax = nRough / nskip_display;
@@ -502,10 +547,10 @@ int ladar_mm_manager_inv_class::draw_point_cloud(int ifile)
 	// ***************************************
 	// For each filter bin (all in bin 0 if no filtering)
 	// ***************************************
-	cout << "PtCloud filter:  Type=" << filter_flag << ", min bin=" << ibinStart << ", max bin=" << ibinEnd << endl;
+	cout << "PtCloud filter:  Type=" << filter_type_flag << ", min bin=" << ibinStart << ", max bin=" << ibinEnd << endl;
 	for (ibin = ibinStart; ibin<=ibinEnd; ibin++) {
 		filterBase[ifile][ibin]->removeAllChildren();
-		if (filter_flag > 0 && filter_bin_n[ifile][ibin] == 0) continue;
+		if (filter_type_flag > 0 && filter_bin_n[ifile][ibin] == 0) continue;
 
 		SoPointSet *pointSet = new SoPointSet();
 		SoDrawStyle* ptDraw = new SoDrawStyle;
@@ -518,11 +563,11 @@ int ladar_mm_manager_inv_class::draw_point_cloud(int ifile)
 		// For each point: if it has the right filter bin, add it to the Sep
 		double xoff, yoff;
 		float zoff;
-		xoff = gps_calc->get_ref_utm_east();	
-		yoff = gps_calc->get_ref_utm_north();
-		zoff = ref_utm_elevation;
+		xoff = gps_calc->get_ref_utm_east() - translate_x;	
+		yoff = gps_calc->get_ref_utm_north() - translate_y;
+		zoff = ref_utm_elevation - translate_z;
 		for (ipt=0; ipt<nRough; ipt++) {
-			if (filter_flag > 0 && filter_bin[ifile][ipt] != ibin) continue;
+			if (filter_type_flag > 0 && filter_bin[ifile][ipt] != ibin) continue;
 			iskip++;
 			if (iskip < nskip_display) continue;
 			double north = image_ptcloud[ifile]->get_y(ipt);
@@ -532,7 +577,7 @@ int ladar_mm_manager_inv_class::draw_point_cloud(int ifile)
 			coords[nThisBin][1] = float(north - yoff);
 			coords[nThisBin][2] = elev_pt - zoff;
 
-			if (intensity_type == 5) {
+			if (nbands == 1) {
 				unsigned char brt = histi[brta[ipt]];
 				hsvv = brt / 255.f;
 
@@ -768,6 +813,12 @@ void ladar_mm_manager_inv_class::open_cb()
 			GL_open_flag->setValue(27);
 		}
 		else {
+			// If filtering on abs elev and no predefined limits, limits may change with new file so filtering must be redone
+			if (filter_type_flag == 2 && filt_lims_abs_flag != 1) {
+				for (int i = 0; i < dir->get_nfiles_ptcloud(); i++) {
+					if (status_flags[i] > 1) status_flags[i] = 1;
+				}
+			}
 			make_scene_3d();
 			n_data++;
 			refresh_pending = 1;
@@ -856,9 +907,6 @@ void ladar_mm_manager_inv_class::mod_cb()
 	// ************************************
 	else if (i_flag == 5) {
 		int val = GL_mobmap_fine_cur->getValue();
-		if (filter_flag == 1) {
-			cout << "FINE bin " << val << " corresponding to raw TAU (Chi) value " << fine_raw[0][val] << endl;
-		}
 		filter_mindisp_slider = val;			// Displays bin filter_mindisp_slider and above
 		refresh_pending = 1;
 		refresh();
@@ -866,43 +914,70 @@ void ladar_mm_manager_inv_class::mod_cb()
 	}
 
 	// ************************************
-	// // Adjust min/max of filter slider AND/OR filtering type
+	// // Adjust filter type AND/OR min/max -- assume total redraw required
 	// ************************************
 	else if (i_flag == 6) {	
-		if (filter_mindisp == GL_mobmap_fine_min->getValue() && filter_maxdisp == GL_mobmap_fine_max->getValue() && filter_flag == GL_mobmap_filt_type->getValue()) return;		// Dont respond when no change
-		
+		// ********************************
 		// Consistency checks
+		// ********************************
 		if (GL_mobmap_filt_type->getValue() == 3 && map3d_index->is_map_defined() == 0) {	// Cant filter rel to DEM if none present
 			warning(1, "Cant filter relative to DEM -- DEM not loaded");
-			GL_mobmap_filt_type->setValue(filter_flag);
+			GL_mobmap_filt_type->setValue(filter_type_flag);
 			return;
 		}
 		if (GL_mobmap_filt_type->getValue() == 1) {											// Cant filter on TAU -- must be present in ALL files
 			for (i=0; i<dir->get_nfiles_ptcloud(); i++) {
-				if (fine_flags == 0) {
+				if (!image_ptcloud[i]->is_tau()) {
 					warning(1, "Cant filter on TAU -- TAU not present in at least 1 file");
-					GL_mobmap_filt_type->setValue(filter_flag);
+					GL_mobmap_filt_type->setValue(filter_type_flag);
 					return;
 				}
 			}
 		}
 
-		// OK, clean out tree and remake
-		if (filter_flag != GL_mobmap_filt_type->getValue()) {
-			filter_flag    = GL_mobmap_filt_type->getValue();
-			filter_mindisp = 0;
-			filter_maxdisp = filter_nbins_max - 1;
-			filter_mindisp_slider = filter_mindisp;
-			GL_mobmap_fine_min->setValue(filter_mindisp);
-			GL_mobmap_fine_max->setValue(filter_maxdisp);
-		}
-		else {
-			filter_mindisp = GL_mobmap_fine_min->getValue();
-			filter_maxdisp = GL_mobmap_fine_max->getValue();
-			filter_mindisp_slider = filter_mindisp;
-		}
+		// ********************************
+		// Update all parameters from menu
+		// ********************************
+		filter_type_flag = GL_mobmap_filt_type->getValue();
+		filter_mindisp = 0;
+		filter_maxdisp = filter_nbins_max - 1;
+		filter_mindisp_slider = filter_mindisp;
 		GL_mobmap_fine_cur->setValue(filter_mindisp_slider);
 
+		if (filter_type_flag == 0) {
+		}
+		else if (filter_type_flag == 1) {									// Filt TAU
+			if (GL_mobmap_fine_min->getValue() != filter_mindisp) {
+				filter_mindisp = GL_mobmap_fine_min->getValue();
+			}
+			if (GL_mobmap_fine_max->getValue() != filter_maxdisp) {
+				filter_maxdisp = GL_mobmap_fine_max->getValue();
+			}
+		}
+		else if (filter_type_flag == 2) {									// Filt abs elevation
+			if (GL_mobmap_filt_amin->getValue() != filt_zmin_abs) {
+				filt_zmin_abs = GL_mobmap_filt_amin->getValue();
+				filt_lims_abs_flag = 2;
+			}
+			if (GL_mobmap_filt_amax->getValue() != filt_zmax_abs) {
+				filt_zmax_abs = GL_mobmap_filt_amax->getValue();
+				filt_lims_abs_flag = 2;
+			}
+		}
+		else if (filter_type_flag == 3) {									// Filt rel elevation
+			if (GL_mobmap_filt_rmin->getValue() != filt_zmin_rel) {
+				filt_zmin_rel = GL_mobmap_filt_rmin->getValue();
+				filt_lims_rel_flag = 2;
+			}
+			if (GL_mobmap_filt_rmax->getValue() != filt_zmax_rel) {
+				filt_zmax_rel = GL_mobmap_filt_rmax->getValue();
+				filt_lims_rel_flag = 2;
+			}
+		}
+
+		// ********************************
+		// Clean out tree for remake
+		// ********************************
 		SoDB::writelock();
 		for (i=0; i<dir->get_nfiles_ptcloud(); i++) {
 			cloudBase[i]->removeAllChildren();				// Clean out previous tree
@@ -913,7 +988,7 @@ void ladar_mm_manager_inv_class::mod_cb()
 		SoDB::writeunlock();
 	}
 
-	if (i_flag == 12) {											// Toggle false color scale AND change limits
+	else if (i_flag == 12) {											// Toggle false color scale AND change limits
 		if (rainbow_scale_flag == GL_mobmap_cscale->getValue() && GL_mobmap_cmin->getValue() == utm_rainbow_hmin
 			&& GL_mobmap_cmax->getValue() == utm_rainbow_hmax) return;													// Dont respond when no change
 		rainbow_scale_flag = GL_mobmap_cscale->getValue();

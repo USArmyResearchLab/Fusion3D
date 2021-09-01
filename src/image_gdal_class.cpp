@@ -71,7 +71,7 @@ int image_gdal_class::write_file(string sfilename)
 		return(0);
 	}
 	papszMetadata = poDriver->GetMetadata();
-	if (CSLFetchBoolean(papszMetadata, GDAL_DCAP_CREATE, FALSE)) printf("Driver supports create method ");
+	if (CSLFetchBoolean(papszMetadata, GDAL_DCAP_CREATE, FALSE)) printf("Driver supports create method \n");
 
 	if (nbands == 1) {								// Write unsigned unsigned char gray
 		poDstDS = poDriver->Create(sfilename.c_str(), ncols, nrows, 1, GDT_Byte, papszOptions);

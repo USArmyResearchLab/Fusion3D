@@ -1,0 +1,97 @@
+<HEAD>
+<TITLE>PUGET SOUND LIDAR DATA -- BROADEN TYPES OF DATA THAT CAN BE ACCESSED</TITLE>
+</HEAD>
+<BODY>
+<H1>PUGET SOUND LIDAR DATA -- BROADEN TYPES OF DATA THAT CAN BE ACCESSED</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#ps_intro">Introduction</A>
+<P>
+<LI><A HREF="#ps_e00">Reading .e00 Files</A>
+<P>
+<LI><A HREF="#ps_hill">Hill Shading</A>
+<P>
+<LI><A HREF="#ps_python">Python</A>
+<P>
+<LI><A HREF="#ps_e00">Implementation Notes</A>
+<P>
+</UL>
+
+<H2><A NAME="ps_intro">INTRODUCTION</A></H2>
+
+In November 2012 I downloaded some lidar data from the Puget Sound Lidar Consortium for Vashon Island.
+I requested login, got it back, then logged into their website to download files.
+This was an attempt to visualize lidar data from a wider range of sources.
+The data is in the NAD83 coordinate system, and I think from the Northern Washington zone.
+The units are feet rather than meters.
+<P>
+The format for the elevation data is .e00 format -- a proprietary format from ESRI for data exchange that is undocumented
+and mostly not reverse engineered.
+I had to write a small class to read this data.
+<P>
+The procedure I used was to write a small code to translate .e00 to GeoTiff so my code could read it.
+I also changed filenames to follow Buckeye naming conventions and
+rewrote the hill-shade files to include more metadata.
+I wrote a Python script to convert all the files in the test directory.
+<P>
+
+
+<H2><A NAME="ps_e00">READING .e00 FILES</A></H2>
+
+The .e00 format is a proprietary format from ESRI for data exchange that is undocumented and mostly not reverse engineered.
+I wrote a class image_e00_class to read the format so that I could convert it to .tif.
+This class is unfinished -- I only implemented far enough to read the data I had from Vashon.
+<P>
+One key trick to reading is that you must read an integral number of lines of ascii per row --
+so that if the number of pixels in a row is not divisible by 5 (no. of entries per ascii line), dummy data set to no-data is read.
+For instance, if each row has 12 pixels, you must read 3 whole lines (15 samples) for each row and throw away the last 3.
+<P>
+
+<H2><A NAME="ps_hill">HILL SHADING</A></H2>
+
+From looking at the raw data, it does not look like there was any intensity data -- so hill shading is the best texturing available.
+The hill shading files I got were not directly usable owing to missing metadata in the GeoTiff header --
+-- most importantly, the units values for z and xy.
+<P>
+I tried the hill-shading utility from GDAL.
+It looked really bad, so I had to abandon it.
+It looked like it was assigning the no-data elevation values a non-zero intensity and creating a little shadow for each no-data.
+From the doc, it looks like it should not do this, but I could not find a way to turn it off.
+<P>
+I finally read in the hill-shaded file I got from Puget Sound, then wrote it back out adding the required metadata.
+<P>
+
+
+
+<H2><A NAME="ps_python">PYTHON</A></H2>
+
+I wrote a python script to cycle thru all the .e00 files in a directory and convert them.
+The script is named 'convertAllVashon.py' and I put it with the data in dir C:\map3dview\rtv\Vashon
+
+<H2><A NAME="ps_notes">IMPLEMENTATION NOTES</A></H2>
+
+<PRE>
+
+An example of GDAL hill shading
+	gdaldem hillshade dem_2m_a2_q47122e43_dsm.tif  int_2m_a2_q47122e43_dsm.tif
+
+Data
+	C:\map3dview\rtv\Vashon
+
+Conversion program
+	Convert_Format.exe
+
+python script
+	convertAllVashon.py
+
+
+
+
+
+
+
+
+
+</PRE>

@@ -1,0 +1,214 @@
+<HEAD>
+<TITLE>VECTOR OVERLAYS</TITLE>
+</HEAD>
+<BODY>
+<H1>VECTOR OVERLAYS</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#vector_intro">Introduction</A>
+<P>
+<LI><A HREF="#vector_fun">Vector Overlay Functionality</A>
+<P>
+<LI><A HREF="#vector_draw">New Vector Overlay Implementation Using draw_data_inv_class</A>
+<P>
+<LI><A HREF="#vector_test">Tests</A>
+<P>
+</UL>
+
+<H2><A NAME="vector_intro">INTRODUCTION</A></H2>
+
+In August 2018, I reimplemented the vector overlay to consolodate the code and give all vector overlays the same structure.
+All classes that process vector data use the draw_data_class class to store vector data and the draw_data_inv_class child class to draw the data.
+The class draw_data_class has a structure that closely follows the KML structure.
+It implements a subset of the KML spec as needed by the current viewer and will be extended as new features require.
+<P>
+Most functionality was retained.
+However, some of the capability in the truth_manager_class was not incorporated in other classes, namely the ability to follow a track in time.
+The draw_data_class class can store time info and has the capability to get location at an arbitrary data index (actually at any point between indices as well).
+The interval_calc_class complements it by calculating the data index given the time series from the draw_data_class.
+I also added an averaging capability to the draw_data_class (storing average locations in a new array structure).
+<P>
+I transfered all of the functionality of the time_track_class to the draw_data_class.
+It is still called in roi_manager_class and in cadmodel_manager_class.
+The roi_manager_class has not been used for a long time and just needs to be rewritten using the new classes.
+Likewise for the cadmodel_manager_class which was used to move model people along a track for a demo but has not been used in a long time.
+<P>
+The clock management also needs to be transfered from the truth_manager_class to the draw_manager_inv_class.
+<P>
+Joe Mullins wants to add the capability in draw to move units along routes.
+The speed of each unit would have to be defined.
+It appears that the way to implement would be to define the start time and the speed and move the unit at that speed until it reached the objective.
+<P>
+A potential problem is that the route would be defined in a very gross way with a smooth route for high-level or large-area presentation.
+It would be defined much more detailed along roads/valleys etc. at a lower-level or smaller-scale presentation.
+These may conflict and a unit would really want to move along the more detailed route.
+<P>
+
+
+
+
+
+
+<H2><A NAME="vector_fun">VECTOR OVERLAY FUNCTIONALITY</A></H2>
+<PRE>
+
+	Point		Can have name, symbol or time associated
+			Default is to draw symbol if present; if no symbol, draw name if present, if neither draw point itself
+			has altitude-mode
+
+	Line		Can have time associated with each point, a symbol or cadmodel associated with a mover along that line
+			has altitude-mode
+			No name or symbol -- must define a separate point for these
+
+	Circle	Just defined as a line within the code
+
+	Polygon	Just defined as a line within the code
+
+
+</PRE>
+
+
+
+
+<H2><A NAME="vector_draw">NEW VECTOR OVERLAY IMPLEMENTATION USING draw_data_inv_class</A></H2>
+
+<PRE>
+
+	Reimplemented
+		draw_manager_inv_class
+			Pro		Mix of multiple lines, points, polygons, circles and symbols
+					Can add, move or delete features
+			Con		Movers along lines has been partially implemented but not finished
+
+		sensor_kml_manager_inv_class
+			Pro		Sensor hit points
+					Draws most-current sensor FOV specified by polygon
+			Con		Only implemented for ARL-India sensor
+
+		kml_manager_inv_class
+			Pro		Can handle multiple input files with mixtures of points, lines, polygons and symbols	
+					Can toggle on and off individual files
+			Con		No editing capability
+
+		track_manager_inv_class
+			Pro		Can 'fly' along a line with averaging of position and heading
+					Can add, move and delete points from a single line
+			Con		Can only handle one line at a time
+					Cant handle points or symbols
+
+		bookmark_manager_inv_class
+			Pro		Can digitize bookmarks, label them, save them and read them
+					Can jump to up to 4 bookmarks using buttons generated in this class
+			Con		Can only handle points -- no lines or symbols
+
+		script_input_class	Still uses time_track_class to implement averaging of location and heading
+			Pro		Can fly along a line
+			Con		Must fly at constant speed -- time = distance
+
+	Superceded
+		time_track_class		Still used in roi_manager_class and cadmodel_manager_class but could be replaced
+
+	Abandoned
+		truth_manager_class	Still old structure -- no current use but has capabilities for animation with time 
+
+		place_point_class		Still old structure -- no current use
+		
+
+
+
+</PRE>
+<H3><A NAME="vector_read">Reading Vector Overlay Files</A></H2>
+<PRE>
+
+	kml	Should be most flexible and general-purpose
+
+	shp	Crude and outmoded but widely used still, so need to read it
+
+	osm	Open Street Map format to add landmarks for context
+
+	sbet	Applanix ascii format that was used vehicle track for BuckEye ground-based ladar in Fredericksburg
+
+	csv	Only implemented for LORD gps tracker file used by ARL MEMS-Scanned ladar
+
+	txt	Only from Project File, reads my old text format for saving tracks so kept for backwards compatibility
+
+
+
+</PRE>
+<H3><A NAME="vector_write">Writing Vector Overlay Files</A></H2>
+<PRE>
+
+	KML		Only format currently fully implemented for most vector overlay output
+
+	shp-LOS	I think this still write LOS using my code
+
+	shp		I have a limited implementation using the OGR library but have not fully checked it out and not wired it into the viewer
+
+
+</PRE>
+
+
+<P>
+
+<H2><A NAME="vector_test">TESTS AND TEST FILES</A></H2>
+
+
+<TABLE BORDER>
+<CAPTION>Test Files</CAPTION>
+<TR><TH>Location		<TH>Function			<TH>Notes
+<TR><TD>Fredericksburg	<TD>sbet				<TD>Read sbet file for path of test vehicle
+<TR><TD>Fredericksburg	<TD>scripted flyby		<TD>Script flies along path to house
+<TR><TD>Fredericksburg	<TD>bookmarks			<TD>Tried all combinations digitizing saving and reading
+<TR><TD>Nangahar		<TD>osm				<TD>File containing nearby vilages
+<TR><TD>Nangahar		<TD>kml from project file	<TD>Scenario from Joe 'APG_Scenario.kml'
+<TR><TD>Nangahar		<TD>kml from menu			<TD>Scenario from Joe 'APG_Scenario.kml'
+<TR><TD>Nangahar		<TD>draw load file		<TD>Scenario from Joe 'APG_Scenario.kml'
+<TR><TD>Nangahar		<TD>draw digitize			<TD>Tried lots of combinations of lines, points, symbols
+<TR><TD>ALCSensorTest	<TD>KML sensor points		<TD>Dummy file generated by Damon shows person walking
+<TR><TD>ALCSensorTest	<TD>KML sensor FOV		<TD>FOV moves with time
+<TR><TD>Belgium		<TD>Follow KML route from menu<TD>Follow GPS tracker 
+
+</TABLE>
+<BR><BR><BR>
+
+
+
+
+
+<TABLE BORDER>
+<CAPTION>Old Test Files</CAPTION>
+<TR><TH>Manager	<TH>R/W	<TH>Format		<TH>Primitive	<TH>Location	<TH>Test File
+<TR><TD>Bookmarks	<TD>Read	<TD>KML		<TD>Simple Points	<TD>Nangarhar	<TD>NangarharBookmarks.kml
+<TR><TD>Bookmarks	<TD>Read	<TD>Shapefile	<TD>Simple Points	<TD>Nangarhar	<TD>NangarharBookmarks.shp
+<TR><TD>Bookmarks	<TD>Write	<TD>KML		<TD>Simple Points	<TD>Nangarhar	<TD>NangarharBookmarks.kml
+<TR><TD>Bookmarks	<TD>Write	<TD>Shapefile	<TD>Simple Points	<TD>Nangarhar	<TD>NangarharBookmarks.shp
+
+<TR><TD>Tracks	<TD>Read	<TD>KML		<TD>Simple Line	<TD>Nangarhar	<TD>NangarharTrack.kml
+<TR><TD>Tracks	<TD>Read	<TD>Shapefile	<TD>Simple Line	<TD>Nangarhar	<TD>NangarharTrack.shp
+<TR><TD>Tracks	<TD>Read	<TD>Textfile	<TD>Simple Line	<TD>Nangarhar	<TD>NangarharTrack.txt
+<TR><TD>Tracks	<TD>Write	<TD>KML		<TD>Simple Line	<TD>Nangarhar	<TD>NangarharTrack.kml
+<TR><TD>Tracks	<TD>Write	<TD>Shapefile	<TD>Simple Line	<TD>Nangarhar	<TD>NangarharTrack.shp
+<TR><TD>Tracks	<TD>Write	<TD>Textfile	<TD>Simple Line	<TD>Nangarhar	<TD>NangarharTrack.txt
+
+<TR><TD>LOS		<TD>Write	<TD>Shapefile	<TD>Simple Lines	<TD>Nangarhar	<TD>NangarharLOS.shp
+
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>Simple Points	<TD>Nangarhar	<TD>AfghanistanEventSimplePoints.kml
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>Simple Lines	<TD>Nangarhar	<TD>NangarharTrack.kml
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>Simple Pols	<TD>Nangarhar	<TD>DONT HAVE
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>Multi Points	<TD>Nangarhar	<TD>NangarharMultiPoints.kml
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>Multi Lines	<TD>Nangarhar	<TD>AfghanistanRiversSmallerMLines.kml
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>Multi Pols	<TD>Nangarhar	<TD>NangarharDistrictBoundsMPols.kml
+<TR><TD>Vector Ovr<TD>Read	<TD>KML		<TD>LatLonBox	<TD>Nangarhar	<TD>mrg_1m_a1_nangarhar_site98_tile1.kml
+<TR><TD>Vector Ovr<TD>Read	<TD>Shapefile	<TD>Simple Lines	<TD>Nangarhar	<TD>NangarharTrack.shp/NangarharLOS.shp
+<TR><TD>Vector Ovr<TD>Read	<TD>Shapefile	<TD>Simple Points	<TD>Lubbock		<TD>scott1.shp
+
+<TR><TD>Truth	<TD>Read	<TD>csv		<TD>Simple Points	<TD>Lubbock		<TD>LL20070927_238_DTR_A4.csv
+<TR><TD>Truth	<TD>Read	<TD>sbet		<TD>Simple Points	<TD>Lubbock		<TD>
+<TR><TD>Truth	<TD>Read	<TD>KML		<TD>Simple Points	<TD>Lubbock		<TD>
+<TR><TD>Truth	<TD>Read	<TD>shapefile	<TD>Simple Points	<TD>Lubbock		<TD>scott1.shp
+
+</TABLE>
+<BR><BR><BR>
+

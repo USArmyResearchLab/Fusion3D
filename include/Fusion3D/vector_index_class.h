@@ -14,11 +14,11 @@ These criteria include the type of data, and the location (the name of the map t
 		2 = "bookmarks" -- bookmarks (can edit, jump to)
 		3 = "mti" -- GMTI -- adds special processing for GMTI data\n
 		4 = "track" -- adds special processing for time/motion and measuring distance\n
-		5 = "sensorml" -- adds special processing for ugs SensorML
-		6 = "om" -- adds special processing for ugs OM
-		7 = 'draw" -- files for drawing, typically military scenarios
-		8 = 'cad" -- files for CAD models
-		99 = deleted
+		5 = "sensorml" -- adds special processing for ugs SensorML\n
+		6 = "om" -- adds special processing for ugs OM\n
+		7 = 'draw" -- files for drawing, typically military scenarios\n
+		8 = 'cad" -- files for CAD models\n
+		99 = deleted\n
 \n
 	vis_flags	1 if file is currently visible, 0 if invisible.\n
 \n

@@ -1,0 +1,130 @@
+<HEAD>
+<TITLE>MAPS FOR MARS AND OTHER PLANETS</TITLE>
+</HEAD>
+<BODY>
+<H1>MAPS FOR MARS AND OTHER PLANETS</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#intro">Introduction</A>
+<P>
+<LI><A HREF="#proc">Processing Steps</A>
+<P>
+<LI><A HREF="#sites">Data Sites/Scenes</A>
+	<UL>
+	<LI><A HREF="#sites-palus">Mars HadriacusPalus Site</A>
+	<LI><A HREF="#sites-mars_jez">Mars Jezero Site</A>
+	<LI><A HREF="#sites-mars_crater">Mars Crater Site</A>
+	<LI><A HREF="#sites-charon">Charon Site</A>
+	</UL>
+<P>
+</UL>
+
+<H2><A NAME="intro">INTRODUCTION</A></H2>
+
+NASA maintains websites with a variety of data for Mars and also Other planets.
+<P>
+
+
+
+
+<H2><A NAME="proc">PROCESSING STEPS</A></H2>
+
+
+
+
+
+</PRE>
+<H2><A NAME="sites">DATA SITES -- SCENES</A></H2>
+<H3><A NAME="sites-palus">HadriacusPalus</A></H3>
+This site is the most interesting that I have processed.
+The elevation changes are not too impressive but there are lots of interesting elevation features.
+This site is the only one I can find that is explicitly identified in the NASA site with its own subdirectory.
+<P>
+The Ortho for this site is considerably larger than the DEM.
+The Ortho consists of 5 strips that are roughly vertical (leaning a little to the left-west).
+There are small gaps between most of the strips.
+The DEM intersects the 3 center strips of the Ortho but is shorter than the Ortho.
+Two of these Ortho strips abut but there is a gap between the other 2.
+The DEMS appear to align with the Orthos -- there is a gap in the DEM that looks to match that between the ortho strips.
+<P>
+
+
+
+<PRE>
+
+
+</PRE>
+<H3><A NAME="sites-mars_jez">Mars Jezero Site</A></H3>
+
+This set is not too impressive -- thank I think to the relative low-res DEM.
+The DEM for his dataset was generated from the MOLA sensor -- a lidar that took planet-wide low-res data.
+The grayscale texture was generated with the HIRISE sensor -- a stereo camera that took much higher-res.
+<P>
+There was a basic processing issue.
+This dataset has tiles where good data areas are not aligned with north/south/east/west.
+The tiles are themselves aligned but diagonal areas of good data are surrounded by no-data.
+Tiles overlap so they cover the area.
+This presents problems for Fusion3D because it assumes good data boundaries between tiles align north-south or east-west.
+<P>
+A workaround for this issue is to merge adjacent tiles using utility Mosaicr.
+This is OK as long as the areas dont get too large causing tiles to get too large to process.
+<P>
+I merged 2 tiles to create a sample map.
+<PRE>
+
+
+</PRE>
+<H3><A NAME="sites-mars_crater">Mars Site with Large Crater</A></H3>
+
+This dataset can only be processed with a kluged version of Fusion3D that I have saved (see below).
+It is not that impressive visually so not worth pursuing further.
+Itis a strip that features a single large crater.
+<P>
+The data was produced by the HIRISE camera that produces stereo pairs.
+I think I got this data from the University of Arizona website though I cant find the exact location again.
+There are a number of other sites in basically the same format.
+<P>
+I had lots of issues processing this dataset -- see below.
+Some issues I was able to address with fixes but others had to be kluged.
+<P>
+
+
+
+
+
+
+<PRE>
+
+	1.  The coordinate system is geodetic rather than projected.
+	Fusion3D converts the coordinates to the appropriate WGS84 projection and does all work in this new system
+	I needed to fix a bug in image_tif_class that does the conversion for files read with GDAL
+		(I think that the code worked with my older implementation but was never tested when I switched to GDAL.)
+	I made permanent fixes and it should now work for geodetic .
+
+	2.  The DEM has very large negative elevations -- approx -11000 km
+	This failed checks in the code that attempt to discard bad data so produced blank screen
+	I made a temporary mod to map3d_index_class to avoid this check.
+
+	3.  The visible image is float and the code was not handling float.
+	This doesn't seem like a reasonable data type for visible imagery, so I did not try to fix the code.
+	I converted the file to byte using a GDAL utility:
+		gdal_translate -scale -ot byte input_file output_file
+
+	3.  The map was still not right -- I think the issue is non-square pixels.
+	I kluged the code to make the pixels square and that produced a 'good' map
+
+	4.  I saved the modified image_tif_class.cpp and map3d_index_class.cpp in the data directory.
+	I save the moded executable in the bin dir as Fusion3D_MarsCraterKluge.exe
+
+
+
+</PRE>
+<H3><A NAME="sites-charon">Charon Site</A></H3>
+
+This is an irregular area that looks like it was from relatively restricted look angles.
+An area in the center looks sharp but data quality falls off at the edges where it looks like look angles were near the horizon.
+<P>
+
+

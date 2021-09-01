@@ -45,19 +45,14 @@ class image_rtv_class:public image_3d_class{
    int read_header(const char *filename);
    int read_elev(const char *filename, int ihit, float *elev);
    int read_intens(const char *filename);
-   int read_merge(const char *filename);
-   int write_cropped(const char *filename_base);
-   int read_index();
    
  public:
    image_rtv_class();
    ~image_rtv_class();
 
    int get_type(char* type);
-   int read_file(string sfilename) override;
    int register_index(map3d_index_class *index);
    int make_smooth_flags();
-   int write_obj(const char *filename);
    
    float* get_elev_first();
    float* get_elev_last();

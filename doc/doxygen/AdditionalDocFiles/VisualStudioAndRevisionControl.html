@@ -1,0 +1,266 @@
+<HEAD>
+<TITLE>VISUAL STUDIO AND REVISION CONTROL</TITLE>
+</HEAD>
+<BODY>
+<H1>VISUAL STUDIO AND REVISION CONTROL</H1>
+<HR>
+
+
+<H2><A NAME="vs2017-license">VISUAL STUDIO 2017 LICENSE</A></H2>
+
+The license needs to be renewed periodically.
+I renewed it 10/15/2019.
+To do this you need to be connected to the internet. 
+It asks you to login -- I logged in as tj71dammann@poetworld.net with passwd CHessie08 (8).
+It then automatically updates the license.
+<P>
+
+
+
+<H2><A NAME="install-dev">PREPROCESSOR FLAGS</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Preprocessor Flags</CAPTION>
+<TR><TH>Flag<TH>Priority<TH>Description
+<TR><TD>LIBS_COIN    <TD>Required<TD>Include COIN3D OpenInventor libraries
+<TR><TD>LIBS_SOQT    <TD>Required<TD>Include SoQt OpenInventor bridge libraries
+<TR><TD>LIBS_QT      <TD>Required<TD>Include Qt GUI libraries
+<TR><TD>LIBS_MRSID   <TD>Optional<TD>Include libraries for MrSID Decode if MrSID imagery files are used
+<TR><TD>LIBS_GDAL    <TD>Optional<TD>Include libraries for GDAL used as primary parser for GeoTiff and many vector formats
+<TR><TD>LIBS_KML     <TD>Optional<TD>Include libraries for LIBKML to read/write KML
+<TR><TD>LIBS_ASSIMP  <TD>Optional<TD>Include libraries from ASSIMP for importing CAD formats (including COLLADA)
+<TR><TD>BIG_ENDIAN   <TD>Optional<TD>Little-endian architecture assumed, needed if architecture is big-endian
+<TR><TD>LIBS_SOWIN   <TD>Old Windows-Only<TD>Include SoWin OpenInventor bridge libraries
+<TR><TD>LIBS_BOOST   <TD>Old Windows-Only<TD>Include libraries for BOOST/MATH
+<TR><TD>LIBS_FASTLZ  <TD>Superceded<TD>Include libraries for FASTLZ compression library
+<TR><TD>LIBS_XC      <TD>Superceded<TD>Include Open XC libraries
+<TR><TD>LIBS_NSP     <TD>Superceded<TD>Include old (superceded) Intel Signal Processing libraries (see notes)
+<TR><TD>LIBS_EOIR    <TD>Superceded<TD>Include libraries from EOIR for communication with Ladar (new ethernet board)
+<TR><TD>LIBS_QUICKLZ <TD>Superceded<TD>Include libraries for QUICKLZ
+<TR><TD>LIBS_PCL     <TD>Superceded<TD>Include libraries for Point Cloud Library
+<TR><TD>LIBS_VSG     <TD>Superceded<TD>Include VSG OpenInventor libraries
+<TR><TD>LIBS_MKL     <TD>Superceded<TD>Include Intel MKL libraries
+<TR><TD>LIBS_MYSQL   <TD>Superceded<TD>Include Intel MYSQL libraries
+<TR>
+<TR>
+<TR>
+<TR><TD>LIBS_LADAR4D<TD>No <TD>Excludes code not required for view_ladar4d
+</TABLE>
+<BR><BR><BR>
+
+
+<pre>
+
+Files depending on LIBS_NSP / LIBS_NSPSGI
+	image_ebapsladar_class
+	image_ebapsladar_doppler_class
+	image_bsladar_class
+	image_dit4d_class
+	image_linladar_class
+	imager_prc_class
+
+
+
+</pre>
+
+
+<H2><A NAME="install-dev">REQUIRED LIBRARIES</A></H2>
+<H3><A NAME="install-dev">Libraries in Build</A></H3>
+
+<TABLE BORDER>
+<CAPTION>Libraries</CAPTION>
+<TR><TH>Library	<TH>Switch       <TH>Fusion3D<TH>View<TH>lasFmt<TH>Location                      <TH>lib         <TH>Notes<TH>
+<TR><TD>Coin3D	<TD>LIBS_COIN    <TD>Yes     <TD>Yes <TD>No    <TD>C:\Coin3D                     <TD>Note 5      <TD>Reqd recompile in msvc10 from source on laptop, but just used msvc9 on dev machine
+<TR><TD>SoWin	<TD>LIBS_COIN    <TD>Yes     <TD>Yes <TD>No    <TD>C:\Coin3D                     <TD>Note 5      <TD>Reqd recompile in msvc10 from source on laptop, but just used msvc9 on dev machine
+<TR><TD>GDAL	<TD>LIBS_GDAL    <TD>Yes     <TD>Yes <TD>Yes   <TD>C:gdal-1.10.0                 <TD>gdal_i.lib  <TD>64-bit binary copied onto dev machine
+<TR><TD>MrSID	<TD>LIBS_MRSID   <TD>Yes     <TD>No  <TD>Yes   <TD>C:\MrSID                      <TD>lti_dsdk.lib<TD>Must get passwd or new account
+<TR><TD>libjpeg	<TD>LIBS_JPEG    <TD>Yes     <TD>No  <TD>No    <TD>C:\jdammann\jpegsr9\jpeg-9    <TD>jpeg.lib    <TD>To read UGS image, made from source in VC10
+<TR><TD>PCL		<TD>LIBS_PCL     <TD>No      <TD>Yes <TD>No    <TD>C:\Program Files\pcl-1.6.0    <TD>multiple    <TD>Point cloud library Also requires Boost, Eigen, FLANN
+<TR><TD>Boost 	<TD>LIBS_BOOST   <TD>No      <TD>Yes <TD>No    <TD>C:\Program Files\pcl-1.6.0    <TD>Note 1      <TD>Included in Point Cloud Library directory
+
+<TR><TD>MKL		<TD>LIBS_MKL     <TD>No      <TD>No  <TD>No    <TD>C:\Program Files\Intel\MKL    <TD>Note 2      <TD>Not included in default
+<TR><TD>MYSQL	<TD>LIBS_MYSQL   <TD>No      <TD>No  <TD>No    <TD>C:\MySQL                      <TD>Note 4      <TD>Not included in default
+<TR><TD>OpenJPEG	<TD>LIBS_OPENJPEG<TD>No      <TD>No  <TD>No    <TD>C:\OpenJPEG                   <TD>Note 3      <TD>Not included in default
+<TR><TD>Plsuite	<TD>LIBS_NSP     <TD>No      <TD>No  <TD>No    <TD>C:\Program Files\Intel\plsuite<TD>            <TD>Signal processing library -- Not included in default
+
+<TR><TD>VLC		<TD>LIBS_VLC     <TD>No      <TD>No  <TD>No    <TD>C:\vlc-2.2.6                  <TD>            <TD>Still experimental
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+1.  PCL libraries	-- Point Cloud Library
+	Includes in C:\Program Files\PCL 1.6.0
+		include\pcl-1.6
+		3rdParty\Eigen\include
+		3rdParty\Boost\include
+		3rdParty\FLANN\include
+	Lib dirs in C:\Program Files\PCL 1.6.0
+		lib
+		3rdParty\Boost\lib
+		3rdParty\FLANN\lib
+	Libs
+		pcl_common_debug.lib
+		pcl_features_debug.lib
+		pcl_segmentation_debug.lib
+		pcl_sample_consensus_debug.lib
+	dlls
+		pcl_common_release.dll
+		pcl_sample_consensus_release.dll
+
+2.  MKL libraries
+	mkl_c.lib
+	mkl_s.lib
+	mkl_c_dll.lib	
+	mkl_s_dll.lib
+	mkl_lapack.lib
+	mkl_solver.lib
+	mkl_ia32.lib
+	libguide40.lib	Also OpenJPEG
+	libguide.lib	Also OpenJPEG
+
+3.  libjpeg libraries
+	jpeg.lib
+
+4.  OpenJPEG libraries
+	libguide40.lib	Also MKL
+	libguide.lib	Also MKL
+	openJPEG.lib / openJPEGd.lib
+
+5.  MySQL libraries
+	libmysql.lib
+
+6.  Coin3D/SoWin libraries
+	coin3.lib / coin2d.lib
+	sowin1.lib / sowin1d.lib
+	simage1.lib /simage1d.lib
+
+
+</PRE>
+
+
+<H3><A NAME="install-dev">Dll's in Bin Directory</A></H3>
+<pre>
+
+GDAL 1.7.1
+	gdal_fw.dll
+	geos_fw.dll
+	geotiff_fw.dll
+	hdf5dll.dll
+	hdf_fw.dll
+	jpeg12_osgeo.dll
+	jpeg_osgeo.dll
+	libcurl.dll
+	libeay32.dll
+	libexpat.dll
+	libpq.dll
+	libtiff_fw.dll
+	lti_dsdk.dll	(also MrSID?)
+	lti_dsdk_dll.dll	(also MrSID?)
+	mfhdf_fw.dll
+	NCScnet_fw.dll
+	NCSEcw_fw.dll
+	NCSUtil_fw.dll
+	netcdf.dll
+	ogdi_32b1.dll
+	proj.dll
+	sqlite3.dll
+	ssleay32.dll
+	szlibdll.dll
+	xerces-c_2_7.dll
+	zlib1.dll
+	zlib_osgeo.dll
+
+COIN
+	coin3.dll
+	sowin1.dll
+
+MYSQL
+	LIBMYSQL.dll (also in gdal 1.10)
+
+OPENJPEG
+	OpenJPEG.dll (also in gdal 1.10)
+	
+
+MICROSOFT
+	COMDLG32.dll
+	libguide40.dll
+	mfc100.dll
+	mfc100u.dll	
+	mfcm100.dll
+	mfcm100u.dll
+	msvcp100.dll
+	msvcr100.dll
+
+
+
+
+
+</PRE>
+<H3><A NAME="install-dev">Making of LIBJPEG</A></H3>
+
+I had to make libjpeg from source.
+I got the source from the net, version 9 (not the latest, but matched some instructions I found).
+<PRE>
+
+	in the prompt window, cd to directory C:\jdammann\jpegsr9\jpeg-9 and run commands:
+
+	set INCLUDE=%INCLUDE%;c:\Program Files\Microsoft SDKs\Windows\v7.0A\Include
+	nmake -f makefile.vc setup-v10
+
+	Then I just made the solution in VC10 and referenced the .h files and .lib file it made
+
+
+</PRE>
+
+
+
+
+<H3><A NAME="install-dev">Update of GDAL Libraries to Version 10.0</A></H3>
+
+I updated the gdal libraries in late May 2013 to version 10.0. -- the old version was 1.7.1.
+I put the new libraries in dir c:\gdal-1.10.0.
+I downloaded the source and compiled with the provided VS10 .sln file to make the library and includes.
+For some reason, the install part of the build did not work for me, so I made 'lib' and 'include' dirs and
+copied the required (cribbed from the makefiles included in the VS10) files into these dirs.
+I downloaded a precompiled binaries to get the .dlls -- I did not use the .dll that my build made.
+I think that ones that I made did not include options that the precompiled ones did.
+<P>
+I got an error message -- ordinal 63 missing.
+I fixed this by putting the new gdal bin dir at the head of the list for env var path.
+I think it was accessing the old gdal .dlls rather that the proper new ones.
+<P>
+On running, I had another problem -- it still cant read the KML latlonbox,
+but does not return NULL like the old libs but returns 0 features instead.
+I moded the code to look for both NULL and 0 features and then go to my separate implementation of the latlonbox.
+<P>
+
+
+
+
+
+
+
+<H2><A NAME="install-dev">PROFILING</A></H2>
+<H3><A NAME="install-dev">Visual Studio Properties Modified</A></H3>
+<PRE>
+
+Configuration Properties
+	General
+		Whole Program Optimization	No whole program Opt??
+C++
+	General
+		Debug info format			Disabled??
+	Optim
+		Favor size or speed		favor fast code
+	Code gen
+		Enable string Pooling		Yes (/GF)
+
+Linker
+	Optim	
+		Link Time Code Gen		Profile Guided Opt
+
+
+</PRE>
+
+

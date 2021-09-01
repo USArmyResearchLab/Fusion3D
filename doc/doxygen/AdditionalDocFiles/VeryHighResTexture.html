@@ -1,0 +1,189 @@
+<HEAD>
+<TITLE>VERY HIGH RESOLUTION TEXTURE</TITLE>
+</HEAD>
+<BODY>
+<H1>VERY HIGH RESOLUTION TEXTURE</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#vhi_intro">Introduction</A>
+<P>
+<LI><A HREF="#vhi_optimize">Optimizing</A>
+<P>
+<LI><A HREF="#vhi_low">Low-Res and Medium-Res Tile Textures with MrSID</A>
+<P>
+<LI><A HREF="#vhi_large">Large Tile-Sized Datasets</A>
+<P>
+<LI><A HREF="#vhi_notes">Implementation Notes</A>
+<P>
+</UL>
+
+<H2><A NAME="vhi_intro">INTRODUCTION</A></H2>
+
+In March 2011 for revision 4.38, I added the capability to texture with an orthophoto that has higher resolution than the corresponding elevation data.
+Previously, the resolution of the texture had to match that of the elevations.
+This was done for Jon Lefman at AGC for the Buckeye program -- Buckeye typicall takes elevation data at 1-m resolution but has orthophotos at 10-cm resolution
+and wants to be able to take advantage of the higher-res textures.
+<P>
+One important restriction is that the texture data must have a sampling rate that is an integer multiple of the elevation rate.
+<P>
+
+<H2><A NAME="vhi_optimize">OPTIMIZING</A></H2>
+
+The initial implementation of the very-high resolution orthophoto texture was very slow and memory intensive.
+The largest area that I could handle with my Constant Hawk development machine and Quadro RF5800 was a square
+of 3x3 64-pixel tiles.
+I was able to make it much more efficient  -- enough so that it could comfortably handle the entire Ft Leonard Wood test set --
+a little larger than 5x5 128-pixel tiles.
+This is about 12 times the original size and render time is reduced by more than 6 times.
+<P>
+Most of the efficiency was gained by only using a single face-set/coordinate/texture-coordinate per tile rather
+than one for each pixel in the tile.
+It was necessary to specify diffuse colors for every pixel even though these values were set to zero and not really used(??).
+Additional efficiency was gained by using the SoVertexProperty with entries for diffuse color, coordinates and texture coordinates.
+<P>
+Following are time and size measurements for different improvements:
+<PRE>
+
+
+Base config	3x3x64	449,276K		~26s	1 FaceSet, 1 coord set, 1 texture coord set per DEM pixel
+mod 1		3x3x64	398,400K		~14s	1 FaceSet per DEM pixel
+Mod 2		3x3x64	264,388K		~1s	Nothing per DEM pixel -- Everything defined per tile 
+Mod 2		5x5x128	363,572K		~4s	Nothing per DEM pixel -- Everything defined per tile 
+Mod 3		5x5x128	341,312K		~4s	Use SoVertexProperty  
+Mod 3		5x5x128	408,864K		N/A	Ottawa, no vhi  
+Mod 4		5x5x128	401,844K		N/A	Ottawa, no vhi med-res converted to SoVertexProperty 
+
+
+</PRE>
+
+
+
+<H2><A NAME="vhi_low">LOW-RES AND MEDIUM-RES TILE TEXTURES WITH MRSID</A></H2>
+
+I implemented producing low-res texture from the MrSID file.
+In order to read and decode efficiently, MrSID downsampling ratios must be a factor of 2.
+For low-res textures, I set the maximum resolution of the texture to 1/3 of the full resolution of the DEM.
+For the datasets I looked at, the MrSID had 10 times the res of the DEM.
+The first power of 2 to satisfy the max res is 32, so the MrSID image is downsampled by 32.
+<P>
+For medium-res textures, I set the maximum resolution of the texture to be the full resolution of the DEM.
+For the datasets I looked at, the MrSID had 10 times the res of the DEM.
+The first power of 2 to satisfy the max res is 16, so the MrSID image is downsampled by 16.
+<P>
+Timing tests indicate that the medium-res textures with MrSID are slightly slower but that the low-res textures are slightly faster.
+So there dont seem to be significant timing differences in the two techniques.
+<P>
+
+<H3><A NAME="vhi_low">Low-Res Timing Tests</A></H2>
+
+Timing tests were done to compare making low-res tiles with MrSID to the previous method of making them using 'mrg' files.
+The new method is somewhat faster:
+<P>
+
+<PRE>
+
+Tested on Baghdad2 dataset, tiles 20-25 using the default 21x21 low-res tiles made in main thread
+	Time in s to make entire low-res tile set including all steps, not just texture
+	For the datasets I looked at, the MrSID had 10 times the res of the DEM.
+	The first power of 2 to satisfy the max res is 32, so the MrSID image is downsampled by 32.
+
+	Tile	'mrg'	MrSID
+	20	6.8	3.9
+	21	5.8	4.0
+	22	?	3.9
+	23	4.3	3.8
+	24	4.4	3.8
+	25	8.3	4.1
+
+
+
+
+
+</PRE>
+<H3><A NAME="vhi_low">Medium-Res Timing Tests</A></H2>
+
+Timing tests were done to compare making medium-res tiles with MrSID to the previous method of making them using 'mrg' files.
+The new method is slightly slower:
+It looks like comparing to no MrSID is very misleading, since MrSID hi-res operation seem to compete for resources with the medium-res operations.
+A better comparison is with the older code where MrSID was used only for hi-res tiles.
+Using the latter comparison, the new method is only slightly slower:
+<P>
+
+<PRE>
+
+Tested on Baghdad2 dataset, tiles 26-30 using the default 5x5 medium-res tiles made in main thread
+	Time in s to make entire medium-res tile set including all steps, not just texture
+	The first power of 2 to satisfy the max res is 16, so the MrSID image is downsampled by 16.
+	I compared all 5 tiles against the case where there are no MrSID files -- no hi-res tiles and 'mrg' used for the medium-res tiles.
+	I compared 2 tiles against the case where there are MrSID files but the older -- hi-res tiles but 'mrg' used for the medium-res tiles.
+
+	Tile	'mrg' with no MrSID	MrSID		'mrg' with older code using MrSID only for hi-res tiles
+	26	2.4				4.9
+	27	2.6				8.1
+	28	1.8				4.9
+	29	2.9				9.9		6.8
+	30	1.8				6.0		5.8
+
+
+
+
+
+</PRE>
+
+<H2><A NAME="vhi_large">LARGE TILE-SIZED DATASETS</A></H2>
+
+The initial implementation of very-high resolution textures is done using GeoTiff files for the very-hi res.
+The conversion from the MrSID file to GeoTiff was done with the LizardTech utility mrsidgeodecode.exe.
+This works well for relatively small areas but not for larger tile-sized areas.
+<P>
+
+<H3><A NAME="vhi_large1">Experiments with Baghdad Tile 27</A></H3>
+
+I got the MrSID file associated with Tile 27 (I wasn't able to download/unzip the file for the entire Baghdad map, so I had to get
+an image for each tile).
+When I tried to convert the entire tile using the LizardTech utility mrsidgeodecode.exe, I got a file that I couldnt read.
+I tried all the programs that read tif images and none of the programs worked either.
+<PRE>
+
+	mrg_1m_a1_baghdad2_tile27.tif		 	   129,637 KB		1-m resolution
+	baghdad122008_block27_10cm_8bit.sid 	   560,871 KB		10-cm resolution
+	vhi_1m_a1_baghdad2_tile2_bigBad.tif		13,150,794 KB		23 times larger than MrSID
+</PRE>
+
+
+<H2><A NAME="vhi_notes">IMPLEMENTATION NOTES</A></H2>
+<H3><A NAME="vhi_notes">Methods</A></H3>
+<PRE>
+
+
+map3d_manager_inv_class -- interface to hi-res imagery
+
+	get_texture_mrsid(double north_cen, double east_cen, float height_tile, float width_tile, unsigned char *data, int mrsid_nxy, int i_mrsid)
+
+	mrsid_nfiles
+
+
+
+	make_newtile_hi (double ncen, double ecen, float height, float width, SoSeparator *lastBase, SoSeparator *firstBase)
+		Makes a tile -- fetches elevations and texture
+
+	data_a1 = map3d_index->get_elev(1, 1);		Gets elevation data for a1 surface
+	data_a2 = map3d_index->get_elev(2, 1);		Gets elevation data for a1 surface
+	data_texture = map3d_index->get_mrg();		Gets texture data at same res as elevations
+	data_vhi = map3d_index->get_vhi();		Gets very-high res texture data
+
+	a2_smooth_flags = map3d_index->get_smooth_flags();
+
+	make_page_last_mrsid(double north_cen, double east_cen, float height_tile, float width_tile,
+		int n_cushion, float *data_elev, unsigned char* data_intens, unsigned char *a2_smooth_flags,
+		SoSeparator *base, char *textureName, int mrsid_nxloc)
+			Builds OpenInventor tree for the tile
+			Just uses data array and array size (texture area precisely matches tile area)
+
+	get_vhi			Gets the very-high res imagery cropped to the tile dimensions
+
+
+
+</PRE>

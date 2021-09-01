@@ -9,6 +9,7 @@ image_mrsid_class::image_mrsid_class(gps_calc_class *gps_calc_in)
 	if (gps_calc_in == NULL) {
 		exit_safe(1, "image_mrsid_class::image_mrsid_class:  NULL gps_calc_class");
 	}
+	class_type = "sid";
 	gps_calc = gps_calc_in;
 	bsq_flag = 0;
    data_type = 6;			// Default color -- can recognize RGB and Grayscale
@@ -165,8 +166,12 @@ int image_mrsid_class::read_file_header()
    yRes = geo.getYRes();
    lrx = ulx + xRes * pixelWidth;			// Local coords
    lry = uly + yRes * pixelHeight;
-   transform_to_global_coord_system(localCoordFlag);		// Translate to global coord system if different
-   
+   if (!gps_calc->is_coord_system_defined()) {
+	   gps_calc->init_from_epsg_code_number(localCoordFlag);
+   }
+   else {
+	   transform_to_global_coord_system(localCoordFlag);		// Translate to global coord system if different
+   }
    ncols = reader->getWidth();
    nrows = reader->getHeight();
    dwidth  =  (float)xRes;
@@ -261,6 +266,65 @@ int image_mrsid_class::read_file_data()
    }
 #endif
   return(1);
+}
+
+// ******************************************
+/// Read the data from an open image -- read entire image at downsampled resolution.
+/// MrSID images are highly compressed and often the entire image cant be stored at max resolution.
+/// This class enables reading at downsampled resolution without creating the entire full-res image.
+/// It takes advantage of capability of MrSID to read lower resolutions directly.
+/// The data for a window is read into a buffer.
+/// The default data ordering is BSQ, but if the flag is not set the data is converted to BIP ordering
+///
+/// @param downsample ratio -- Must be power of 2 (what MrSID natively supports) or results will probably be wrong
+///
+// ******************************************
+int image_mrsid_class::read_file_data_down(int downsample_ratio)
+{
+#if defined(LIBS_MRSID)
+	LT_STATUS sts = LT_STS_Uninit;
+
+	int nc = ncols / downsample_ratio;
+	int nr = nrows / downsample_ratio;
+	double magnification = 1.0 / double(downsample_ratio);
+
+	// decode the whole image at full resolution
+	scene = new LTIScene(0, 0, nc, nr, magnification);
+
+	// construct the buffer we're decoding into
+	// note we choose to allocate our own buffer, rather than let
+	// LTISceneBuffer implicitly allocate one for us
+	const lt_uint32 siz = nc * nr * 1;
+	if (membuf != NULL) delete[] membuf;
+	membuf = new lt_uint8[siz * 3];
+	void* bufs[3] = { membuf + siz * 0, membuf + siz * 1, membuf + siz * 2 };
+	LTISceneBuffer bufData(reader->getPixelProps(), nc, nr, bufs);
+
+	// perform the decode
+	sts = reader->read(*scene, bufData);
+	if (sts != LT_STS_Success) {
+		cout << "image_mrsid_class::read_image: Cant read image " << endl;
+		return(0);
+	}
+
+	// perform the decode
+	if (bsq_flag) {
+		data[0] = membuf;
+	}
+	else {
+		if (membuf2 != NULL) delete[] membuf2;
+		membuf2 = new lt_uint8[siz * 3];
+		sts = bufData.exportDataBIP((void*&)membuf2);
+		if (sts != LT_STS_Success) {
+			cout << "image_mrsid_class::read_image: Cant read image " << endl;
+			return(0);
+		}
+		data[0] = membuf2;
+		delete[] membuf;
+		membuf = NULL;
+	}
+#endif
+	return(1);
 }
 
 // ******************************************

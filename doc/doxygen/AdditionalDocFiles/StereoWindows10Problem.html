@@ -1,0 +1,206 @@
+<HEAD>
+<TITLE>PROBLEM WITH NVIDIA QUADBUFFERED STEREO AND WINDOWS-10</TITLE>
+</HEAD>
+<BODY>
+<H1>PROBLEM WITH NVIDIA QUADBUFFERED STEREO AND WINDOWS-10</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#general">General</A>
+<LI><A HREF="#stereotest">Stereotest, a Simple OpenGL Test Program</A>
+<LI><A HREF="#forum">Nvidia Forum</A>
+<LI><A HREF="#notes">Notes</A>
+</UL>
+
+<H2><A NAME="general">GENERAL</A></H2>
+
+
+<TABLE BORDER>
+<CAPTION>Test Configurations</CAPTION>
+<TR><TH>Computer<TH>Card<TH>Monitor<TH>Operating System<TH>Driver<TH>Parms<TH>Notes
+
+<TR><TD>Development machine<TD>Quadro K4000 <TD>Asus VG278H<TD>Windows 7 <TD>333.11<TD>Generic active stereo (with Nvidia 3D Vision)<TD>
+<TR><TD>Eurocom laptop     <TD>Quadro K5000M<TD>LG 3DTV    <TD>Windows 7 <TD>353.30<TD>Generic active stereo (with Nvidia 3D Vision)<TD>
+<TR><TD>Office Tower       <TD>Quadro M4000 <TD>Asus VG278H<TD>Windows 10<TD>382.59<TD>Generic active stereo (with Nvidia 3D Vision)<TD>Note 1
+<TR><TD>Conover laptop     <TD>Quadro P4000 <TD>LG 3DTV    <TD>Windows 10<TD>416.78<TD>Generic active stereo (with Nvidia 3D Vision)<TD>
+</TABLE
+<BR><BR><BR>
+
+<PRE>
+
+1.  Cables must have enough bandwidth to support 1920x1080 at 120 Hz
+	This requires a dual-link DVI for ASUS monitor
+	The Quadro M4000 in my office tower has only 4 displayPort outputs, so converter required that can support dual DVI
+	The converter already on the computer could not -- 120Hz setting did not show up on the Change Resolution menu
+		and the display did not flash as it should when starting Fusion3D in stereo
+	We have a StarTech DisplayPort to DVI Dual Line Active Converter (originally bought for Eurocom?) which looks to work
+		120Hz can be chosen and the display flashes properly -- however, viewer still crashes.
+
+
+</PRE>
+
+
+
+<H2><A NAME="stereotest">STEREOTEST, A VERY SIMPLE OPENGL PROGRAM FOR TESTING 3D STEREO</A></H2>
+
+Stereotest is a simple OpenGL program for testing if 3D stereoscopic viewing works properly within a window on the display screen
+(in contrast to "full screen" stereo where images are not contained within a window).
+The program tests for basic "stereo-in-a-window" functionality by 1) creating a window, 2) initializing it for OpenGL drawing,
+and 3) drawing the background for each eye as a solid color.
+There are no dependencies on any graphical user interface, and no 3D drawing.
+<P>
+The background is a field of red in the left eye and a field of blue in the right eye.
+Thus, without 3D glasses you should see a magenta window if the stereo images are superimposed on the display correctly
+and with 3D glasses you should see separate background colors in each eye.
+If stereotest doesn't display the expected red-in-left-eye and blue-in-right-eye image,
+then either the graphics driver isn't configured properly for 3D stereo or there is a hardware problem.
+If your graphics card does not support stereo the message "unable to get stereo visual" is output. 
+<P>
+
+
+
+
+<H3><A NAME="stereotest-test">Tests of stereotest on My Windows10 Office Desktop</A></H3>
+
+
+I tested stereotest on my office PC running Windows10 Enterprise with a DoD-standard 'image' that includes lots of security additions.
+It has a Quadro M4000 card running 382.59 driver version.
+I used a ASUS VG278H monitor with built-in emitter and Nvidia 2nd-gen glasses.
+It looks like the first time I run stereotest with the stereo monitor and correct stereo settings, the emitter comes on for a short time
+then turns back off.  After that the emitter never turns on again (until a reboot perhaps, as I have seen this behavior several times separated by
+weeks during which there was a reboot).
+<P>
+
+<PRE>
+
+
+	stereotest on my office PC, windows10, Enterprise with ARL 'image'
+		Stereo enable off, any reasonable stereo-emitter settings
+			Result: immediate error message basically saying stereo not available
+
+		Stereo enable on, mono monitor
+			Stereo enable on, any reasonable stereo-emitter settings
+				blinking red/blue alternate like it should be (but no stereo of course)
+
+		Stereo enable on, stereo monitor, 1920x1080, 120Hz, ASUS VG278H with built-in emitter
+			Stereo enable on, generic active stereo
+				purple, emitter dark
+			Stereo enable on, generic active stereo (with NVIDIA 3d Vision)
+				First time:  Test window appears, screen blinks, emitter turns on very short time, screen blinks/emitter shuts off
+				Subsequent:  Test window appears, screen blinks, emitter never turns on, very slow response to anything until window killed
+			Stereo enable on, On board DIN connector (with NVIDIA 3d Vision)
+				Subsequent:  Test window appears, screen blinks, emitter never turns on, very slow response to anything until window killed
+			Stereo enable on, On board DIN connector
+				Subsequent:  Test window appears, screen blinks, emitter never turns on, very slow response to anything until window killed
+
+
+
+</PRE>
+
+
+
+<H2><A NAME="forum">NVIDIA FORUM QUESTION</A></H2>
+
+<PRE>
+
+	Registered Nvidia:	27 Aug 2019	User name: gov email		Passwd Chessie 08-12
+	Original question: 	27 Aug 2019	
+	Forums > Professional Graphics and Rendering > General Development > Drivers
+
+
+</PRE>
+
+Hope this is the right place to enter this question.
+<P>
+We have been using quadbuffered stereo with Quadro cards for a number of years and this is very important for our software package based on OpenInventor.
+I have not been able to get the stereo to work on Windows10. I have tried 4 different computers -- 2 laptops and 2 towers -- with 4 different Quadro cards.
+I have used an ASUS monitor with built-in emitter, several monitors with separate emitters, and an LG 3D tv. None have worked.
+They all show the same symptoms. Whenever the quadbuffered stereo is enabled (in any configuration) the application crashes on starting -- 
+it appears to be when the initial window is opened.
+<P>
+Has anyone been able to get stereo to work on Windows10? I have combed the forum and internet but found no answers.
+<P>
+
+
+
+<H2><A NAME="notes">NOTES</A></H2>
+<H3><A NAME="notes">Nvidia Discontinues Stereo Support</A></H3>
+<PRE>
+
+
+Thank you to all who replied. I have some good news for this issue.
+
+Nvidia has a beta QNF driver version 382.05 dated 4 May 2017 and a WHQL release 377.48 from 14 June 2017.
+Both of these appear to retain stereo capabilities together with the Windows 10 Creators update.
+
+The WHQL driver 377.35 from 9 May 2017 does NOT work.
+
+The WHQL driver 377.48 is not listed for use with the Quadro Pascal-series cards for Notebooks/laptops.
+We tested the QNF 382.05 driver in a Windows 10 laptop with an NVIDIA Quadro P4000 in a Dell Precision 7720 Mobile Workstation, and it works well.
+When installing a new nVidia driver for use with OpenGL stereo, select the "Custom" and "Clean" settings.
+Then reset the three nVidia Control Panel settings: 120 Hz (not 144Hz), stereo enable=on, and stereo display mode="On-board DIN connector (with NVIDIA3D vision)"
+or one of the top three or four selections if that isn't offered (one of them will give better stereo than the others).
+
+If one of these two video drivers -- and we can assume drivers released after 14 June 2017 -- works, there is no need to roll back your Windows 10 Creators update.
+
+Nvidia has a beta QNF driver version 382.05 dated 4 May 2017 and a WHQL release 377.48 from 14 June 2017.
+Both of these appear to retain stereo capabilities together with the Windows 10 Creators update.
+
+On April 11, 2019, NVIDIA announced that support for 3D Vision in drivers would be discontinued[4], as well as support for 3DTV.
+Driver releases from version 425.31 onward do not include support for 3D Vision. 
+
+</PRE>
+<H3><A NAME="notes">Current Nvidia Settings</A></H3>
+<PRE>
+
+"Stereoscopic 3D"
+----------------------
+
+Nvidia Control Panel -> Stereoscopic 3D -> Set up stereoscopic 3D
+	In Windows 7, does not matter whether on not "Enable stereoscopic 3D" is checked (enabled) or not
+	Needs to be enabled to run Nvidia test pattern (letters moving in and out of screen)
+
+
+Windows10
+-----------
+
+	Settings -> Display -> 3D display mode -> On/Off
+		Off gives flash when viewer starts, On give no flash
+		Neither seems to fix problem of crashing
+
+
+
+Nvidia P5000 card
+---------------------
+
+From specs:		Nvidia 3D Vision and 3D Vision Pro   		"Support via 3 pin DIN"
+
+
+Current config
+-------------------
+
+Development machine	Quadro K4000    Asus monitor  	Windows 7 		Driver 333.11 	Generic active stereo (with Nvidia 3D Vision)
+Eurocom laptop		Quadro M?	LG 3Dtv		Windows7		Driver ?	Generic active stereo (with Nvidia 3D Vision)
+Office Tower		Quadro M4000	Asus		Windows10 Entrprse	Driver 382.59		1, 2
+Conover laptop		Quadro P4000	Asus		Windows10 Entrprse	Driver 416.78
+
+
+2  Iff Stereo-Enable on:  Crashes Fusion3D for any likely Stereo-Display mode 
+					Double images but emitter not working and no stereo effect for Stereo-Display mode->interleaved settings
+
+</PRE>
+<H3><A NAME="notes">Changing BIOS Settings on the Desktop Tower</A></H3>
+<PRE>
+
+
+	Get into Bios
+		Hit F2 function key repeatedly while you reboot (happens before you get to the Bitlocker input)
+		BOIS -> Video->Primary display
+			Auto (current setting)
+			Intel Graphics
+			Nvidia Graphics
+
+
+
+</PRE>
+

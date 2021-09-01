@@ -6,15 +6,15 @@
 Manages all status overlays -- objects that are always postioned at the top-left of the display and show time or compass or other status parameters.
 
 Implemented currently for time and for compass.
+Displays time in GMT hours:minutes:seconds
+Default simple compass is arrow pointing north and labeled 'N'
 */
 class status_overlay_manager_class:public atrlab_manager_class{
    protected:
-	   int displayCompassFlag;			// 0 for no display, 1 for simple display, 2 for fancy display
-	   float red, grn, blu;				// status overlay colors
-	   float updateInterval;
-	   float compassScaleFactor;
-      
-	   time_conversion_class *		time_conversion;
+	   int displayCompassFlag;			///< 0 for no display, 1 for simple display, 2 for fancy display
+	   float red, grn, blu;				///< status overlay colors
+	   float compassScaleFactor;		///< Controls compass size -- can be modified in Project file (see User Man)
+	   time_conversion_class *time_conversion;	///< Helper class to convert time to GMT hours:minutes:seconds
 
 	   int reset_all();
 

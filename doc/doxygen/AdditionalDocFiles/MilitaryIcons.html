@@ -1,0 +1,121 @@
+<HEAD>
+<TITLE>MILITARY ICONS</TITLE>
+</HEAD>
+<BODY>
+<H1>MILITARY ICONS</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#icons_intro">Introduction</A>
+<P>
+<LI><A HREF="#icons-micro">Creating the Icons With Microdem</A>
+<P>
+<LI><A HREF="#icons-mouat">Tom Mouat's Set of Symbol Fonts used by Microdem</A>
+<P>
+<LI><A HREF="#icons-spatial">Creating the Icons With Spatial Illusions</A>
+<P>
+<LI><A HREF="#icons-save">Saving Symbols for Access by Fusion3D</A>
+<P>
+<LI><A HREF="#icons-mouat">Accessing Symbols from Fusion3D</A>
+<P>
+<LI><A HREF="#icons-save">Saving the Icons to KML</A>
+<P>
+</UL>
+
+
+
+<H2><A NAME="icons_intro">INTRODUCTION</A></H2>
+
+There are 2 basically similar standards for military icons -- 2525B/C which is for the US and NATO APP6B.
+They are heirarchical and can define procedurally a large number of different icons based on different attributes.
+They span the entire universe of military things, so they tend to be pretty broad categories.
+<P>
+I have not been able to find a c++ library that creates icons and also this would require a lot of programming to
+make a rather complex menu to construct the icons.
+So, at least for the short term, I have decided to create icons external to Fusion3D and use the images in the code.
+
+
+<H2><A NAME="icons-micro">CREATING THE ICONS WITH MICRODEM</A></H2>
+
+I downloaded Microdem to the Bang and Olafson computer in 3F061.  It is installed with microdem_setup.exe which runs standalone.
+However when you first start it, it asks for additional files from the net. Apparently, you dont need these files to use the icon generator
+but it does ask you for them each time you start Microdem -- a pain.
+I downloaded the requested .dbf files and that fixed the problem.
+I installed Microdem on the development machine in 3F061, then copied the .dbf files from the B&O machine and it worked properly.
+<P> 
+It uses basic symbols from MAPSYMBS.COM in the form of 'fonts' so these fonts have to be loaded also or all the useful symbols dont appear.
+<p>
+You access the icon composer by running Microdem, clicking the 'file' menu, the 'tools' submenu and the 'Military icon generator'.
+You should see 5 tabs, starting with the 'FR land'.  If you only see 2 starting with 'DRMS' then the MAPSYMBS.COM symbols have not been recognized.
+<p>
+You can save files as BMP, JPEG, GIF, and PNG.
+<p>
+
+
+
+<H3><A NAME="icons-mouat">TOM MOUAT'S MAPSYMBS.COM</A></H3>
+
+These are the basic symbols used by Microdem.
+As I understand it, each symbol is a letter in a font and the font is scalable so the output can be any size desired.
+<P>
+Licensing for commercial use is questionable, but it looks like there is no license required for Fusion3D as long is it doesn't become a commercial product.
+<P>
+
+
+
+<H2><A NAME="icons-spatial">POSSIBLE ALTERNATIVE:  CREATING THE ICONS WITH SPATIAL ILLUSIONS</A></H2>
+
+Spatial Illusions has a java library for creating icons procedurally and also a web-based applications that generates them for download.
+<PRE>
+
+	1.  Spatial Illusions (spatialillusions.com) has a browser-based code that will generate icons based on a number of attributes
+		selected from pull-down menus
+
+	2.  Right-click on the icon to save it as a .png file -- BUT SECURITY APPARENTLY BLOCKS DOWNLOAD ON ARL NETWORK
+
+
+
+
+</PRE>
+<H2><A NAME="icons-save">SAVING THE SYMBOLS FOR ACCESS BY FUSION3D</A></H2>
+
+Fusion3D looks for military symbols in a subdirectory of its bin directory: bin/milSymbols.
+It requires a BMP image file for each symbol.
+One should specify a standard size in Microdem when saving symbols, but the symbols are typically different sizes,
+most larger than the specified size.
+<P>
+
+
+<H2><A NAME="icons-access">ACCESSING THE SYMBOLS FROM FUSION3D</A></H2>
+
+Fusion3D has a menu that shows all the military symbols in directory bin/milSymbols.
+One can choosed the desired symbol from this menu.
+The menu can accomodata over 100 symbols, but is fixed size.  If there are too many symbols, some symbols may not appear.
+<P>
+At this point, the menu appears whenever you digitize a point feature in the draw feature.
+<P>
+
+
+
+<H2><A NAME="icons-save">SAVING THE ICONS TO KML</A></H2>
+
+Icons can be placed on the map using KML files
+<PRE>
+
+		<Style id="GlobeIcon">
+			<IconStyle>
+				<Icon>
+					<href> ... </href>
+				</Icon>
+			</IconStyle>
+		</Style>
+
+
+		<Placemark>
+			<styleUrl>#globeIcon</styleUrl>
+			<Point>
+				<coordinates> ... </coordinates>
+			</Point>
+		</Placemark>
+
+</PRE>

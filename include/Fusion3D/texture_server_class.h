@@ -103,6 +103,7 @@ public:
    
 	int register_map3d_lowres(map3d_lowres_class*	map3d_lowres_in);
 	int set_change_det(float thresh, float color_max);
+	int is_all_gray();
 	int get_hires_flag();
 	int get_medres_flag();
 	int get_lowres_flag();

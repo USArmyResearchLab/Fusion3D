@@ -3,12 +3,13 @@
 #ifdef __cplusplus
 
 /**
-Manages all SpaceNavigator inputs.
+Manages all 3Dconnexion SpaceNavigator inputs -- currently implemented in Windows-Sowin version but not in Qt-SoQt version.
 
 Originally written for the Spaceball, the class now is used to manage the SpaceNavigator -- a descendent of the Spaceball.
-This class does not work with the old SGI version of OpenInventor.
-It has been implemented in both the VSG and Coin3d versions of OpenInventor.
-But it is wired differently in these versions so some version-dependent code is required.\n
+Owing to basic limitations in Qt, this class does not work with the Open Sourced Qt version of the code.
+The SpaceNavigator does not appear to be important enough to Qt to add the functionality. 
+It may be possible to implement it but it would need to be done at a very low level, bypassing all the nice API
+supplied by 3Dconnexion.
 \n
 As the class was originally written, it depended on the SpaceNav device being set in "Dominant" mode, where only
 the largest input of the 6 degrees of freedom is passed.

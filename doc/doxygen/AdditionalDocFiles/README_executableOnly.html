@@ -1,0 +1,138 @@
+<HEAD>
+<TITLE>README FOR FUSION3D EXECUTABLE DISTRIBUTION</TITLE>
+</HEAD>
+<BODY>
+<H1>README FOR FUSION3D EXECUTABLE DISTRIBUTION</H1>
+<HR>
+
+The Fusion3D 3-D terrain viewer is oriented toward terrain visualization.
+It attempts to render the terrain in the most intuitive and visually direct way possible to facilitate human perception.
+It should be useful for situation awareness, mission planning and other situations where human understanding of terrain is important.
+It also has capabilities for line of sight and highlighting of vertical obstructions.
+Vertical obstruction highlighting makes checking flight paths and landing zones much faster and more reliable.
+<P>
+The rendering technique, unique to this viewer, provides many of the visual benefits of a point cloud while keeping
+the small size and useful ordering of the DSM.
+Fusion3D is a constrained viewer and navigation should be done as described below.
+These features are described in somewhat more detail below and much more thoroughly in the introductory tutorials and user manual
+provided with the code.
+<P>
+
+
+
+
+
+
+<H2><A NAME="ps_install">FUSION3D INSTALLATION</A></H2>
+
+The viewer, Fusion3D, can be simply copied onto your machine -- it does not need to be installed.
+The resultant directory tree should look something like:
+
+<PRE>
+
+	C:\Fusion3D\bin			Contains executable and all libraries that are required
+	C:\Fusion3D\doc			Contains documentation including introductory tutorials
+	C:\Fusion3D\data\scene	Contains a Project File and Digital Surface Models (DEMs) and point clouds for the scene
+
+</PRE>
+
+
+Independent libraries used are included in the distribution.
+
+
+
+
+<H2><A NAME="ps_sample">SAMPLE MAP WITH PROJECT FILE IN SUBDIRECTORY DATA/SCENE</A></H2>
+
+Project Files have the suffix '.s4d'.
+Digital Surface Models (DSMs), point clouds, associated vector overlays, and bookmarks can be loaded or created, then the entire ensemble saved as a Project File.
+They can be loaded by clicking on the 'File' Menu at the top-left of the main window, then clicking on the 'Open Project'.
+<P>
+Project Files are plain text, man-readable and can be edited with Wordpad, Notepad or any other simple text editor.
+They consist of tags (that must start a line) and accompanying parameters.
+<P>
+
+A sample scene is provided for basic testing of the Fusion3D viewer.
+The scene is a rural area in New York that contains a road with a few houses, fields and an area with tree cover.
+It was obtained from the LiDARUSA website, lidarusa.com, that contains a number of freely downloadable lidar datasets.
+This point-cloud dataset, according to their website, was "Captured with snoopy A-Series mounted on a Drone.
+The data is tiled so it isn't huge.  Colorized with world imagery and classified.  We are only
+using a small percentage of the available lasers for this view."
+<P>
+The Fusion3D viewer is capable of ingesting very large maps but we used only the A1 tile of the 4 available,
+and further cropped the point cloud to minimize the Fusion3D distribution download.
+We derived DSMs from the downloaded A1 point cloud using an Army Research Lab (ARL) developed gridding utility.
+This utility produces two DSMs:  a last-hit (a2) DSM and a first-hit (a1) DSM
+Note that the Fusion3D viewer can display both DSM's simultaneously -- a feature that we think is unique among terrain viewers
+-- and that the a1-DSM can be toggled on or off with a viewer button.
+<P>
+The point cloud was cropped to the upper-left corner of the image to minimize size.
+It was also culled with another ARL utility to eliminate point-cloud points very near the last-hit DSM.
+This is not necessary for the viewer but was done to illustrate how the DSM and point cloud can be used together.
+It has 2 advantages:  It reduces the cloud size (and total dataset size) by about half and it also reduces visual clutter.
+<P>
+
+
+<PRE>
+
+	Fusion3D/data/Scene/dem_0.5m_a2_scene.tif		Primary last-hit DSM
+	Fusion3D/data/Scene/dem_0.5m_a1_scene.tif		Secondary first-hit DSM
+	Fusion3D/data/Scene/mrg_0.5m_a1_scene.tif		Color image used to texture the DSM (Colors derived from .las)
+	Fusion3D/data/Scene/int_0.5m_a1_scene.tif		Intensity image that could be used as texture when no color image 
+	Fusion3D/data/Scene/mrg_0.5m_a1_scene.kml		Bounding box for the scene DSM
+	Fusion3D/data/Scene/sampleTrack.kml			Simple vector overlay example
+	Fusion3D/data/Scene/scene_cull_crop.kml		Bounding box for the scene point cloud
+	Fusion3D/data/Scene/scene_cull_crop.las		Point cloud culled and cropped (see above)
+	Fusion3D/data/Scene/sampleProjFile.s4d		Project file for the scene
+
+
+</PRE>
+
+
+<H2><A NAME="ps_nav">BASIC NAVIGATION</A></H2>
+
+The viewer is constrained so that the user maintains heads-up, does not go below the terrain, and maintains proper stereo perspective as he moves.
+Therefore the user should use the mouse and thumbwheels only and NOT use the alt-mouse functions associated with general OpenInventor Viewer motion.
+The user moves (translates) by left-mouse clicking on a location to center that location on the screen.
+The thumbwheels are used to zoom and pan and the mouse wheel can also be used to zoom.
+The viewer is also set up to use 3DConnection Space Navigator, which is a cheap and very effective way to zoom and pan.
+<P>
+
+
+<H2><A NAME="ps_stereo">STEREO</A></H2>
+
+The Fusion3D viewer is designed to use a stereo display using Nvidia-style quadbuffered stereo.
+You should definitely try it if you can.
+The stereo implementation entails much more than simply turning on stereo;
+the focus point for the stereo and the degree of stereo separation are adjusted as the user moves so that correct stereo is maintained 
+without need for additional user effort.
+<P>
+
+
+
+<H2><A NAME="ps_render">RENDERING TECHNIQUE</A></H2>
+
+The terrain is rendered with a patented technique that is a hybrid of the standard method of draping a DSM and a point-cloud rendering.
+Smooth areas of the DSM terrain are draped in the same way that other viewers do.
+Fields, roads, rooftops and other smooth surfaces are rendered as smooth.
+Rough areas like trees and discontinuities like light/power poles, wires, fences and other manmade features are rendered more like point clouds.
+The hybrid technique captures the best features of both the DSM and point cloud.
+As far as we know, this approach is unique to the Fusion3D viewer.
+<P>
+
+
+<H2><A NAME="ps_sample">TEXTURE</A></H2>
+
+In the Fusion3D viewer, the resolution of the texture is independent of the DSM resolution.
+So, whereas many other viewers restrict the texture resolution to match that of the elevation DSM,
+Fusion3D displays the texture at full resolution.
+Since the texture may have as much as ten times the DSM resolution, this significantly improves the display.
+<P>
+
+
+
+
+
+
+
+

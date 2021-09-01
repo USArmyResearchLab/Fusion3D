@@ -1,0 +1,44 @@
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<H1>WRITE DEM VISUALIZATION TO .OBJ FORMAT</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#obj_intro">Introduction</A>
+<P>
+<LI><A HREF="#obj_test">Test Case</A>
+<P>
+</UL>
+
+<H2><A NAME="obj_intro">INTRODUCTION</A></H2>
+
+In early November 2015 I wrote code into Fusion3D to write the visualization of the DEMs into a file in .obj format.
+The motivation was to write data that could be viewed on the Oculus Rift.
+<P>
+All the hi-res DEMs at initialization of the viewer are written.
+The option works only from Project Files and is not implemented in menus.
+The location that you wish to write must be specified as the origin in the Project File as well as the number of hi-res tiles.
+The a1- and a2-DEMs have separate files and there are separate files for each 128x128 tile.
+Tiles are written after the flat plates are warped to form smooth surfaces in smooth areas, so the output should look identical to the Fusion3D display.
+<P>
+I scaled the data by 0.01 since I thought that might look best on the Rift.
+However, it is probably better to scale in the Rift code rather than in the Fusion3D output, so I will probably change that.
+<P>
+The option is turned on using the tag 'Map3d-Obj-Write' -- see the Tagged Ascii doc in the users manual.
+<P>
+
+
+
+<H2><A NAME="obj_test">TEST CASE</A></H2>
+
+I chose the Belgium dataset as the test example, centered where I do the comparison with QT.
+The MrSID hi-res texture is written as a .bmp file attached to the main .obj file.
+The outputs are in dir F:/Belgium.
+<P>
+I wrote out 9 tiles for the first test.
+<P>
+
+<P>

@@ -6,16 +6,15 @@
 Manages all bookmarks.
 
 When the make-bookmarks option is enabled, one can make a bookmark by middle-mouse clicking on a location.
-The bookmark is given a default name "Bn" where n is indexed from 0.
+On clicking, a menu allows the user to name the bookmark.
 Bookmarks can be read from and written to a KML file.
-Bookmarks are always visible.
 
 */
 
 class bookmark_manager_class:public atrlab_manager_class{
    protected:
-      float d_above_ground;				// Draw object and track this dist above ground
-	  draw_data_inv_class *draw_data;			// Helper class -- store and draw bookmarks
+      float d_above_ground;						///< Draw bookmark this dist above ground (default 2m)
+	  draw_data_inv_class *draw_data;			///< Helper class -- store and draw bookmarks
 
 public:
       bookmark_manager_class();

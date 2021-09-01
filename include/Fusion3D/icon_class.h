@@ -17,27 +17,27 @@ class icon_class{
    private:
       
    public:
-      int seqno;			/// Sequence no of icon
-      float east;			/// Location East  of ref point in m
-      float north;			/// Location North of ref point in m
-      float height;			/// Location height above mean ground plane in m
-      float target_az;		/// Azimuth angle of target in deg ccw? relative to East??
-      int tarid;			/// Target id no -- 0 for unknown, -99 for not set
-      int sar_image;		/// SAR -- associated image no (-99 for no SAR image)
-      int sar_row;			/// SAR -- 
-      int sar_col;			/// SAR -- 
-      int sar_alg;			/// SAR -- 
-      int sar_el;			/// SAR -- Elev angle in deg
-      int sar_squint;		/// SAR -- Squint angle in deg (broadside is 90)
-      float sar_range_angle;/// SAR -- angle of SAR image rel to world coordinates  
-      						///        for vector from radar to scene center (anti-range) 
-							///        in deg from East toward North
-      int camera_adjust;	/// Camera -- 1 iff adjust viewer loc, azimuth, and elevation angles
-      float camera_deast;	/// Camera -- Offset, Put viewer location at east + deast
-      float camera_dnorth;	/// Camera -- Offset 
-      float camera_dheight;	/// Camera -- Offset 
-      float camera_az;		/// Camera -- Viewer azimuth angle in deg
-      float camera_el;		/// Camera -- Viewer elevation angle in deg
+      int seqno;			///< Sequence no of icon
+      float east;			///< Location East  of ref point in m
+      float north;			///< Location North of ref point in m
+      float height;			///< Location height above mean ground plane in m
+      float target_az;		///< Azimuth angle of target in deg ccw? relative to East??
+      int tarid;			///< Target id no -- 0 for unknown, -99 for not set
+      int sar_image;		///< SAR -- associated image no (-99 for no SAR image)
+      int sar_row;			///< SAR -- 
+      int sar_col;			///< SAR -- 
+      int sar_alg;			///< SAR -- 
+      int sar_el;			///< SAR -- Elev angle in deg
+      int sar_squint;		///< SAR -- Squint angle in deg (broadside is 90)
+      float sar_range_angle;///< SAR -- angle of SAR image rel to world coordinates  
+      						///<        for vector from radar to scene center (anti-range) 
+							///<        in deg from East toward North
+      int camera_adjust;	///< Camera -- 1 iff adjust viewer loc, azimuth, and elevation angles
+      float camera_deast;	///< Camera -- Offset, Put viewer location at east + deast
+      float camera_dnorth;	///< Camera -- Offset 
+      float camera_dheight;	///< Camera -- Offset 
+      float camera_az;		///< Camera -- Viewer azimuth angle in deg
+      float camera_el;		///< Camera -- Viewer elevation angle in deg
    
       icon_class();
       ~icon_class();

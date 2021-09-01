@@ -7,25 +7,32 @@ Manages all Line-Of-Sight (LOS) calculations.
 
 Can do LOS from a ground point to any other ground point.\n
 Can do LOS from a fixed sensor in the air.\n
-Can do LOS from a moving GMTI sensor.\n
 Can to sun shadowing -- which is essentially LOS from the sun position.\n
+Previously, could do LOS from a moving GMTI sensor but this functionality has not recently been used so disabled.\n
 
 */
 
 class los_manager_class:public atrlab_manager_class{
    protected:
-      float los_rmin, los_rmax;		// Parms for LOS calc
-      float los_cenht, los_perht;	// Parms for LOS calc
-      float los_amin, los_amax;		// Parms for LOS calc
-	  float los_sensor_nrel, los_sensor_erel;   // Obscuration for sensor -- (north,east) in m rel to map origin
-	  float los_sensor_elev;                    // Obscuration for sensor -- elevation in m rel to map origin
-	  float los_sensor_delev;                   // Obscuration for sensor -- Follow ray this dist above test-pixel elevation
-      
-	  int action_current;	///< 0=Off, 1=on, clicked point is end point of LOS
-      float xpt1, ypt1;		///< Coordinates of first point
-      float xpt2, ypt2;		///< Coordinates of second point
+      double los_eye_n, los_eye_e;	///< LOS menu parms -- sensor/eye location at center loc -- northing, easting
+      float los_rmin, los_rmax;		///< LOS menu parms -- ground-to-ground search area min and max radius (m)
+      float los_cenht, los_perht;	///< LOS menu parms -- ground-to-ground height above the local ground of center eye, edge pts (m)
+	  float los_amin, los_amax;		///< LOS menu parms -- ground-to-ground angle limits (deg from N cw)
+	  double los_sensor_lat;		///< LOS menu parms -- standoff sensor 
+	  double los_sensor_lon;		///< LOS menu parms -- standoff sensor 
+	  float los_sensor_elev;		///< LOS menu parms -- standoff sensor absolute elevation (m)
 
-	  atr_los_class *atr_los;
+	  unsigned char *mask;			///< LOS Mask -- Pointer to mask managed by mask_server_class
+	  float mask_dx, mask_dy;		///< LOS Mask -- pixel size
+	  int mask_nx, mask_ny;			///< LOS Mask -- No of pixels
+	  double mask_north, mask_west;	///< LOS Mask -- Upper-left corner of mask
+
+	  int action_current;			///< Point-to-point ray -- 0=Off, 1=on, clicked point is end point of LOS
+      float xpt1, ypt1;				///< Point-to-point ray -- Coordinates of first point
+      float xpt2, ypt2;				///< Point-to-point ray -- Coordinates of second point
+	  float los_sensor_delev;		///< Obscuration for sensor -- Follow ray this dist above test-pixel elevation
+
+	  atr_los_class *atr_los;		///< Helper class -- LOS calculations
 
 	  int reset_all();
       

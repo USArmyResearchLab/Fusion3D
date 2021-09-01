@@ -1,0 +1,677 @@
+<HEAD>
+<TITLE>MULTITHREADING</TITLE>
+</HEAD>
+<BODY>
+<H1>MULTITHREADING</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#thread_intro">Introduction</A>
+<P>
+<LI><A HREF="#thread_intro">Current Multithreading Options</A>
+<P>
+<LI><A HREF="#thread_intro">History</A>
+<P>
+<LI><A HREF="#thread_avoid">Avoiding Conflicts</A>
+<P>
+<LI><A HREF="#thread_gl_busy">Global variable GL_busy</A>
+<P>
+<LI><A HREF="#thread_notes">Notes</A>
+<P>
+<LI><A HREF="#thread_time">Timing Experiments</A>
+<P>
+</UL>
+
+<H2><A NAME="thread_intro">INTRODUCTION</A></H2>
+
+I have implemented several different multithreading options that can be used either separately or together.
+They are controlled by a tag 'Map3d-Update' in the parameter file.
+There is always the main thread that implements the user interface and traverses the OpenInventor object tree to visualize.
+There may also be one or more worker threads that make portions of new areas of the map as needed.
+<P>
+
+
+<H2><A NAME="thread_intro">INITIALIZING THREADS</A></H2>
+<PRE>
+
+	COIN
+		To use threads, one must rebuild the Coin Library (see below)
+			To turn on Coin threadsafe, we set the Preprocessor variable COIN_THREADSAFE in building Coin.
+
+
+	VSG/FEI
+		Init is different with and without threads -- to use threads init the OpenInventor library with the following:
+			SoWin::threadInit(myWindow);
+
+	Both
+		SoDB::threadInit();	??? What does this do?  is it necessary in either lib?
+
+
+</PRE>
+
+
+<H2><A NAME="thread_intro">THREAD FUNCTIONS</A></H2>
+<PRE>
+
+	Main thread
+		Does all OpenInventor calls -- builds tree
+
+	Worker thread
+		makes tiles -- all hi, then all med, then all low
+		
+
+	MrSID threads
+		1 or 2 threads
+		Reads and decodes MrSID images, then transfers to cache
+
+	Mutex
+		tiles_rtv_class::mutex_stat_hi
+</PRE>
+
+
+<H2><A NAME="thread_intro">THREAD SAFE MECHANISM FOR GRAPHICS</A></H2>
+
+This protects the basic graphics tree.
+Both COIN and VSG provide basic functions to protect the tree so that a worker thread can modify the tree 
+without interfering with the main thread that traverses the tree.
+The worker will be blocked until the traversal is finished, then locks out any other reads of the tree until it is finished and unlocks.
+<P>
+
+<pre>
+	Multithread users for hi-res tiles
+		Worker thread				Modifies graphics tree for individual tiles
+		Main thread					Traverses graphics tree
+
+	Protection mechanism
+		tiles_rtv_class::writelock(int ithread)
+		tiles_rtv_class::writeunlock(int ithread)
+			SoDB::writelock();		supplied by the COIN and VSG libraries
+			SoDB::writeunlock();
+
+
+</PRE>
+<H2><A NAME="thread_intro">NEW THREAD SAFE MECHANISM FOR NON-GRAPHICS</A></H2>
+
+The new approach that I am experimenting with makes individual classes thread safe rather than
+handling thread safety at the global level.
+Protection is done within classes.
+It also tries to use multiple mutexes to protect the smallest feasible groups of data
+rather than the old method that used only 2 for much broader groups.
+<P>
+
+
+<H3><A NAME="thread_intro">Status of Thread Safe Mechanisms</A></H3>
+
+I had to do extensive changes to implement the various mutex-oriented thread-safety changes.
+Something I did resulted in a bug that I could not track down, even after several days work.
+So I reverted back to rev 5.44 which had cache_class changes but did not have changes for map3d_index_class or tiles_rtv_class.
+<P>
+<PRE>
+
+Changes to rev 5.44
+
+	Add new methods
+		map3d_index_class->is_elev_intersection(double roi_cen_north, double roi_cen_east, float roi_size_y, float roi_size_x);
+			This is thread-safe and simpler -- used instead of calc_roi_intersections()
+			Wired into some classes but not all
+		map3d_index_class->dealloc_elev2();
+			No thread-safety effects
+
+	Added code but did not implement thread-safe features
+		map3d_index_class->get_elev_safe(double roi_cen_north, double roi_cen_east, float roi_size_y, float roi_size_x, int which_flag, int exec_smoothing_flag, int lowres_flag);
+			This thread-vulnerable tasks into single method that can be more easily thread-safed
+			Code kept but not wired into other classes
+
+	Modified call sequence but did not implement new thread-safety
+		map3d_index_class->get_elev_at_pt(double north, double east, int external_safe_flag, float &elev_a2);
+
+
+<H3><A NAME="thread_intro">CLASS cache_class</A></H3>
+
+Status variables are protected by a mutex so that only a single user can read/write them.
+The storage area is protected while writing by setting the stat array for that tile to 2 before starting to write and setting it to 1 on completion.
+That stat array is then checked that it is 1 before reading.
+The storage area is protected for later reading since it will never be deleted until it out of the display area.
+<P>
+
+<H3><A NAME="thread_intro">CLASS map3d_index_class</A></H3>
+
+<H4><A NAME="thread_intro">Elevation Data </A></H4>
+
+Elevation data is protected either by an internal mutex or by calling lock and unlock methods from calling classes that set the mutex.
+The internal mutex is used when only a single point elevation (or 2) is needed such done in mensuration.
+Locking and unlocking methods are called when elevations for a group of points are needed such as pinning a ground track to the terrain elevation.
+<P>
+<PRE>
+
+	Multithread users for hi-res tiles
+		Elevation worker thread		Add elevations to tiles
+		Main thread				Gets elevations for point or group of points such as mensuration
+		Main thread				Uses elevations to make false-color textures
+		Main thread				Uses elevations for LOS
+
+	Protected
+		data arrays data_a2 and data_a1
+		smoothing flags smooth_flags
+		parms of current roi
+		which tiles intersect (including method map3d_index->calc_roi_intersections())
+
+	Concept
+		The lock method is called
+		A block of elevation data is read
+		The data is consumed -- transfered to cache, or a point-elevation is extracted, etc
+		The unlock method can then be called since the data is no longer needed
+
+	get_elev_at_pt(double north, double east, int external_safe_flag, float &elev_a2);
+		map3d_index_class::elev_mutex_lock()		Locks before a group of points is processed
+		map3d_index_class::get_elev_at_pt(double north, double east, int external_safe_flag, float &elev_a2);
+			Called with external_safe_flag=1 		indicates that thread safing done external to class
+		map3d_index_class::elev_mutex_unlock()		Unlocks after group is processed
+
+			kml_manager_inv_class.cpp(335): 		Pin line (multiple points) to ground before drawing it
+			ladar_mm_manager_inv_class:			Cull points very near ground level
+			track_manager_class: 				Pin line (multiple points) to ground before drawing it
+
+		OR
+
+		map3d_index_class::get_elev_at_pt(double north, double east, int external_safe_flag, float &elev_a2);
+			Called with external_safe_flag=0		Indicates thread safing is internal to this method 
+
+			kml_manager_inv_class:				Display image just above the ground
+			kml_manager_inv_class:				Display single point?
+			los_manager_inv_class:				Display sensor loc (on tower)
+			los_manager_inv_class:				Draw a line from sensor to single loc
+			mensuration_manager_inv_class:		Find elev of picked pt or difference between 2 points
+			track_manager_inv_class:			Edit track -- Add or move a point
+		
+
+	get_elev(int which_flag, int exec_smoothing_flag, int lowres_flag);
+
+			atr_los_class::read_a2_image:			Read block of elevations, then transfer to local storage
+			atr_los_class::make_mask():			Read block of elevations, then create shadow mask -- 	KEEPS LOCK FOR A LONG TIME
+			image_rtv_class:					No longer used -- do nothing
+			map3d_index_class::make_low_res():		Make low-res tiles
+			map3d_manager_inv_class:			Make map tiles/make false-color texture
+
+
+</PRE>
+<H3><A NAME="thread_tiles_rtv_class">CLASS tiles_rtv_class -- Hi-Res Tile Building Status</A></H4>
+
+Class tiles_rtv_class maintains the status of the building of hi-res tiles, med-res tiles and low-res tiles.
+Only the hi-res needs to be protected since that is the only one presently accessed by multiple threads.
+<PRE>
+
+	Multithread users for hi-res tiles
+		MrSID	worker threads 		Add textures to tiles 
+		Elevation worker thread		Add elevations to tiles
+
+	Protected data
+		Status array stat_hi
+
+	Protected methods
+		get_next_newtile_hi(int iFlag, int &iSpatialOut, int &iMemOut, double &north, double &east, float &height, float &width)
+		init_newtile_hi(int *mem_flags)
+		get_nnew_hi(int iMark)
+		mark_tile_hi(int iSpatial, int iMark)
+		get_Sep_status_hi(int iSep)
+
+	Concept
+		The next new tile is indentified and marked as under construction -- this is mutex protected
+		Tile data (MrSID texture or elevation) is read and added to tile -- this does not need to be protected
+		The data for the new tile is marked as complete -- this is mutex protected
+
+</PRE>
+<H3><A NAME="thread_intro">LOS Calculations</A></H3>
+
+LOS calculations use A2 elevations.
+These are protected using the elevation data safing described in map3d_index_class.
+<P>
+It also produces masks. 
+These are not protected -- it is very unlikely to produce a conflict and I think any corrupted data would be overwritten.
+<P>
+
+
+
+<H2><A NAME="thread_intro">OLD THREAD SAFE MECHANISMS</A></H2>
+<H3><A NAME="thread_intro">OIV GLOBAL GL_Busy</A></H3>
+<PRE>
+
+	Using classes
+		los_manager_inv_class
+		map3d_index_class
+		map3d_manager_inv_class
+		
+	
+	Worker thread -- map3d_manager_inv_class::update_tiles_next()
+
+
+
+
+</PRE>
+<H3><A NAME="thread_intro">Mutex Used to Safe MrSID Threads -- mutex_mrsid</A></H3>
+<PRE>
+
+	Main thread -- IF no multithreading
+		map3d_manager_inv_class::update_tiles()
+
+	Worker thread
+		map3d_manager_inv_class::update_tiles_next()
+
+	MrSID worker threads
+		map3d_manager_inv_class::update_mrsid_next(int iMrSID)
+			Get next tile that needs MrSID 
+
+
+</PRE>
+
+
+<H2><A NAME="thread_intro">HISTORY</A></H2>
+
+Multithreading is useful because maps can be much larger than can be accomodated in the hardware.
+Because of memory constraints with a 32-bit operating system and on the graphics card,
+only a portion of large map can displayed.
+Also, 3 different levels of detail are employed, high at the center and lower for areas further from the center.
+Maps are broken up into small tiles.
+When the user moves off the center portion of the map, new tiles around the new center of the map are read and processed and 
+furthest away tiles are discarded to conserve memory.
+Worker threads speed up this process of creating new portions of the map.
+<P>
+1. The first option is a worker thread that does all the tile updating.
+This option works with the VSG version of the viewer, since that library is thread-safe for different threads modifying objects
+and traversing the object tree.
+The option does not work reliably on the Coin-3d version of the viewer, since that library is not thread-safe.
+<P>
+2.  The second option is a worker thread that does reading and decoding of MrSID-encoded high-resolution orthophoto texture.
+This process is CPU-intensive where most of the other tile-making processes are IO-intensive.
+<P>
+3.  A third option is not truly multithreading, but has much the same effect.
+It allows the low-resolution tiles to be made by the main thread in the background -- only when the user interface is
+not active.
+Without an SSD and when data is being read for the first time,
+making the low-res tiles can much slower that making the high-res and medium-res tiles.
+This allows the user to view and manipulate the center portion of the image as the low-res edges are being constructed.
+<P>
+
+
+
+<H2><A NAME="thread_options">CURRENT MULTITHREADING OPTIONS</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Threading Options</CAPTION>
+<TR><TH>Option                                         <TD>Tag               <TH>Variable          <TH>Default<TH>
+<TR><TD>No of worker threads for MrSID read/decode     <TD>Map3d-Thread-MrSID<TD>thread_flag_mrsid <TD>4 processors->2, 2 proc->1, 1 proc->0<TD>
+<TR><TD>Are tiles made (except MrSID) in worker thread?<TD>Map3d-Thread-Tile <TD>thread_flag_tile  <TD>VSG:  yes, Coin:  No (not threadsafe)<TD>
+<TR><TD>Are low-res tiles made in the background?      <TD>Map3d-Thread-Low  <TD>thread_flag_low   <TD>VSG:  No (covered by tiling thread), Coin:  Yes<TD>
+</TABLE
+<BR><BR><BR>
+
+<H3><A NAME="thread_options">SoDB::init</A></H2>
+
+When there is multithreading it is necessary to use SoDB::threadinit rather than SoDB::init.
+This init is done for the main thread in lsensor_world using a parm from sw_parms_class:
+
+<PRE>
+	Default			sw_parms_class		init for multithreading
+	Map3d-Update	0	sw_parms_class		init for single thread
+
+
+</PRE>
+
+<H2><A NAME="thread_history">HISTORY</A></H2>
+
+In October 2007, I implemented a simple form of multi-threading.
+The purpose was to avoid the display freezing while batches of new tiles are made.
+When moving within the low-res map, the user can move immediately to a new area after he clicks on it
+and can view the low-res map while med-res tiles are building.
+Before multithreading, he would have to wait for all new tiles to be constructed before moving.
+When moving outside the low-res map, he can now move immediately and can begin to do useful work
+after the hi-res tiles are up rather than having to wait much longer for all tiles.
+<P>
+I only implemented 2 threads.
+The second worker thread only constructs new tiles -- it reads the data from disk, does the processing
+necessary to determine smooth areas and constructs the OpenInventor object for each tile.
+The primary thead does everything else -- it handles user inputs, does calculations like track registration 
+and LOS.
+When it needs to access map data, it requests that the worker thread pause so thread safety is assured.
+The worker thread is launched on program initialization and runs continually until map3dview is terminated.
+It continually tests whether new tiles are needed and, if so, makes them as fast as it can.
+<P>
+The Mercury OIV on Windows implements threading and claims to be completely thread-safe.
+It has a writelock/writeunlock that I put around the appropriate parts of the code
+to ensure that only 1 thread accesses objects at a time.
+<P>
+On the SGI I used Posix pthreads.
+The SGI OIV is not thread-safe as far as I know and I was not careful using mutexes, etc.
+I really dont care if this crashes occasionally on the SGI since I
+will only be doing debugging and not using the multi-thread option for real work here.
+<P>
+I implemented 3 options:
+Option 0 is the original technique with a single thread that makes the user wait until
+all tiles are updated before the display is updated.
+<P>
+Option 1 has a single thread, but updates in the background only when OIV is not busy.
+The trick here is to balance the tile updates with display refreshes.
+If you make too few tiles at a time, tile update is very slow.
+If you make too many, the tile update process monopolizes the processor making
+user response very slow.
+I have not found a decent balance between the two that significantly improves performance over
+the old method, so this option is not yet useful.
+<P>
+Option 2 is dual-thread, where the user can continue to interact with the display as 
+the second thread updates the tiles.
+The trick here is not to allow the display to refresh too often --
+if you allow it to refresh after each tile is created (my first thought),
+the huge number of refreshes makes the update impossibly long.
+You have to update a bunch of tiles, then refresh.
+My current technique updates the med-res tiles in a single batch.
+It updates the low-res tiles in 2 batches --
+the first just a few tiles around the med-res section, then all the rest in the second batch.
+<P>
+
+
+<H2><A NAME="thread_avoid">AVOIDING CONFLICTS</A></H2>
+
+Normal tile creation is protected with the Mercury writelock/writeunlock as described above.
+<P>
+
+
+
+<H3><A NAME="thread_avoid_2">Tasks Outside map3d_manager_inv_class</A></H2>
+
+The track-registration, LOS and mensuration tasks require tile data and may crash if not protected in multithread.
+I have defined a global variable GL_busy (see beloe and doc for global variables) to do this coordination.
+If there is no multithreading GL_busy is set to 0.
+If there is multithreading GL_busy is positive.
+It is 1 in the normal mode.
+A task that needs exclusive use of the processors sets GL_busy to 2;
+Then the worker thread pauses and sets it to 3.
+Now the task in the main thread can be executed without conflict.
+When finished, the task sets GL_busy back to 1 allowing the worker thread to resume.
+<P>
+
+
+
+
+<H2><A NAME="thread_gl_busy">THE COIN3D SUPPORT</A></H2>
+
+<H3><A NAME="thread_gl_busy">Turning on Coin Threadsafe</A></H3>
+
+To turn on Coin threadsafe, we set the Preprocessor variable COIN_THREADSAFE in building Coin.
+We first tried to do this in the Properties, but that did not work -- the variable was still unset.
+We then set it explicitly in a .h file and that seemed to do the trick.
+<P>
+Before we set the variable, the code would crash, usually on moving after a few mouse clicks.
+<P>
+
+<H3><A NAME="thread_gl_busy">Documentation Notes</A></H3>
+
+From the Coin3d doc (Coin-2):
+<pre>
+
+From email 5/5/2010 from Tom Fredrik Klaussen SIM
+
+	My question:  The second is multithreading.  It appears from your documentation that
+	multithreading is implemented but not turned on as a default.
+	  
+	His answer:  Rendering traversals are guaranteed to be thread-safe. There are other aspects of Coin that we know are thread-safe,
+	but we make no guarantees in this regard. It needs to be enabled, since it incurs a small overhead.
+
+From SIM doc -- I think from Version 2:
+The support in Coin for using multiple threads in application programs and the Coin library itself, consists of two main features: 
+Coin provides platform-independent thread-handling abstraction classes. These are classes that the application programmer can freely
+use in her application code to start new threads, control their execution, work with mutexes and do other tasks related to handling multiple threads. 
+The classes in question are SbThread, SbMutex, SbStorage, SbBarrier, SbCondVar, SbFifo, SbThreadAutoLock, SbRWMutex, and SbTypedStorage.
+See their respective documentation for the detailed information. 
+The classes fully hides the system-specific implementation, which is either done on top of native Win32 (if on Microsoft Windows),
+or over POSIX threads (on UNIX and UNIX-like systems). 
+The other aspect of our multi-threading support is that Coin can be specially configured so that rendering traversals of the scene graph are done
+in a thread-safe manner. This means e.g. that it is possible to have Coin render the scene in parallel on multiple CPUs for multiple rendering pipes,
+to better take advantage of such high-end systems (like CAVE environments, for instance). 
+Thread-safe render traversals are off by default, because there is a small overhead involved which would make rendering
+(very) slightly slower on single-threaded invocations. 
+To get a Coin library built with thread-safe rendering, one must actively re-configure Coin and build a special, local version.
+For configure-based builds (UNIX and UNIX-like systems, or with Cygwin on Microsoft Windows) this is done with the option "--enable-threadsafe"
+to Autoconf configure. For how to change the configuration and re-build with Visual Studio, get in touch with us at "coin-support@coin3d.org". 
+There are some restrictions and other issues which it is important to be aware of: 
+We do not yet provide any support for binding the multi-threaded rendering support into the SoQt / SoWin / etc GUI bindings,
+and neither do we provide bindings against any specific library that handles multi-pipe rendering.
+This means the application programmer will have to possess some expertise, and put in some effort, to be able to utilize multi-pipe rendering with Coin. 
+Rendering traversals is currently the only operation which we publicly support to be thread-safe.
+There are other aspects of Coin that we know are thread-safe, like most other action traversals beside just rendering,
+but we make no guarantees in this regard. 
+Be careful about using a separate thread for changing Coin structures versus what is used for the application's GUI event thread. 
+We are aware of at least issues with Qt (and thereby SoQt), where you should not modify the scene graph in any way in a thread
+separate from the main Qt thread. This because it will trigger operations where Qt is not thread-safe. 
+
+
+</PRE>
+<H2><A NAME="thread_gl_busy">THE GLOBAL VARIABLE GL_BUSY</A></H2>
+<PRE>
+
+
+GL_busy -- Used to request exclusive use of processors for multithreading
+                = 0     Tiles made in main thread, so state can be ignored
+                = 1     Worker thread makes tiles -- state is used
+                = 2     Main thread request exclusive use of processors
+                = 3     Worker threads suspended and grants exclusive to main thread
+
+
+1.  globals_inv_class.C:  			Defines GL_busy
+
+2.  map3d_manager_inv_class::make_scene_3d	Init (0=no threads, 1=threads) Starts worker thread
+
+    map3d_manager_inv_class::update_tiles_next	Worker thread continuously checks GL_busy
+						 If GL_busy=2, this indicates that the main thread needs exclusive
+						 It set GL_busy=3 to indicate that it has paused and the main thread can proceed
+						 It checks GL_busy until GL_busy=1, indicating the main thread has finished
+						 It then resumes.
+
+
+3.  los_manager_inv_class::register_inv		Requests exclusive so it can calc Line-of-sight
+
+4.  map3d_index_class::get_elev_at_pt		Requests exclusive so it can get elev of single pt -- uses local store to minimize requests
+		mensuration_manager_inv_class		Calls to get elev for either info on single point or info on each end of line
+		track_manager_inv_class			Calls to get elev for track points
+		ladar_mm_manager_inv_class::cull_near_ground	Cull pts near ground
+
+
+5.  ch_manager_inv_class::				Requests exclusive so it can register group of frames
+
+</PRE>
+
+<H2><A NAME="thread_notes">NOTES</A></H2>
+<H3><A NAME="thread_notes">Main Thread</A></H3>
+
+The main thread does everything except build the individual tiles, done in the worker thread.
+Many tasks that require reading/writing the map are explicitly protected by GL_busy (see above).
+The only thing not protected this way is updating the map.
+<P>
+The updating process is probably very inefficient and can be streamlined.
+You want to update only those tiles done in specific pass
+(either med-res, or the inner ring of low-res or the outer ring of low-res).
+<P>
+
+<PRE>
+
+Update map by emptying it and then adding in all tiles 						map3d_manager_inv_class::refresh()
+	1.  Write lock												tiles_rtv->writelock(0);
+	2.  Turn on Notify -- allow IOV to sense that map is being updated			cubesBase->enableNotify(TRUE);
+	3.  Delete all tiles from the map									cubesBase->removeAllChildren
+	4.  Add all tiles												cubesBase->addChild
+	2.  Turn off Notify -- only want IOV to update map on explicit refresh			cubesBase->enableNotify(FALSE);
+	4.  Write unlock												tiles_rtv->writeunlock(0);
+
+
+
+</PRE>
+<H3><A NAME="thread_notes">Worker Thread -- Building Individual Tiles</A></H3>
+
+The worker threads builds all the tiles.
+There are basically 3 tasks to build each tile:
+first, read the data from disk;
+second, run smoothing algorithm to create smooth areas;
+build the IOV object for the tile.
+The second and third of these tasks are done togehter and protected by enclosing them in VSG IOV writelock/writeunlock.
+<P>
+
+
+<PRE>
+
+Worker thread spawned in an infinite loop looking for tiles to update 				map3d_manager_inv_class::thread_method() 
+
+	Update any required tiles one-by-one								map3d_manager_inv_class::update_tiles_next
+		1.  Checks whether any med-res tiles need to be updated -- 				tiles_rtv->is_retile_med_required()
+		2.  If med-res needs update, set up new tile structure for  med-res tiles 	tiles_rtv->retile_med();
+		3.  Checks whether any low-res tiles need to be updated -- 				tiles_rtv->is_retile_low_required()
+		4.  If low-res needs update, set up new tile structure for  low-res tiles 	tiles_rtv->retile_low();
+		5.  If med-res needs update, 
+			Update 1 med-res tile									map3d_manager_inv_class::make_newtile_med
+		    Else if low-res needs update, 
+			Update 1 low-res tile									map3d_manager_inv_class::make_newtile_low
+		    Else
+			Do nothing
+		6.  Check if you should refresh (after med, first half of low, end of low)	tiles_rtv->get_refresh_flag_med / get_refresh_flag_low
+
+		Updata a single tile low/med
+			1.  Read data from disk files into memory						
+			2.  Write lock										tiles_rtv->writelock(1); -> SoDB::writelock();
+			3.  Update OIV object for tile							map3d_manager_inv_class::
+			2.  Write unlock										tiles_rtv->writeunlock(1); -> SoDB::writeunlock();
+
+
+
+</PRE>
+<H2><A NAME="thread_time">TIMING EXPERIMENTS</A></H2>
+<pre>
+
+sensor_world from Visual Studio in debug mode
+
+Parms_Baghdad_DemifyJFD.s4d for map 
+	Map3d-Index-Loc   Baghdad  33.564   44.046 33.086   44.623 33.3115     44.3496    35  10 int 
+	Map3d-Index-Find  Baghdad  C:/map3dview/rtv/Baghdad2_Tile37jfd  dem_1m_a2_  .tif   mrg    2
+	Map3d-Index-MrSID Baghdad  baghdad122008	0	# MapID, MrSID prefix, flag (not used)
+
+
+</PRE>
+<H3><A NAME="thread_time_nossd">Without SSD</A></H3>
+<pre>
+
+Single thread	
+	Map3d-Update		0			# 0=single thread as previous revs, 1=dont use this option, 2=threads
+	Tiles-N		30 30 4 2	# Lod halfwidths -- xlo, ylo, med, hi (0-> 1 tile, -1-> no tiles)	Large test
+
+	Times
+		med-res			25.2
+		hi-res			17.6
+		low-res			130.8
+
+Additional thread for read/decode MrSID	
+	Map3d-Update		4			# 0=single thread as previous revs, 1=dont use this option, 2=threads
+	Tiles-N		30 30 4 2	# Lod halfwidths -- xlo, ylo, med, hi (0-> 1 tile, -1-> no tiles)	Large test
+
+	Times
+		med-res			 38.3		19.1		19.5
+		hi-res			  1.5		 8.5		 6.8
+		low-res			130.8
+
+
+</PRE>
+<H3><A NAME="thread_time_ssd">With SSD</A></H3>
+<pre>
+
+Single thread using SSD
+	Map3d-Update		0	
+	Tiles-N		30 30 4 2	# Lod halfwidths -- xlo, ylo, med, hi (0-> 1 tile, -1-> no tiles)	Large test
+
+	Times
+		med-res			 4.1
+		hi-res			 9.8
+		low-res			26.5
+
+Additional thread for read/decode MrSID using SSD	
+	Map3d-Update		4			# 0=single thread as previous revs, 1=dont use this option, 2=threads
+	Tiles-N		30 30 4 2	# Lod halfwidths -- xlo, ylo, med, hi (0-> 1 tile, -1-> no tiles)	Large test
+
+	Times
+		med-res			  7.1
+		hi-res			  2.4
+		low-res			 26.3
+
+
+2 Additional threads for read/decode MrSID	
+	Map3d-Update	20	
+	Tiles-N		30 30 4 2	# Lod halfwidths -- xlo, ylo, med, hi (0-> 1 tile, -1-> no tiles)	Large test
+
+	Times
+		med-res			 7.0	7.3
+		hi-res			 1.6	1.6
+		low-res			27.5	26.
+
+
+
+
+
+
+</pre>
+<H2><A NAME="thread_time">NOTES</A></H2>
+<H3><A NAME="thread_time">MrSID Thread</A></H3>
+<PRE>
+
+void map3d_manager_inv_class::thread_method_mrsid()
+   while (1) {
+      // cout << "   Thread to start pass " << icount << endl;
+      rc = update_mrsid_next();
+      if (!rc)  Sleep(20);		// Windows takes msec
+   }
+****************************************************************************
+
+int map3d_manager_inv_class::update_mrsid_next()
+   if ((tile_update_flag % 8) >= 4) {
+	   mutex_mrsid.lock();
+   }
+   n_hi = tiles_rtv->get_nnew_hi(4);
+   if (n_hi == 0) {
+      if ((tile_update_flag % 8) >= 4) mutex_mrsid.unlock();
+	  return(0);
+   }
+
+   // ************************************************
+   // Find texture for the single highest ranked remaining tile
+   // *************************************************
+   tiles_rtv->get_next_newtile_hi(4, iSpatial,iSep, nc, ec, tile_height, tile_width);
+   if ((tile_update_flag % 8) >= 4) mutex_mrsid.unlock();
+
+   get_texture_hi(iSep, nc, ec, tile_height, tile_width);
+
+   if ((tile_update_flag % 8) >= 4) mutex_mrsid.lock();
+   if (tiles_rtv->mark_tile_hi(iSpatial, 8)) {
+      store_tex_flags[iSep] = store_tex_flags[iSep] + 8;
+      if (diag_flag > 0) cout << "iSpat=" << iSpatial << " iMem=" << iSep << " out of " << update_hi_n << " Texture mapped" << endl;
+   }
+   else {
+      cout << "Texture mapped to mem index " << iSep << " ABORTED ***********" << endl;
+   }
+   if ((tile_update_flag % 8) >= 4) mutex_mrsid.unlock();
+
+****************************************************************************
+
+
+
+int map3d_manager_inv_class::get_texture_hi(int iTile, double north_cen, double east_cen, float height_tile, float width_tile)
+{
+   map3d_index->set_roi_cen_hires_texture(north_cen, east_cen);
+   map3d_index->set_roi_size_hires_texture(height_tile, width_tile);
+   unsigned char *data_vhi = map3d_index->get_vhi();
+
+   int ny_tile = tiles_rtv->get_tiles_ny();
+   int nx_tile = tiles_rtv->get_tiles_nx();
+   int ratio_samples_vhi_to_a2 = map3d_index->get_ratio_vhi_to_elev();
+   for (int i=0; i<3*ratio_samples_vhi_to_a2*ratio_samples_vhi_to_a2*ny_tile*nx_tile; i++) {
+	   store_tex_hi[iTile][i] = data_vhi[i];
+   }
+   return(1);
+}
+</PRE>
+
+

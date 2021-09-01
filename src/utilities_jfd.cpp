@@ -302,6 +302,7 @@ int read_defaults(int &nlowx, int &nlowy, int &nmed, int &nhi, int &stereoType, 
 // ********************************************************************************
 /// Set stereo mode using current value of OIV Global variable GL_stereo_on.
 // ********************************************************************************
+#if defined(LIBS_COIN) 
 int set_stereo_mode(fusion3d_viewer_class *myViewer)
 {
 	SoSFInt32*  GL_stereo_on    = (SoSFInt32*)  SoDB::getGlobalField("Stereo-On");
@@ -351,6 +352,7 @@ int set_stereo_mode(fusion3d_viewer_class *myViewer)
 #endif
 	return 1;
 }
+#endif
 
 // ********************************************************************************
 /// When reading from a text file, translate a relative pathname (relative to the reading-file ) to absolute.

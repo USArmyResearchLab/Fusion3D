@@ -178,7 +178,7 @@ int image_las_demify_class::read_data_and_rasterize(int init_flag)
 		else {
 			nProc = blockSize;
 		}
-		read_block(nProc, 0, nptsLoc);
+		read_block(nProc, nptsLoc);
 
 		rasterize_add(nptsLoc);
 		iStart = iStart + nProc;

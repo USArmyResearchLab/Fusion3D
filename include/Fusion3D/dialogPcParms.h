@@ -3,6 +3,11 @@
 #include <QDialog>
 #include "ui_dialogPcParms.h"
 
+/**
+Qt dialog for specifying how a point cloud is to be displayed.
+\n
+The menu currently allows the user to set different false color scales based on elevation.
+*/
 class dialogPcParms : public QDialog, public Ui::dialogPcParms
 {
 	Q_OBJECT

@@ -3,17 +3,17 @@
 #ifdef __cplusplus
 
 /**
-   Given a monotonically increasing array of times, calculate the indices of the earliest and latest times within a time window.
+   Provides storage for images that are defined in screen coordinates (always staying same size regardless of zoom).
+
+   Images are created and stored internally.  They can then be retrieved by image index.
 
 */
 class osus_image_store_class{
    
    private:
-	   int n_images;
-	   int n_images_max;
- 
-	   SoSeparator**		cameraImagesBase;	///< Per image stored, base of tree 
-
+	   int n_images;					///< No. of images currently stored
+	   int n_images_max;				///< Max no. of images that can be stored -- hardwired to 100
+	   SoSeparator** cameraImagesBase;	///< Per image stored, base of tree 
 
    public:
       osus_image_store_class();

@@ -1,0 +1,730 @@
+<HEAD>
+<TITLE>INTERNAL COMMUNICATION WITH BUFFERS AND GLOBAL VARIABLES</TITLE>
+</HEAD>
+<BODY>
+<H1>INTERNAL COMMUNICATION WITH BUFFERS AND GLOBAL VARIABLES</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#comm_buffers">Communication Using Buffers</A>
+<P>
+<LI><A HREF="#comm_globals">Communication Using Buffers</A>
+	<UL>
+	<LI><A HREF="#comm_globals_general">General Purpose</A>
+	<LI><A HREF="#comm_globals_mouse">Mouse Click</A>
+	<LI><A HREF="#comm_globals_file">File Opening</A>
+	<LI><A HREF="#comm_globals_map">Maps</A>
+	<LI><A HREF="#comm_globals_los">Line of Sight</A>
+	<LI><A HREF="#comm_globals_track">Track</A>
+	<LI><A HREF="#comm_globals_clock">Clock</A>
+	<LI><A HREF="#comm_globals_button">Button</A>
+	<LI><A HREF="#comm_globals_pc">Point Cloud</A>
+	<LI><A HREF="#comm_globals_other">Other</A>
+	</UL>
+<P>
+</UL>
+
+Communication within map3dview is handled in 2 different ways.
+The original technique was to have any user input modify one or more locations in a fixed set of buffers in memory.
+Any location in the memory buffers can be wired to any manager creating a flexible communications scheme.
+After any user input, all the managers are updated.  The update method, refresh() checks for specific buffers that
+have been updated and takes the appropriate actions.
+<P>
+This method proved not to be general enough so was augmented by a second communication method using OpenInventor Global Variables.
+Once they are defined, OpenInventor Global Variables can be accessed by any class using the variable name.  Any class can attach
+a OpenInventor sensor to a Global Variable causing any change to that variable to initiate a callback in the class. 
+This technique is not as portable, since it relies on OpenInventor, but much more general and flexible.
+
+<H2><A NAME="comm_buffers">BUFFERS</A></H2>
+
+Buffers are defined in atrlab_manager_class, the virtual class that is the parent of all manager classes.
+Therefore, it can be accessed by any manager to signal an update to that manager
+<p>
+This method was elegant and portable, but was not general enough.  In particular, it was difficult for several
+different managers to take coordinated actions on a single user input.  Also it was awkward to carry associated parameters
+from the button or menu to the object that carried out the action.
+<P>
+
+
+
+
+
+<H2><A NAME="comm_globals">GLOBAL VARIABLES IN PROGRAM FUSION3D</A></H2>
+
+OpenInventor Global Variables can be accessed by any class using only the variable name.  Any class can attach
+a OpenInventor sensor to a Global Variable causing any change to that variable to initiate a callback in the class. 
+
+<TABLE BORDER>
+<CAPTION>Global Variables</CAPTION>
+<TR><TH>Type <TH>Global Name        <TH>Local Var (SoSF)          <TH>From Class<TH>To Class<TH>Purpose<TH>Ref
+
+<TR><TD>Cam<TD>"New-Aimpoint"     <TD>Int32  GL_aimpoint_flag   <TD>ch_manager<TD>map3d_manager<TD>Current cam -- Signal new<TD><A HREF="#OIV_GL_aimpoint_flag">Ref</A>
+<TR><TD>   <TD>"Camera-Az"        <TD>Float  GL_camera_az       <TD>menu<TD>camera<TD>Current cam -- az
+<TR><TD>   <TD>"Camera-El"        <TD>Float  GL_camera_el       <TD>menu<TD>camera<TD>Current cam -- el
+<TR><TD>   <TD>"Camera-Zoom"      <TD>Float  GL_camera_zoom     <TD>mouse<TD>camera<TD>Current cam -- zoom
+
+<TR><TD>Mouse<TD>"Mouse-Mid-North"  <TD>Float GL_mousem_north     <TD>mouse<TD>any<TD>Mouse click -- middle press
+<TR><TD>     <TD>"Mouse-Mid-East"   <TD>Float GL_mousem_east      <TD>mouse<TD>any<TD>Mouse click -- middle press
+<TR><TD>     <TD>"Mouse-MidR-North" <TD>Float GL_mousemr_north    <TD>mouse<TD>any<TD>Mouse click -- middle release
+<TR><TD>     <TD>"Mouse-MidR-East"  <TD>Float GL_mousemr_east     <TD>mouse<TD>any<TD>Mouse click -- middle release
+<TR><TD>     <TD>"Mouse-Mid-New"    <TD>Int32 GL_mousem_new       <TD>mouse<TD>any<TD>Mouse click -- middle release<TD><A HREF="#OIV_GL_mousem_new">Ref</A>
+
+<TR><TD>Clock<TD>"Clock-Min"    <TD>Float  GL_clock_min    <TD>clock<TD>any<TD>Clock -- Interval min
+<TR><TD>     <TD>"Clock-Max"    <TD>Float  GL_clock_max    <TD>clock<TD>any<TD>Clock -- Interval max
+<TR><TD>     <TD>"Clock-Del"    <TD>Float  GL_clock_del    <TD>menus<TD>clock<TD>Clock -- Del time per tic for model
+<TR><TD>     <TD>"Clock-Time"   <TD>Float  GL_clock_time   <TD>clock/menus<TD>any<TD>Clock -- Time in s after midnight<TD><A HREF="#OIV_GL_clock_time">Ref</A>
+<TR><TD>     <TD>"Clock-Date"   <TD>String GL_clock_date   <TD>track<TD>any<TD>Clock -- Date (begin string from track)
+
+<TR><TD>Sensor<TD>"Sensor-Types"         <TD>String GL_sensor_types     <TD>menu<TD>any<TD>List of sensor types and names
+<TR><TD>      <TD>"Sensor-Filt-Flags"    <TD>Int32 GL_sensor_filflags	<TD>menu<TD>any<TD>Filter flags -- 1 if filter sensor out of viewer<TD><A HREF="#OIV_GL_sensor">Ref</A>
+
+<TR><TD>Track<TD>"Tracks-State"     <TD>Int32 GL_tracks_state     <TD>menu<TD>place_point<TD>Track state from menu to place_point<TD><A HREF="#OIV_GL_tracks_state">Ref</A>
+<TR><TD>     <TD>"Current-Frame"    <TD>Int32 GL_current_frame    <TD>place_point<TD>ch manager<TD>Current track/CH frame
+<TR><TD>     <TD>"Track-Name"       <TD>String GL_track_name      <TD>menu/clin<TD>place manager<TD>Filename for track
+<TR><TD>     <TD>"Fly-Track"        <TD>Int32 GL_fly_track        <TD>menu<TD>script<TD>Route/track flyover parms (coded)<TD><A HREF="#OIV_GL_fly_track">Ref</A>
+
+<TR><TD>File<TD>"Filename"         <TD>String GL_filename        <TD>menu<TD>any<TD>Filename for general-purpose use
+<TR><TD>    <TD>"Aux-Filename"     <TD>String GL_aux_filename    <TD>menu<TD>any<TD>Aux filename -- for map extents for new maps<TD><A HREF="#OIV_GL_aux_filename">Ref</A>
+<TR><TD>    <TD>"Open-File"        <TD>Int32 GL_open_flag        <TD>menu<TD>any<TD>Flag to open file for read/write<TD><A HREF="#OIV_GL_open_flag">Ref</A>
+
+<TR><TD>LOS<TD>"LOS-Flag"         <TD>Int32 GL_los_flag         <TD>menu<TD>los manager<TD>LOS -- trigger calc<TD><A HREF="#OIV_GL_los_flag">Ref</A>
+<TR><TD>   <TD>"LOS-Rmin"         <TD>Float GL_los_rmin         <TD>menu<TD>los manager<TD>LOS --Min range
+<TR><TD>   <TD>"LOS-Rmax"         <TD>Float GL_los_rmax         <TD>menu<TD>los manager<TD>LOS --Max range
+<TR><TD>   <TD>"LOS-Cenht"        <TD>Float GL_los_cenht        <TD>menu<TD>los manager<TD>LOS --Ht at center point
+<TR><TD>   <TD>"LOS-Perht"        <TD>Float GL_los_perht        <TD>menu<TD>los manager<TD>LOS --Ht at peripheral pts
+<TR><TD>   <TD>"LOS-Amin"         <TD>Float GL_los_amin         <TD>menu<TD>los manager<TD>LOS --Min angle in deg
+<TR><TD>   <TD>"LOS-Amax"         <TD>Float GL_los_amax         <TD>menu<TD>los manager<TD>LOS --Max angle in deg
+<TR><TD>   <TD>"LOS-OVis"         <TD>Int32 GL_los_ovis         <TD>menu<TD>los manager<TD>LOS --1 iff outline visible regions for shapefile
+<TR><TD>   <TD>"LOS-OShad"        <TD>Int32 GL_los_oshad        <TD>menu<TD>los manager<TD>LOS --1 iff outline shadowed regions for shapefile
+<TR><TD>   <TD>"LOS-Bound"        <TD>Int32 GL_los_bound        <TD>menu<TD>los manager<TD>LOS --1 iff include regions that touch boundary
+<TR><TD>   <TD>"LOS-PShad"        <TD>Float GL_los_pshad        <TD>menu<TD>los manager<TD>LOS --Percent of area shadowed
+<TR><TD>   <TD>"LOS-SensorEl"     <TD>Float GL_los_sensorEl     <TD>menu<TD>los manager<TD>LOS --Standoff sensor -- Elevation
+<TR><TD>   <TD>"LOS-SensorN"      <TD>Float GL_los_sensorE      <TD>menu<TD>los manager<TD>LOS --Standoff sensor -- East
+<TR><TD>   <TD>"LOS-SensorE"      <TD>Float GL_los_sensorN      <TD>menu<TD>los manager<TD>LOS --Standoff sensor -- North
+ 
+<TR><TD>Map<TD>"Map-NHI"        <TD>Int32 GL_map_nhi        <TD>menu<TD>map3d_manager<TD>half-width of hi-res area
+<TR><TD>   <TD>"Map-NMed"       <TD>Int32 GL_map_nmed       <TD>menu<TD>map3d_manager<TD>half-width of medium-res area
+<TR><TD>   <TD>"Map-NLowX"      <TD>Int32 GL_map_nlowx      <TD>menu<TD>map3d_manager<TD>half-width of low-res area -- x-dimension
+<TR><TD>   <TD>"Map-NLowY"      <TD>Int32 GL_map_nlowy      <TD>menu<TD>map3d_manager<TD>half-width of low-res area -- y-dimension
+<TR><TD>   <TD>"Map-Status-Flag"<TD>Int32 GL_map_status_flag<TD>map3d_manager<TD>menu<TD>Map status -- 0=undefined, 1=basic parms defined, 2=all parms defined <TD><A HREF="#GL_map_status_flag">Ref</A>
+<TR><TD>   <TD>"Map-Mod-Flag"   <TD>Int32 GL_map_mod_flag   <TD>menu<TD>map3d_manager<TD>Remake tiles owing to some change in vis parms<TD><A HREF="#GL_map_mod_flag">Ref</A>
+<TR><TD>   <TD>"Rainbow-Min"    <TD>Float GL_rainbow_min    <TD>map3d_index<TD>map3d_manager<TD>Elevation mapping to min color<TD><A HREF="#OIV_GL_rainbow_min">Ref</A>
+<TR><TD>   <TD>"Rainbow-Max"    <TD>Float GL_rainbow_max    <TD>map3d_index<TD>map3d_manager<TD>Elevation mapping to max color<TD><A HREF="#OIV_GL_rainbow_min">Ref</A>
+<TR><TD>   <TD>"Hilite-Thresh1" <TD>Float GL_hilite_thresh1 <TD>menu<TD>map3d_manager<TD>Hiliting -- first height threshold
+<TR><TD>   <TD>"Hilite-Thresh2" <TD>Float GL_hilite_thresh2 <TD>menu<TD>map3d_manager<TD>Hiliting -- second height threshold
+
+<TR><TD>Pt Cld<TD>"Mobmap-Mod"      <TD>Int32 GL_mobmap_mod       <TD>menus<TD>ladar_mm<TD>Modify point cloud flag<TD><A HREF="#OIV_GL_mobmap_fine">Ref</A>
+<TR><TD>      <TD>"Mobmap-Pts-Dmax" <TD>Float GL_mobmap_pts_dmax  <TD>menus<TD>ladar_mm<TD>Max no. of pts to display
+<TR><TD>      <TD>"Mobmap-CScale"   <TD>Int32 GL_mobmap_cscale    <TD>menus<TD>ladar_mm<TD>False color scale (0=nat/abs, 1=b-r/abs, 2=nat/rel, 3=b-r/rel)<TD><A HREF="#OIV_GL_mobmap_fine">Ref</A>
+<TR><TD>      <TD>"Mobmap-CMin"     <TD>Float GL_mobmap_cmin      <TD>menus<TD>ladar_mm<TD>False color for point clouds -- elevation corresponding to min hue<TD><A HREF="#OIV_GL_rainbow_min">Ref</A>
+<TR><TD>      <TD>"Mobmap-CMax"     <TD>Float GL_mobmap_cmax      <TD>menus<TD>ladar_mm<TD>False color for point clouds -- elevation corresponding to max hue<TD><A HREF="#OIV_GL_rainbow_min">Ref</A>
+<TR><TD>      <TD>"Mobmap-Filt-Type"<TD>Int32 GL_mobmap_filt_type <TD>menus<TD>ladar_mm<TD>Type of filtering -- 0=None, 1=TAU, 2=elevation
+<TR><TD>      <TD>"Mobmap-Fine_Cur" <TD>Int32 GL_mobmap_fine_cur  <TD>menus<TD>ladar_mm<TD>Min TAU value currently displayed
+<TR><TD>      <TD>"Mobmap-Fine-Min" <TD>Int32 GL_mobmap_fine­_min  <TD>menus<TD>ladar_mm<TD>Min TAU value for display
+<TR><TD>      <TD>"Mobmap-Fine-Min" <TD>Int32 GL_mobmap_fine­_max  <TD>menus<TD>ladar_mm<TD>Max TAU value for display
+<TR><TD>      <TD>"Mobmap-Filt_AMin"<TD>Float GL_mobmap_filt_amin <TD>menus<TD>ladar_mm<TD>Filter -- Abs elev -- min<TD></A>
+<TR><TD>      <TD>"Mobmap-Filt_AMax"<TD>Float GL_mobmap_filt_amax <TD>menus<TD>ladar_mm<TD>Filter -- Abs elev -- max<TD></A>
+<TR><TD>      <TD>"Mobmap-Filt_RMin"<TD>Float GL_mobmap_filt_rmin <TD>menus<TD>ladar_mm<TD>Filter -- Relative elev -- min<TD></A>
+<TR><TD>      <TD>"Mobmap-Filt_RMax"<TD>Float GL_mobmap_filt_rmax <TD>menus<TD>ladar_mm<TD>Filter -- Relative elev -- max<TD></A>
+
+<TR><TD>Write<TD>"Write-Base" <TD>String GL_write_base <TD>menu<TD>write_manager<TD>Base pathname for sequence of write files
+<TR><TD>     <TD>"Write-Nx"   <TD>Int32 GL_write_nx    <TD>menu<TD>write_manager<TD>Size of write image
+<TR><TD>     <TD>"Write-Ny"   <TD>Int32 GL_write_ny    <TD>menu<TD>write_manager<TD>Size of write image
+
+<TR><TD>Ovrlay<TD>"Over-Transparency"<TD>Float GL_transparency     <TD>menu<TD>ch_manager      <TD>Send trans from menu
+<TR><TD>      <TD>"Over-Hist-Eq"     <TD>Int32 GL_histeq_flag      <TD>menu<TD>ch_manager      <TD>Toggle histogram equalization
+<TR><TD>      <TD>"Color-Balance"    <TD>Int32 GL_color_balance    <TD>menu<TD>ladar_mm_manager<TD>Set color-balance type
+
+<TR><TD>Misc<TD>"Busy"             <TD>Int32 GL_busy             <TD>cruncher<TD>any inputs<TD>Signal busy for multithreading (see note)
+<TR><TD>    <TD>"Warning"          <TD>Int32 GL_warning          <TD>any<TD>menu<TD>Display warning/error window -- not yet implemented
+<TR><TD>    <TD>"Stereo-On"        <TD>Int32 GL_stereo_on        <TD>menu<TD>menu<TD>Toggle stereo
+<TR><TD>    <TD>"Stereo-Sep"       <TD>Float GL_stereo_sep       <TD>menu<TD>menu<TD>Adjust stereo separation
+<TR><TD>    <TD>"Space-Button"     <TD>Int32 GL_space_button     <TD>spaceball_input<TD>any<TD>Records SpaceNav button presses
+<TR><TD>    <TD>"Button-Mod"       <TD>Int32 GL_button_mod       <TD>any<TD>buttons_input<TD>Update button bitmaps<TD><A HREF="#OIV_GL_button_mod">Ref</A>
+<TR><TD>    <TD>"Nav-El-Max"       <TD>Int32 GL_nav_elmax        <TD>menus<TD>buttons_input<TD>Max elevation angle for viewer (cant rotate display more than this angle)
+<TR><TD>    <TD>"Slider-Value"     <TD>Float GL_slider_val       <TD>menu<TD>menu<TD>Value of general-purpose slider [0,1]<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Int-Value"        <TD>Int32 GL_int_val          <TD>menu<TD>menu<TD>Value of general-purpose int<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"String-Value"     <TD>String GL_string_val      <TD>menu<TD>menu<TD>Value of general-purpose string<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Flag"      <TD>Int32 GL_action_flag      <TD>menu<TD>menu<TD>Triggers immediate action based on value<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Int1"      <TD>Int32 GL_action_int1      <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Int2"      <TD>Int32 GL_action_int2      <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Int3"      <TD>Int32 GL_action_int3      <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float1"    <TD>Int32 GL_action_float1    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float2"    <TD>Int32 GL_action_float2    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float3"    <TD>Int32 GL_action_float3    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float4"    <TD>Int32 GL_action_float4    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float5"    <TD>Int32 GL_action_float5    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float6"    <TD>Int32 GL_action_float6    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-Float7"    <TD>Int32 GL_action_float7    <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-String1"   <TD>String GL_action_string1  <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+<TR><TD>    <TD>"Action-String2"   <TD>String GL_action_string2  <TD>menu<TD>menu<TD>Associated with trigger -- consumed immediately<TD><A HREF="#general-purpose">Ref</A>
+</TABLE
+<BR><BR><BR>
+
+
+
+<H2><A NAME="comm_globals_general">GENERAL PURPOSE</A></H2>
+
+<H3><A NAME="general-purpose">Action Globals</A></H3>
+
+GL_action_flag triggers an immediate action -- it should be monitored by at least one callback and perhaps many.
+The action taken is based on the value of the flag.
+The other action globals are associated with the trigger and must be consumed immediately in the callback -- their values should not be used thereafter.
+<P>
+<PRE>
+
+GL_action_flag = 1			Collect new sequence of frames
+	GL_action_string1			Header filename
+	GL_action_string2			Output directory
+	GL_action_int1			First seq no
+	GL_action_int2			Last seq no
+	GL_action_int3			Write option (0=files, 1=buffers, 2=both)
+
+GL_action_flag = 2			Review old sequence of frames
+	GL_action_string1			Header filename
+	GL_action_string2			Name of first file in sequence
+	GL_action_int1			Last image no.
+	GL_action_int2			Stride
+
+GL_action_flag = 3			View single image
+	GL_action_string1			Header filename
+	GL_action_string2			Name of image
+
+GL_action_flag = 10			Collect new sequence of frames
+	GL_action_string1			filename / stream-url
+	GL_action_string2			
+	GL_action_int1			action 0=play, 1=meta, 2=both
+	GL_action_int2			stream-flag 0=file, 1=stream
+	GL_action_int3			port no. for stream
+
+GL_action_flag = 11			VLC Player -- Play video1
+GL_action_flag = 12			VLC Player -- Pause video1
+GL_action_flag = 13			VLC Player -- Stop video1
+GL_action_flag = 14			VLC Player -- Play video1
+GL_action_flag = 15			VLC Player -- Pause video1
+GL_action_flag = 15			VLC Player -- Stop video1
+GL_action_flag = 17			VLC Player -- Play video1
+GL_action_flag = 18			VLC Player -- Pause video1
+GL_action_flag = 19			VLC Player -- Stop video1
+
+GL_action_flag = 20			Open file for play
+GL_action_flag = 21			Open file for meta
+GL_action_flag = 20			Open file for both play and meta
+	GL_action_string1			filename / stream-url
+	GL_action_string2			
+	GL_action_int1			stream-flag 0=file, 1=stream
+	GL_action_int2			port no. for stream
+	GL_action_int3			pid #
+
+GL_action_flag = 40			Modify filtering of sensors
+
+GL_action_flag = 61			CAD -- Deconflict
+
+</PRE>
+
+
+
+<H2><A NAME="comm_globals_mouse">MOUSE CLICK VARIABLES</A></H2>
+
+
+<H3><A NAME="OIV_GL_mousem_new">Middle Mouse to Pick -- GL_mousem_new</A></H3>
+
+The middle mouse is used to pick an x-y location.  The location (x,y) relative to the current origin is placed in global variables and the
+flag GL_mousem_new is set to indicate that a point has been picked.
+Picking is a modal function -- the response to the pick depends on the current mode.
+GL_mousem_new is also used to set the current mode.
+<P>
+
+<PRE>
+
+
+	Set by:
+		diag_route_class			sets values 56/57/58/59 associated with distance along route
+		mouse_input_3d_class		flag that 
+		menu_input_sw_class		send track edit commands
+		script_input_class		mimics mouse 			
+	
+	Monitored by:
+		mensuration_manager_inv_class		Triggers get mensuration points
+		mti_manager_inv_class			Triggers draw sensor-vector to nearest hit
+		place_point_manager_inv_class		Triggers editing tracks and digitizing tracks
+		proj_manager_inv_class			Triggers show proj for nearest icon
+		buttons_input_sw_class			Add new jump buttons -- Add on middle mouse click, or add on tags from parm file
+
+
+
+</PRE>
+
+
+<TABLE BORDER>
+<CAPTION>GL_mousem_new Options</CAPTION>
+<TR><TH>State   <TH>Set By                 <TH>Description                 			<TH>Grouping
+
+<TR><TD>1 <TD>Mouse <TD>Specify point -- Middle mouse click						<TD>1-19 for point picking
+<TR><TD>1 <TD>Script<TD>Mimics Middle mouse click
+<TR><TD>2 <TD>Mouse <TD>Delete nearest point -- Middle mouse click
+<TR><TD>20<TD>Menu  <TD>Turn off all middle-mouse -- mensuration/bookmark/track		<TD>20-29 for mensuration, bookmarks, LOS
+<TR><TD>21<TD>Menu  <TD>Mensuration -- Turn on mensuration distance measure (turn off bookmark-creation)
+<TR><TD>22<TD>Menu  <TD>Mensuration -- Turn on mensuration point measure (turn off bookmark-creation)
+<TR><TD>23<TD>Menu  <TD>Bookmarks -- Turn on bookmark creation (turn off mensuration)
+<TR><TD>24<TD>Menu  <TD>Bookmarks -- Flag to bring up menu for bookmark name
+<TR><TD>25<TD>Menu  <TD>Bookmarks -- Flag that bookmark name has been entered
+<TR><TD>26<TD>Menu  <TD>LOS -- Arm to use middle mouse to pick end point for ray from sensor to point
+<TR><TD>28<TD>Menu  <TD>GMTI -- Info on the closest MTI hit
+<TR><TD>31<TD>Menu  <TD>Motion Video -- Request MotionVideo at the clicked loc -- source 1			<TD>30-39 for motion video
+<TR><TD>32<TD>Menu  <TD>Motion Video -- Request MotionVideo at the clicked loc -- source 2
+<TR><TD>33<TD>Menu  <TD>Motion Video -- Request MotionVideo at the clicked loc -- source 3
+<TR><TD>34<TD>Menu  <TD>Motion Video -- Request MotionVideo at the clicked loc -- source 4
+<TR><TD>35<TD>Menu  <TD>Motion Video -- Request Image from nearest registered UGS sensor
+<TR><TD>40<TD>Menu  <TD>Draw -- Clear										<TD>40-49 for draw function
+<TR><TD>41<TD>Menu  <TD>Draw -- Initialize draw
+<TR><TD>42<TD>Menu  <TD>Draw -- Signal to menu_class to open feature-parms menu
+<TR><TD>43<TD>Menu  <TD>Draw -- Signal from menu that feature-parms set
+<TR><TD>44<TD>Menu  <TD>Draw -- signal from menu that altitude-menu parms set
+<TR><TD>45<TD>Menu  <TD>Draw -- Signal to open messageBox verification menus to accept changes
+<TR><TD>50<TD>Menu  <TD>Track -- clear		<TD>50-69 for track editing functions
+<TR><TD>51<TD>Menu  <TD>Track -- save to file
+<TR><TD>52<TD>Menu  <TD>Track -- Put track under SoAnnotation
+<TR><TD>53<TD>Menu  <TD>Track -- Put track under SoSeparator
+<TR><TD>54<TD>Menu  <TD>Track -- start digitizing
+<TR><TD>55<TD>Menu  <TD>Track -- Open file
+<TR><TD>56<TD>Menu  <TD>Distance along track -- pick 1st point				
+<TR><TD>57<TD>Menu  <TD>Distance along track -- pick 2nd point
+<TR><TD>58<TD>Menu  <TD>Distance along track -- Calc distance along track
+<TR><TD>59<TD>Menu  <TD>Distance along track -- Reset
+<TR><TD>60<TD>Menu  <TD>Instantaneous track parms at point (i.e. velocity)
+</TABLE>
+<BR><BR><BR>
+
+<H3><A NAME="OIV_GL_aimpoint_flag">Left Mouse for Translation -- GL_aimpoint_flag</A></H3>
+<PRE>
+
+Left mouse is used to translate in the map -- to translate the point clicked to screen center
+
+	Set by:		mouse_input_3d_class		click point to origin
+			ch_manager_inv_class		follow the track chips
+			proj_manager_inv_class		set camera to look at projected image
+			map3d_manager_inv_class		jump-to from button
+			script_input_class		mimic left mouse click
+			menu_input_sw_class		jump to a specified loc
+			
+	Monitored by:	camera4d_manager_inv_class	resets origin	MUST HAVE HIGHEST PRIORITY
+			map3d_manager_inv_class		retiles
+			menu_input_sw_class		read current loc
+
+
+
+</PRE>
+
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_aimpoint_flag</CAPTION>
+<TR><TH>State   <TH>Set By                 <TH>Description
+<TR><TD>-7      <TD>Left mouse             <TD>Go to loc of mouse click
+<TR><TD>-2      <TD>Menu class Go-To-Loc   <TD>Jump to loc typed into menu
+<TR><TD>-2      <TD>Projection class       <TD>Jump to loc/angle to view projected image
+<TR><TD>-1      <TD>Button class Jump-To   <TD>Jump to specified location
+<TR><TD>-1      <TD>Script class Jump-To   <TD>Jump to specified location
+<TR><TD>0       <TD>CH manager read dir    <TD>Move to center of first CH frame 
+<TR><TD>Positive<TD>CH manager update frame<TD>Move to center of next CH frame 
+</TABLE>
+<BR><BR><BR>
+
+
+
+
+<H2><A NAME="comm_globals_file">FILE OPENING VARIABLE</A></H2>
+<H3><A NAME="OIV_GL_open_flag">Global Variable GL_open_flag</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_open_flag</CAPTION>
+<TR><TH>No<TH>From<TH>To<TH>Read/Write<TH>Type of File
+<TR><TD>0    <TD><TD><TD>Status<TD>File opened -- need to regenerate menu of vector files to add just-read -- in menu
+<TR><TD>1    <TD><TD><TD>Read  <TD>Vector overlay for display only -- in kml_manager_class
+<TR><TD>2    <TD><TD><TD>Read  <TD>Vector overlay for bookmarks -- in bookmark manager_class
+<TR><TD>3    <TD><TD><TD>Read  <TD>Vector overlay for MTI  -- in mti_manager_class
+<TR><TD>4    <TD><TD><TD>Read  <TD>Vector overlay for truthing -- in truth_manager_class
+<TR><TD>5    <TD><TD><TD>Read  <TD>Vector overlay for UGS SensorML
+<TR><TD>6    <TD><TD><TD>Read  <TD>Vector overlay for UGS OM
+<TR><TD>7    <TD><TD><TD>Status<TD>Display needs refresh??
+<TR><TD>12   <TD><TD><TD>Write<TD>Vector overlay for bookmarks -- 
+<TR><TD>21   <TD><TD><TD>Write<TD>Write screen to user-specified file 
+<TR><TD>22   <TD><TD><TD>Write<TD>Write screen to program-specified indexed file (sequenced files for saving group of frames for movie) 
+<TR><TD>23   <TD><TD><TD>Write<TD>Write current program parameters to user-specified file 
+<TR><TD>24   <TD><TD><TD>Write<TD>Write data to yaff file -- not fully implemented
+<TR><TD>25   <TD><TD><TD>Read <TD>Read current program parameters from user-specified file 
+<TR><TD>26   <TD>Menu<TD>Write manager<TD>New Scene<TD>New scene -- new map, Buckeye
+<TR><TD>27   <TD>Menu<TD>Write manager<TD>New Scene<TD>New scene -- new terrestrial lidar 
+<TR><TD>28   <TD>Menu<TD>Write manager<TD>New Scene<TD>New scene -- new map, Not following Buckeye conventions
+<TR><TD>31   <TD><TD><TD>Read  <TD>Mobile mapping terrestrial lidar
+<TR><TD>41   <TD><TD><TD>Write <TD>View_ladar4d -- Write current frame
+<TR><TD>42   <TD><TD><TD>Write <TD>View_ladar4d -- Write world coordinate point cloud to LAS file
+<TR><TD>51   <TD><TD><TD>Read <TD>Draw -- Read file for edit
+<TR><TD>52   <TD><TD><TD>Write <TD>Draw -- Save file
+<TR><TD>61   <TD><TD><TD>Read <TD>CAD manager  -- Read file
+<TR><TD>99   <TD><TD><TD>Clear <TD>Clear all -- all maps, vectors and LAS
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+	kml_manager_inv_class 		1 to open, 5 to update display
+	mti_manager_inv_class		3 to open, 5 to update display
+	truth_manager_inv_class		4 to open, 5 to update display
+	bookmark_manager_inv_class	2 to open, 12 to write
+	write_manager_inv_class		21, 22, 23, 24, 25, 26, 27
+	menu_input_sw_class		sets all
+
+
+</PRE>
+<H2><A NAME="comm_globals_map">MAP VARIABLE GL_map_status_flag</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_map_status_flag</CAPTION>
+<TR><TH>No<TH>Action<TH>State after action<TH>Legal Next States
+<TR><TD>0 <TD>No map defined<TD><TD>
+<TR><TD>1 <TD>In map3d_manager_inv_class::make_scene_3d(), map after alloc, cache def, thread def<TD><TD>
+<TR><TD>2 <TD>In map3d_manager_inv_class::make_scene_3d(), Map tiling set up and tiling started<TD><TD>
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+	set by
+		globals_inv_class::set_globals_sw()			Init to 0
+		map3d_manager_inv_class::clear_all()		Reset to 0 on clear-all
+		map3d_manager_inv_class::make_scene_3d()		Set to 1 after alloc, cache def, thread def
+		map3d_manager_inv_class::update_tiles()		Set to 2 after tiling set up
+		map3d_manager_inv_class::update_tiles_next()	Set to 2 after tiling set up
+
+	monitored by
+		map3d_manager_inv_class::make_scene_3d()		If > 0, class already init, so skip init
+		map3d_manager_inv_class::update_mrsid_next	If < 2, MrSID is separate thread, so dont start to work before everything set up
+		map3d_manager_inv_class::refresh()			If < 2, Dont start to work before everything set up
+
+		menu_input_sw_class::map_status_cb()		Grays out appropriate entries in menu
+
+
+
+</PRE>
+<H2><A NAME="GL_map_mod_flag">MAP VARIABLE GL_map_mod_flag</A></H2>
+
+This global variable is used to indicate to the map3d_manager_inv_class that it needs to remake some or all of its tiles owing to some change in visualization parameters.
+<P>
+
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_map_mod_flag</CAPTION>
+<TR><TH>No<TH>Action
+<TR><TD>1 <TD>Change map size (no. of high/med/low res tiles)
+<TR><TD>2 <TD>Change color scale
+<TR><TD>3 <TD>Regenerate medium- and high-res tiles owing to outside changes in DEM
+<TR><TD>4 <TD>Regenerate all (low-, medium- and high-res) tiles owing to outside changes in DEM
+</TABLE>
+<BR><BR><BR>
+
+
+
+
+<H2><A NAME="OIV_GL_los_flag">LOS VARIABLES GL_los_flag</A></H2>
+
+Communication is from the menu to the los_manager_inv_class::los_cb() except for the case where a mask has been generated, modified, or deleted
+and the map must be redrawn.  In this case the los_manager_inv_class::los_cb() signals to the map3d_manager_inv_class::los_cb() to update the display.
+<P>
+
+
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_los_flag</CAPTION>
+<TR><TH>No<TH>Action<TH>State after action<TH>Where to
+<TR><TD>0 <TD>Clear all LOS display             <TD>clear                <TD>
+<TR><TD>1 <TD>Calculate LOS from ground         <TD>Calculated, display not updated<TD>los_manager_inv_class::los_cb()
+<TR><TD>2 <TD>Calculate LOS from sun            <TD>Calculated, display not updated<TD>los_manager_inv_class::los_cb()
+<TR><TD>3 <TD>Calculate LOS from standoff sensor<TD>Calculated, display not updated<TD>los_manager_inv_class::los_cb()
+<TR><TD>4 <TD>Calculate LOS from GMTI sensor    <TD>Calculated, display not updated<TD>los_manager_inv_class::los_cb()
+<TR><TD>5 <TD>Output LOS outlines to Shapefile  <TD>Written, no change display     <TD>los_manager_inv_class::los_cb()
+<TR><TD>6 <TD>Update LOS display                <TD>Display updated                <TD>map3d_manager_inv_class::los_cb()
+<TR><TD>7 <TD>Load a LOS mask from GeoTiff      <TD>Read, no change display        <TD>los_manager_inv_class::los_cb()
+<TR><TD>8 <TD>Output LOS mask to GeoTiff        <TD>Written, no change display     <TD>los_manager_inv_class::los_cb()
+</TABLE>
+<BR><BR><BR>
+
+
+<H2><A NAME="comm_globals_track">TRACK VARIABLES</A></H2>
+<H3><A NAME="OIV_GL_tracks_state">GL_tracks_state</A></H3>
+
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_tracks_state</CAPTION>
+<TR><TH>No<TH>Action
+<TR><TD>0 <TD>Clear track
+<TR><TD>12<TD>Fly through the track/route -- Start
+<TR><TD>13<TD>Fly through the track/route -- Forward direction
+<TR><TD>14<TD>Fly through the track/route -- Backward direction
+<TR><TD>15<TD>Fly through the track/route -- Set averaging interval
+<TR><TD>16<TD>Fly through the track/route -- Set location along track
+<TR><TD>17<TD>Fly through the track/route -- Set speed of travel
+<TR><TD>18<TD>Fly through the track/route -- Use calculated az angle -- look along the direction of motion
+<TR><TD>19<TD>Fly through the track/route -- Allow user to control az angle
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+Note:
+	State 6 deleted  -- to Clear CHover  then goto 0
+		all clears done in state 0
+
+track_manager classes
+	On init
+		extra buttons off	
+			=> middle-mouse to add/move/del disabled
+		Middle mouse off and cant b used
+
+	On parmfile-track-read/menu-track-read
+		extra buttons on	
+			=> middle-mouse to add/move/del enabled, 
+		Middle mouse off -- must click button to get add or move or del
+
+	On menu-create
+		extra buttons on	
+			=> middle-mouse to add/move/del enabled, 
+		Middle mouse set to add
+
+
+</PRE>
+
+
+
+
+<H3><A NAME="OIV_GL_fly_track">GL_fly_track</A></H3>
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_fly_track</CAPTION>
+<TR><TH>Value           <TH>Bit      <TH>Description
+<TR><TD>1s bit		   <TD>1		<TD>Route flyover -- 0 for forward, 1 for reverse
+<TR><TD>2s bit		   <TD>2		<TD>Route flyover -- 0 for track always on top, 1 for track can be obscured
+<TR><TD>4s bit		   <TD>3		<TD>Route flyover -- 0 for user controls azimuth, 1 for program controls az
+<TR><TD>8/16s bit	   <TD>4-5	     <TD>Route flyover -- Stride (stride = 1 + val, 0 <= val <= 4)
+<TR><TD>32-1024s bit	   <TD>6-11	<TD>Route flyover -- Average interval (avg radius in m = 10 * val, 0<=val<=63)
+<TR><TD>2048-131072s bit<TD>12-17	<TD>Route flyover -- location along track (location in % = val / 63, 0<=val<=63)
+</TABLE>
+<BR><BR><BR>
+
+
+
+<H2><A NAME="comm_globals_clock">CLOCK VARIABLES</A></H2>
+<PRE>
+
+	GL_clock_time
+		Sets
+			globals_inv_class -- init to 0
+			clock_input_class::increment_clock()
+			Clock menu, slider
+			LOS parms menu -- time of day for sun shadows
+
+		Monitors
+			place_point_manager_inv_class::tic_cb()	Sets the CH frame no. for current time
+			mti_manager_inv_class::tic_cb()		Refreshes MTI hits for current time
+			bookmark_manager_inv_class::jump_to		Gets time for Jump-To
+			los_manager_inv_class::los_cb()		Gets time for sun-shadow calc
+			truth_manager_inv_class::refresh()		Updates target position for current time
+			ladar_gr_manager_inv_class::anim_cb()	Gets frame-no = time
+
+	GL_clock_min
+		Min time -- When clock tics backwards to this time, it will keep ticking but stay at the min time
+ 
+	GL_clock_max
+		Max time -- When clock tics forwards to this time, it will keep ticking but stay at the max time
+
+	GL_clock_del
+		Interval in seconds between clock tics in model time
+
+	GL_clock_date
+		Date and time in format yyyy-mm-dd T hh:mm:ss.sssZ or yyyy-mm-dd hh:mm:s where seconds are float
+		Sets
+			globals_inv_class -- init to ""
+			LOS parms menu -- date for sun shadows (time overwritten)
+			place_point_manager_inv to set date for CH data
+
+		Monitors
+			LOS for sun shadows	
+
+
+
+</PRE>
+<H2><A NAME="comm_globals_button">BUTTON VARIABLES</A></H2>
+
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_button_mod</CAPTION>
+<TR><TH>No<TH>Action<TH>Action<TH>Notes
+<TR><TD>0 <TD>Reset map<TD><TD>
+<TR><TD>1 <TD>Reset vector<TD><TD>
+<TR><TD>2 <TD>Reset point cloud<TD><TD>
+<TR><TD>3 <TD>Reset bookmarks<TD><TD>
+<TR><TD>4 <TD>Reset track<TD><TD>
+<TR><TD>99   <TD>Mod buttons to add script buttons
+<TR><TD>100  <TD>Mod buttons to add clock buttons
+<TR><TD>200<TD>track digitize -- add editing buttons<TD><TD>
+<TR><TD>201<TD>track digitize -- del editing buttons<TD><TD>
+<TR><TD>301<TD>Jump to bookmark -- add button 1<TD><TD>
+<TR><TD>302<TD>Jump to bookmark -- add button 2<TD><TD>
+<TR><TD>303<TD>Jump to bookmark -- add button 3<TD><TD>
+<TR><TD>304<TD>Jump to bookmark -- add button 4<TD><TD>
+<TR><TD>99   <TD>Mod buttons to add script buttons
+<TR><TD>100  <TD>Mod buttons to add clock buttons
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+Note:
+	0-4 work for buttons but visibility gets confused -- cant make this work properly, so just issue warning
+
+
+</PRE>
+<H2><A NAME="comm_globals_pc">POINT CLOUD PARAMETERS</A></H2>
+
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_mobmap_mod</CAPTION>
+<TR><TH>No<TH>Action<TH>Action<TH>Notes
+<TR><TD>0 <TD>Default<TD><TD>
+<TR><TD>1<TD>Toggle false color scale natural green-white (default)/blue-red)<TD><TD>
+<TR><TD>2<TD>Adjust false color limits<TD><TD>
+<TR><TD>3<TD>Change color balance type<TD><TD>
+<TR><TD>4<TD>Change max no. of points<TD><TD>
+<TR><TD>5<TD>Adjust FINE alg slider<TD><TD>
+<TR><TD>6<TD>Adjust min and max of FINE alg slider<TD><TD>
+<TR><TD>12<TD>both Toggle false color scale and Adjust false color limits<TD><TD>
+</TABLE>
+<BR><BR><BR>
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_mobmap_cscale</CAPTION>
+<TR><TH>No<TH>Action<TH>Action<TH>Notes
+<TR><TD>0 <TD>Toggle the false color map to natural (green-white) (default) based on absolute elevation<TD><TD>
+<TR><TD>1 <TD>Toggle the false color map to blue-red based on absolute elevation<TD><TD>
+<TR><TD>2 <TD>Toggle the false color map to natural (green-white) based on elevation relative to mean ground plane<TD><TD>
+<TR><TD>3 <TD>Toggle the false color map to blue-red based on elevation relative to mean ground plane<TD><TD>
+</TABLE>
+<BR><BR><BR>
+<PRE>
+
+MAP Modules using
+	globals_inv_class::set_globals_sw()		Defined, set = 0
+	sw_parms_class::read_defaults			Override from custom defaults 
+	map3d_manager_inv_class				If user override from parm file, mod value; then query and use
+	dialog_resources					Set when user changes menu
+	dialog_terr_lidar					Set when user changes menu
+
+
+
+
+</PRE>
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_mobmap_fine</CAPTION>
+<TR><TH>No<TH>Action<TH>Action<TH>Notes
+<TR><TD>0 <TD>Turn off FINE algorithm processing<TD><TD>
+<TR><TD>1 <TD>Reset on FINE algorithm processing<TD><TD>
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+Note:
+	0-4 work for buttons but visibility gets confused -- cant make this work properly, so just issue warning
+
+
+</PRE>
+<H2><A NAME="comm_globals_other">OTHER VARIABLES</A></H2>
+
+<PRE>
+
+Notes
+	1.  GL_busy -- Used to request exclusive use of processors for multithreading
+		= 0	No multithreading, so state can be ignored
+		= 1	Normal state where multiple threads share processors
+		= 2	Main thread request exclusive use of processors
+		= 3	Worker threads suspended and grants exclusive to main thread
+
+		
+
+
+</PRE>
+<H3><A NAME="OIV_GL_aux_filename">Global Variable GL_aux_filename</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Global Variable GL_aux_filename</CAPTION>
+<TR><TH>Value                      <TH>Description
+<TR><TD>dirname/filename           <TD>Open and display the specific file
+<TR><TD>dirname/filename-makeExtent<TD>Make, open, display and save a single Extent file 
+<TR><TD>dirname-openAll            <TD>Open and display all KML files in the directory
+</TABLE>
+<BR><BR><BR>
+
+<PRE>
+
+	set by:
+		dialog_load_dem::OnInitDialog			Name of KML file for single chosen a2 file assuming Buckeye conventions
+		dialog_load_dem::OnBnClickedOpenMultButton	FIX************
+		dialog_load_dem_other::OnBnClickedOK	If KML file specified, that name; otherwise ""
+
+	monitored by:
+		kml_manager_inv_class::make_scene_3d
+</PRE>
+
+<H3><A NAME="OIV_GL_rainbow_min">Global Variables to set False Color Ranges</A></H2>
+
+False color ranges for the map are defined in GL_rainbow_min and GL_rainbow_max.
+When both are present, these values get passed from the map to the point cloud.
+False color ranges for the point cloud are kept in GL_mobmap_cmin and GL_mobmap_cmax.
+They can be adjusted from the menu.
+<P>
+
+<PRE>
+
+GL_rainbow_min and GL_rainbow_max
+
+	Ref
+		globals_inv_class				defined and defaulted to 0
+		map3d_manager_inv_class			set from tag in Parm file or from DEM -- not used in draw
+		ladar_mm_manager_inv_class		set from tag in Parm file, inherited from DEM or estimatedfrom first pt cloud -- used in draw
+
+	Default
+		set to 0/0 by globals_inv_class
+
+	Priority 1 set
+		set by tag 'Map3d-Color-Rainbow-Ranges' in map3d_manager_inv_class
+
+	Priority 2 set
+		set from first point cloud (percentiles)
+
+
+GL_mobmap_cmin and GL_mobmap_cmax
+
+	Ref
+		globals_inv_class				defined and defaulted to 0
+		ladar_mm_manager_inv_class		set from tag in Parm file, inherited from DEM or estimatedfrom first pt cloud -- used in draw
+
+	Priority 1 set
+		set by tag 'Map3d-Color-Rainbow-Ranges' in ladar_mm_manager_inv_class
+
+	Priority 2 set
+		set from GL_rainbow_min and GL_rainbow_max if DEM is present
+
+	Priority 3 set
+		set from first point cloud (percentiles)
+
+	Adjusted
+		Point Cloud menu
+
+	Draw
+		On draw, GL_mobmap_cmin and GL_mobmap_cmax used
+
+
+</PRE>	
+

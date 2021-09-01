@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 
 /**
-Does import and export of 2-d images in .pnm format.
+Does import and export of 2-d images in .pnm format, a general designator that includes the grayscale .pgm and color .ppm formats.
 
 This class handles either gray-scale images (1 byte per pixel, internal image type = 5) or rgb images (3 bytes per pixel, internal image type = 6).
 */

@@ -61,6 +61,22 @@ int image_geo_class::set_output_type_float()
 }
 
 // ******************************************
+/// Get upper-left corner of image in projection coordinates -- north.
+// ******************************************
+double image_geo_class::get_ulcorner_north()
+{
+	return uly;
+}
+
+// ******************************************
+/// Get upper-left corner of image in projection coordinates -- west.
+// ******************************************
+double image_geo_class::get_ulcorner_west()
+{
+	return ulx;
+}
+
+// ******************************************
 /// Return the data type -- 1=unsigned char, 2=short unsigned int, 3=float.
 // ******************************************
 int image_geo_class::get_char_int_float_flag()

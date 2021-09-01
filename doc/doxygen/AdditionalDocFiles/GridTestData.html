@@ -1,0 +1,150 @@
+<HEAD>
+<TITLE>TEST MAPS AND TESTING PROCEDURES</TITLE>
+</HEAD>
+<BODY>
+<H1>TEST MAPS AND TESTING PROCEDURES</H1>
+<HR>
+
+<UL>
+<LI><A HREF="#grid-general">General</A>
+<LI><A HREF="#grid-use">Using the Site</A>
+<LI><A HREF="#grid-data">Sample Datasets</A>
+<LI><A HREF="#grid-issues">Issues</A>
+<P>
+</UL>
+
+
+
+
+<H2><A NAME="grid-general">GENERAL</A></H2>
+
+The GRiD site is run by NGA and CRREL and located at CRREL.
+It is designed to be the repository for elevation data -- DSM, DTM, Bare Earth, and Point Clouds and associated EO.
+It will be the default place a lot of people go to get elevation data.
+In January 2018, I made a number of changes to be able to read data files from GRiD, so the viewer should now be able to use this data.
+However, owing to the fact that there are no consistent naming conventions now in use in GRiD,
+some of the convenient viewer features that exploit BuckEye or ALIRT or HALOE naming conventions are not available --
+ones that allow a user to load all the files associated with a large set of DEM tiles with a single simple command.
+<P>
+I talked to Chris Irwin at CRREL on 21 November 2018.
+He was very helpful and gave me much of the information given below.
+<P>
+
+
+
+<H2><A NAME="grid-use">USING THE GRID SITE</A></H2>
+<PRE>
+
+	URL:  https://griduc.rsgis.erdc.dren.mil/griduc
+
+	Login		email	Peaker98
+
+	Navigate:	click map -> new map interface -> pan and zoom to area
+
+	AOI: 	Click draw (pencil) button at top right to draw AOI on map
+		Middle-mouse click each corner, left-mouse click to end
+		When list of datasets comes up, check ones you want
+
+	Download:	Quick download seems to work OK, but it defaults to compressing (all?) GeoTiff files with Adobe Deflate
+		Advanced download gives you the option of not compressing by unchecking the box.
+
+
+
+</PRE>
+<H2><A NAME="grid-data">GRID DATA SETS</A></H2>
+
+The following datasets were downloaded:
+
+
+<PRE>
+
+Datasets
+	Sahat-Halaba_EO-DSM_20181120.1312
+		UFO_BuckEye_DSM_20181120.1312_21.tif	Only 1 DSM? a1
+		UFO_BuckEye_EO_20181120.1312_11.tif	5 EO file, all covering same area
+		UFO_BuckEye_EO_20181120.1312_12.tif
+
+	Holy-Redeemer-School_First Return-Last Return-Intensity-Bare Earth_20181120.1338
+		U_US-Cities_Bare_Earth_20181120.1339_21.tif
+		U_US-Cities_First_Return_20181120.1339_11.tif
+		U_US-Cities_Intensity_20181120.1339_31.tif
+		U_US-Cities_Last_Return_20181120.1339_41.tif
+
+	Karghu_EO-DSM-DTM_20181120.1606
+		UFO_ALIRT_DSM_20181120.1606_31.tif
+		UFO_ALIRT_DTM_20181120.1606_21.tif
+		UFO_BuckEye_DSM_20181120.1606_11.tif	Only 1 DSM?
+		UFO_BuckEye_EO_20181120.1606_41.tif
+
+
+
+
+
+</PRE>
+<H3><A NAME="grid-data">BuckEye</A></H3>
+
+There are several basic differences from the data we have seen from the BuckEye website.
+<P>
+At least some of the BuckEye locations have only a single DSM file.
+I was told this corresponds to the old 'a1' elevation file.
+There is no 'a2' file.
+There is sometimes a 'bare earth' file but is a processed version of the 'a2' file where stuff like buildings has been stripped away.
+<P>
+Also, if one asks for EO, one may get several EO files from different dates in the download.
+This seems to happen even when you have chosen a single one of these dates for the elevation collection.
+It cant be determined from the filenames what the dates for each file are.
+One must get this info by getting details for the files on the website.
+<P>
+
+
+
+
+
+<H3><A NAME="grid-data">US Cities</A></H3>
+
+I got some intensity data as floating point -- totally different from all other intensity files in 8-bit formats.
+However, I got other files that were in the 8-bit format.
+I don't yet know why this is so.
+<P>
+Basically the intensity value present in the floating point 'Intensity' file is pulled from the first return.
+<P>
+Reflective surface data represents the DEM created by laser energy reflected from the first surface encountered by the laser pulse.
+Some energy may continue beyond this initial surface to be reflected by a subsequent surface as represented by the Last Return data.
+Intensity information is captured from the Reflective Surface pulse and indicates the relative energy returned to the sensor as compared to the energy transmitted.
+The Intensity image is not calibrated or normalized but indicates differences in energy absorption due to the the interaction of the surface materials 
+with laser energy at the wavelength transmitted by the sensor.
+<P>  
+Bare earth model is created by identifying those returns that fall on the ground surface and interpolating a surface between these points.  
+In this manner buildings and vegetation are removed from Bare Earth Model.   
+This data set does not include bridges and overpasses in the Bare Earth model as the delineation point for these structures is not reliably discernable in the LiDAR data.
+<P>
+
+
+
+<H2><A NAME="grid-issues">GRID ISSUES</A></H2>
+<H3><A NAME="grid-issues-compression">Compression in GeoTiff Files</A></H3>
+
+All of the DEM files from GRiD are by default compressed with Adobe Deflate.
+This appears to be the default for download, but can be overridden in the Advanced Download by unchecking the box.
+I cant read this with my home-grown parser, but I modified the image_tif_class to read these files using GDAL.
+<P>
+
+
+<H3><A NAME="grid-issues-names">Filename Conventions</A></H3>
+
+Determining file types from their GRiD filenames is going to be much more difficult than it was for BuckEye.
+And it may never be feasible to find an algorithm that works reliably -- doesn't get broken by the next dataset.
+I have put off working on this indefinitely.
+<P>
+At the moment, GRiD does not have a unified filename convention.
+Currently they put an indication of the security classification at the front but then just go with the convention of the contributor.
+The original idea was to be able to get the original filename from the GRiD name but this doesn't seem to be working out.
+<P>
+NGA has been tasked with determining the filename conventions in the future.
+The have not reached a conclusion and there is no documentation yet.
+If and when they decide on a convention, this may not be retroactively applied to current files.
+<P>
+
+
+
+

@@ -231,7 +231,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
 	# If building Only Release or multiple configs then include install project
 	install(TARGETS Fusion3D RUNTIME DESTINATION bin)
-	install(DIRECTORY data/GDAL data/milSymbols DESTINATION bin)
+	install(DIRECTORY data/GDAL data/milSymbols data/platforms DESTINATION bin)
 	install(DIRECTORY data/Scene DESTINATION data)
 	install(FILES data/CustomParms.txt DESTINATION bin)
 	install(DIRECTORY doc DESTINATION .)

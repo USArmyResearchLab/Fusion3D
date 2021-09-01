@@ -3,21 +3,8 @@
 #ifdef __cplusplus
 
 /** 
-Wrapper for ogr classes that import/export in a wide variety of vector formats.
-Implemented for import of shapefiles, .kml and .osm files and export of vehicle tracks in a specific KML format.\n
-\n
-Unfortunately, the KML driver for OGR is quite limited and can only read/write a limited number of data types.
-(An alternate driver, using LIBKML, is available but does not work with Visual Studio 2008, according to their doc.)
-GDAL can't produce the attributes necessary for animations in Google, so it had to be done outside the GDAL framework.
-So that capability was implemented in a special method copy_track_to_KML(char *filename).\n
-\n
-Also, OGR cant read the KML data type LatLonBox.
-This is the data type used to outline tiles by the standard Buckeye product, so is useful.
-This was also implemented in a special private method read_file_kml_non_gdal that is tried first.
-\n
-Also, OGR cant read images referenced in KML.
-This is the data type used to overlay military symbology, so is useful.
-This was also implemented in the special private method read_file_kml_non_gdal that is tried first.
+Wrapper for GDAL OGR classes that import/export in a wide variety of vector formats -- implemented to date for shapefile and OSM formats.
+Implemented for import of shapefiles, and .osm (Open Street Map) files and export of shapefile format.\n
 \n
 The class reads the following OGR data types:\n
 	wkbPoint = 1,           0-dimensional geometric object, standard WKB\n

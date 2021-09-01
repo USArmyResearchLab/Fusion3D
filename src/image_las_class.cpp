@@ -18,9 +18,9 @@ image_las_class::image_las_class()
 
 	udata_flag = 0;
 	will_write_flag = 0;
-	decimate_flag = 0;
 	cullOnlyFlag = 0;
 	memset(number_of_points_by_return, 0, 5 * sizeof(unsigned int));
+	thin_flag = 0;		// No thinning
 
 	amp_max_raw = -99999;
 	amp_min_raw = 99999;
@@ -33,11 +33,10 @@ image_las_class::image_las_class()
 	xyunits_key = 0;
 	zunits_key = 0;
 
-	for (int i = 0; i<361; i++) decimate_n[i] = 1;
-	memset(decimate_i, 0, 361 * sizeof(int));
-
 	headerString = NULL;
+#ifndef NO_MAP3D
 	map3d_index = NULL;
+#endif
 
 	xa = NULL;
 	ya = NULL;
@@ -69,58 +68,6 @@ image_las_class::~image_las_class()
 {
 	if (headerString != NULL) delete[] headerString;
 	free_read();
-}
-
-// ******************************************
-/// Set flag to cull out all "only" returns -- pulses that have only a single hit.
-// ******************************************
-int image_las_class::register_map3d_index_class(map3d_index_class *map3d_index_in)
-{
-	map3d_index = map3d_index_in;
-	return(1);
-}
-
-// ******************************************
-/// Set flag to cull out all returns that are within threshold thresh of DSM.
-// ******************************************
-int image_las_class::set_cull_near_dsm(float thresh)
-{
-	cullDSMFlag = 1;
-	cullDSMThreshold = thresh;
-	return(1);
-}
-
-// ******************************************
-/// Set flag to cull out all "only" returns -- pulses that have only a single hit.
-// ******************************************
-int image_las_class::set_cull_only_returns()
-{
-	cullOnlyFlag = 1;
-	return(1);
-}
-
-// ******************************************
-/// Set decimation factor for an angular region.
-/// Works with 1-deg angular bins.
-/// @param angMin	Min angle in deg, inclusive(0 right, 90 up, 270 down)
-/// @param angMax   Max angle of region, inclusive
-/// @param nDecimateMin 	Only keep 1 out of nDecimateMin  points at the min angle
-/// @param nDecimateMax 	Only keep 1 out of nDecimateMax  points at the max angle (linearly interpolate)
-// ******************************************
-int image_las_class::set_decimate_angular_region(int angMin, int angMax, int nDecimateMin, int nDecimateMax)
-{
-	int iangMin = int(angMin);
-	int iangMax = int(angMax + 0.5);
-	if (iangMin < 0) angMin = 0;
-	if (iangMax < 0) angMax = 0;
-	if (iangMin > 360) angMin = 360;
-	if (iangMax > 360) angMax = 360;
-	for (int i=iangMin; i<=iangMax; i++) {
-		int nDecimate = int(nDecimateMin + float(nDecimateMax - nDecimateMin) * float(i - angMin) / float(angMax - angMin) + .01);
-		decimate_n[i] = nDecimate;
-	}
-	decimate_flag++;
-	return(1);
 }
 
 // ******************************************
@@ -621,7 +568,7 @@ int image_las_class::read_file_header()
 		read_var_record();
 	}
 	if (xyunits_key == 0 && zunits_key == 0 && diag_flag > 0) {
-		warning(1, "LAS units not defined in variable records -- assume meters");
+		cout << "WARNING *****LAS units not defined in variable records -- assume meters" << endl;
 	}
 	else if (xyunits_key != 0 && zunits_key != 0) {
         if (xyunits_key == 9002) {
@@ -663,7 +610,7 @@ int image_las_class::read_file_header()
 	zoff_meters =  header.z_offset       * zunits_to_m;
 
 	if (epsgTypeCode < 0 && diag_flag > 0) {
-		warning(1, "Coordinate system EPSG code not defined in LAS file, coord system may not be right");
+		cout << "WARNING **** Coordinate system EPSG code not defined in LAS file" << endl;
 	}
 
    // **********************************
@@ -734,13 +681,13 @@ int image_las_class::read_file_header()
    // **********************************
    if (diag_flag > 0) {
       cout << "   Point data format " << point_data_type << endl;
-      cout << "   Length of each point record " << header.point_data_record_length << endl;
-	  if (header.global_encoding % 2 == 0) {
-		  cout << "   Uses GPS Week time (time in s from beginning of the week)" << endl;
-	  }
-	  else {
-		  cout << "   Uses GPS absolute time with offset" << endl;
-	  }
+      //cout << "   Length of each point record " << header.point_data_record_length << endl;
+	  //if (header.global_encoding % 2 == 0) {
+	//	  cout << "   Uses GPS Week time (time in s from beginning of the week)" << endl;
+	  //}
+	  //else {
+	//	  cout << "   Uses GPS absolute time with offset" << endl;
+	  //}
       cout << "   No of points " << npts_file << endl;
       for (i=0; i<5; i++) {
          cout << "   Pts per return " << i << " = " << header.number_of_points_by_return[i] << endl;
@@ -1096,7 +1043,7 @@ int image_las_class::read_file_data()
 	// ********************************************
 	nBlocks = npts_file / blockSize + 1;
 	free_read();						// May be reading multiple files
-	int nalloc = (npts_file / nskip) + 2 * nBlocks;	// Reading in blocks so may get extra pt at start of each block
+	int nalloc = (npts_file / decimation_n) + 2 * nBlocks;	// Reading in blocks so may get extra pt at start of each block
 	alloc_read(nalloc);
 	alloc_block(blockSize);
 
@@ -1105,30 +1052,31 @@ int image_las_class::read_file_data()
 	// ********************************************
 	npts_read = 0;	// Keep a running total of valid points over the blocks
 	for (iBlock=0; iBlock<nBlocks; iBlock++) {
-		cout << "To read block (of " << nBlocks << ") no. " << iBlock << endl;
+		cout << "         To read block (of " << nBlocks << ") " << iBlock << endl;
 		if (iBlock == nBlocks-1) {
 			nProc = npts_file - (nBlocks-1) * blockSize;
 		}
 		else {
 			nProc = blockSize;
 		}
-		read_block(nProc, 0, nptsb);
+		read_block(nProc, nptsb);
 
 		// ********************************************
 		// Cull points whose elevations are within a threshold distance of the defined DSM
 		// ********************************************
+#ifndef NO_MAP3D
 		if (cullDSMFlag) {
-			if (diag_flag > 0) cout << "N points before cull close to DSM " << nptsb << endl;
+			if (diag_flag >= 0) cout << "N points before cull close to DSM " << nptsb << endl;
 			cull_near_dsm(nptsb, nptsb);
-			if (diag_flag > 0) cout << "N points after  cull close to DSM " << nptsb << endl;
+			if (diag_flag >= 0) cout << "N points after  cull close to DSM " << nptsb << endl;
 		}
-
+#endif
 		// ********************************************
 		// Clip to extent if requested
 		// ********************************************
 		if (clip_extent_flag) {
-			clip_extent(nptsb, nptsb);
-			if (diag_flag > 0) cout << "N points after clip to extent " << nptsb << endl;
+			clip_block(nptsb, nptsb);
+			if (diag_flag >= 0) cout << "N points after clip to extent " << nptsb << endl;
 		}
 
 		// ********************************************
@@ -1147,12 +1095,21 @@ int image_las_class::read_file_data()
 		// ********************************************
 		// Transfer to persistent memory
 		// ********************************************
-		transfer_persistent(nptsb, npts_read, npts_read, nskip);
+		transfer_persistent(nptsb, npts_read, npts_read);
 	}
 	if (timeFlag) timeStart = timea[0];
 	if (timeFlag) timeEnd   = timea[npts_read-1];
 
 	if (nclean > 0) cout << "Bad data values culled " << nclean << endl;
+
+	// ********************************************
+	// Thin if requested (Only a single point per voxel)
+	// ********************************************
+	if (thin_flag) {
+		int nWrite;
+		thin_all(nWrite);
+		if (diag_flag >= 0) cout << "N points after thin (1 hit per voxel) " << nWrite << endl;
+	}
 
 	// Kluge ********************************** Experiment with sbet ************************************
 	//if (0) {
@@ -1199,59 +1156,11 @@ int image_las_class::read_file_data()
 }
 
 // ******************************************
-/// Cull all points within threshold distance in elevation from the defined DSM.
-/// @param nIn		No. of points to be culled (input).
-/// @param nOut		Total no. of output points at exit (output)
-// ******************************************
-int image_las_class::cull_near_dsm(int nIn, int &nOut)
-{
-	int iin, iout=0;
-	float elevDSM, elevPC, elevDiff;
-	double xPC, yPC;
-	for (iin = 0; iin < nIn; iin++) {
-		xPC    = xmult_meters * xab[iin] + xoff_meters;
-		yPC    = ymult_meters * yab[iin] + yoff_meters;
-		elevPC = zmult_meters * zab[iin] + zoff_meters;
-		map3d_index->get_elev_at_pt(yPC, xPC, elevDSM);
-		elevDiff = fabs(elevPC - elevDSM);
-		if (elevDiff > cullDSMThreshold) {			// Copy points within threshold, skip those outside threshold
-			// Copy point
-			xab[iout] = xab[iin];
-			yab[iout] = yab[iin];
-			zab[iout] = zab[iin];
-			iab[iout] = iab[iin];
-			rotab[iout] = rotab[iin];
-			flagsab[iout] = flagsab[iin];
-			classab[iout] = classab[iin];
-			udataab[iout] = udataab[iin];
-			pointSourceIDab[iout] = pointSourceIDab[iin];
-
-			// Write GPS time in formats 1 and 3
-			if (point_data_type == 1 || point_data_type == 3) {
-				timeab[iout] = timeab[iin];
-			}
-
-			// Write RGB in formats 2 and 3
-			if (point_data_type == 2 || point_data_type == 3) {
-				redab[iout] = redab[iin];
-				grnab[iout] = grnab[iin];
-				bluab[iout] = bluab[iin];
-			}
-			iout++;
-		}
-		if (iin % 50000 == 0) cout << "filter iin=" << iin << ", iout=" << iout << endl;
-	}
-	nOut = iout;
-	return(1);
-}
-
-// ******************************************
 /// Read a block of data -- Protected.
 /// @param nInput		No. of points to be read (input).
-/// @param nSkipInput	No of points to skip before start reading (input)
 /// @param nOutput		Total no. of output points at exit (output)
 // ******************************************
-int image_las_class::read_block(int nInput, int nSkipInput, int &nOutput)
+int image_las_class::read_block(int nInput,int &nOutput)
 {
 	int32_t x;
 	int32_t y;
@@ -1262,11 +1171,7 @@ int image_las_class::read_block(int nInput, int nSkipInput, int &nOutput)
 	unsigned char sar;
 	unsigned char udata;
 	unsigned short pointSourceID;
-
-	if (nSkipInput != 0) {
-		exit_safe(1, "image_las_class::read_block:  Nonzero nSkipInput not implemented");
-	}
-	int ipt = 0;
+	int ipt = 0, idec = 0;
 	
 	for (int i=0; i<nInput; i++) {
 		// Read part of record common to all formats -- Using header doesnt work with linux
@@ -1318,30 +1223,14 @@ int image_las_class::read_block(int nInput, int nSkipInput, int &nOutput)
 		}
 
 		if (zab[ipt] < clean_izmin || zab[ipt] > clean_izmax) {
-			if (nclean == 0 && zab[ipt]-10 > clean_izmax && diag_flag > 0) warning(1, "Data contains bad z values -- culled");
+			if (nclean == 0 && zab[ipt]-10 > clean_izmax && diag_flag >= 0) warning(1, "Data contains bad z values -- culled");
 			nclean++;
 		}
-		
-		// Decimate specified angular regions
-		else if (decimate_flag) {
-			int item = 2 * rotab[ipt];
-			if (decimate_n[item] == 1) {
-				ipt++;
-			}
-			else {
-				decimate_i[item]++;
-				if (decimate_i[item] == decimate_n[item]) {
-					ipt++;
-					decimate_i[item] = 0;
-				}
-			}
-		}
 		else {
-			ipt++;
+			if (idec == 0) ipt++;
+			idec++;
+			if (idec == decimation_n) idec = 0;
 		}
-
-		//if (rota[ipt] > 105 && rota[ipt] < 165) ipt++;
-		//ipt++;
 	}
 	nOutput = ipt;
 	return(1);
@@ -1401,13 +1290,13 @@ int image_las_class::amp_rescale(int nIn)
 }
 
 // ******************************************
-// Clip data to given extents -- Private
+// Clip data in current block to given extents -- Private
 // ******************************************
-int image_las_class::clip_extent(int nIn, int &nOut)
+int image_las_class::clip_block(int nIn, int &nOut)
 {
-	int iin, nin = nIn, iout=0;
-	for (iin=0; iin<nin; iin++) {
-		if (xab[iin] >= clip_extent_wnorm  && xab[iin] <= clip_extent_enorm  && yab[iin] >= clip_extent_snorm  && yab[iin] <= clip_extent_nnorm ) {
+	int iin, nin = nIn, iout = 0;
+	for (iin = 0; iin<nin; iin++) {
+		if (xab[iin] >= clip_extent_wnorm  && xab[iin] <= clip_extent_enorm  && yab[iin] >= clip_extent_snorm  && yab[iin] <= clip_extent_nnorm) {
 			xab[iout] = xab[iin];
 			yab[iout] = yab[iin];
 			zab[iout] = zab[iin];
@@ -1437,10 +1326,10 @@ int image_las_class::clip_extent(int nIn, int &nOut)
 // ******************************************
 /// Transfer points from temp block memory to persistent memory -- Private.
 // ******************************************
-int image_las_class::transfer_persistent(int nIn, int iOutStart, int &nOut, int nSkip)
+int image_las_class::transfer_persistent(int nIn, int iOutStart, int &nOut)
 {
 	int iin, nin = nIn, iout=iOutStart;
-	for (iin=0; iin<nin; iin=iin+nSkip) {
+	for (iin=0; iin<nin; iin=iin++) {
 		xa[iout] = xab[iin];
 		ya[iout] = yab[iin];
 		za[iout] = zab[iin];
@@ -1547,7 +1436,7 @@ int image_las_class::read_var_record()
 		delete[] desc;
 	}
 
-	cout << "VarLenRecord u id=" << userID << " " << recordID << " len=" << recordLen << " Des=" << description << endl;
+	if (diag_flag > 0) cout << "VarLenRecord u id=" << userID << " " << recordID << " len=" << recordLen << " Des=" << description << endl;
 	return(1);
 }
 
@@ -1626,11 +1515,11 @@ int image_las_class::alloc_read(int nAlloc)
 	   reda = new unsigned short[nAlloc];
 	   grna = new unsigned short[nAlloc];
 	   blua = new unsigned short[nAlloc];
-       data_intensity_type = 6;	// RGB
+       nbands = 3;	// RGB
 	   n_bytes_per_hit = n_bytes_per_hit + 6;
    }
    else {
-       data_intensity_type = 5;	// Intensity only
+       nbands = 1;	// Intensity only
    }
    if (point_data_type == 1 || point_data_type == 3) {
 	   timea = new double[nAlloc];
@@ -1705,11 +1594,11 @@ int image_las_class::alloc_block(int nAlloc)
 	   redab = new unsigned short[nAlloc];
 	   grnab = new unsigned short[nAlloc];
 	   bluab = new unsigned short[nAlloc];
-       data_intensity_type = 6;	// RGB
+       nbands = 3;	// RGB
 	   n_bytes_per_hit = n_bytes_per_hit + 6;
    }
    else {
-       data_intensity_type = 5;	// Intensity only
+       nbands = 1;	// Intensity only
    }
    if (point_data_type == 1 || point_data_type == 3) {
 	   timeab = new double[nAlloc];
@@ -1783,6 +1672,207 @@ long int image_las_class::kth_smallest(long int *a, int n, int k)
       if (k < i) m=j;
    }
    return a[k];
+}
+
+// ******************************************
+/// Register map3d_index_class used to cull points near a DSM.
+// ******************************************
+#ifndef NO_MAP3D
+int image_las_class::register_map3d_index_class(map3d_index_class *map3d_index_in)
+{
+	map3d_index = map3d_index_in;
+	return(1);
+}
+
+// ******************************************
+/// Set flag to cull out all returns that are within threshold thresh of DSM.
+// ******************************************
+int image_las_class::set_cull_near_dsm(float thresh)
+{
+	cullDSMFlag = 1;
+	cullDSMThreshold = thresh;
+	return(1);
+}
+
+// ******************************************
+/// Set flag to cull out all "only" returns -- pulses that have only a single hit.
+// ******************************************
+int image_las_class::set_cull_only_returns()
+{
+	cullOnlyFlag = 1;
+	return(1);
+}
+
+// ******************************************
+/// Cull all points within threshold distance in elevation from the defined DSM.
+/// @param nIn		No. of points to be culled (input).
+/// @param nOut		Total no. of output points at exit (output)
+// ******************************************
+int image_las_class::cull_near_dsm(int nIn, int &nOut)
+{
+	int iin, iout = 0;
+	float elevDSM, elevPC, elevDiff;
+	double xPC, yPC;
+	for (iin = 0; iin < nIn; iin++) {
+		xPC = xmult_meters * xab[iin] + xoff_meters;
+		yPC = ymult_meters * yab[iin] + yoff_meters;
+		elevPC = zmult_meters * zab[iin] + zoff_meters;
+		map3d_index->get_elev_at_pt(yPC, xPC, elevDSM);
+		elevDiff = fabs(elevPC - elevDSM);
+		if (elevDiff > cullDSMThreshold) {			// Copy points within threshold, skip those outside threshold
+													// Copy point
+			xab[iout] = xab[iin];
+			yab[iout] = yab[iin];
+			zab[iout] = zab[iin];
+			iab[iout] = iab[iin];
+			rotab[iout] = rotab[iin];
+			flagsab[iout] = flagsab[iin];
+			classab[iout] = classab[iin];
+			udataab[iout] = udataab[iin];
+			pointSourceIDab[iout] = pointSourceIDab[iin];
+
+			// Write GPS time in formats 1 and 3
+			if (point_data_type == 1 || point_data_type == 3) {
+				timeab[iout] = timeab[iin];
+			}
+
+			// Write RGB in formats 2 and 3
+			if (point_data_type == 2 || point_data_type == 3) {
+				redab[iout] = redab[iin];
+				grnab[iout] = grnab[iin];
+				bluab[iout] = bluab[iin];
+			}
+			iout++;
+		}
+		if (iin % 50000 == 0) cout << "filter iin=" << iin << ", iout=" << iout << endl;
+	}
+	nOut = iout;
+	return(1);
+}
+#endif
+
+// ******************************************
+/// .
+// ******************************************
+int image_las_class::init_thin(float res)
+{
+	thin_flag = 1;
+	thin_res = res;
+	will_write_flag = 3;	// Write only after all has been read and processed
+	return(1);
+}
+
+
+// ******************************************
+/// .
+// ******************************************
+int image_las_class::thin_all(int &nWrite)
+{
+	int ix, iy, iz, ip, iz1, iz2, ibin, nhitsSlice, nhitsOut=0, iin, iout=0;
+	double es, ns;
+	double thin_emin = double(int(emin));
+	int nx = int((emax - thin_emin) / thin_res + .99);
+	double thin_nmin = double(int(nmin));
+	int ny = int((nmax - thin_nmin) / thin_res + .99);
+
+	float thin_zmin = int(zmin / thin_res) * thin_res;
+	if (zmin < 0.) thin_zmin = thin_zmin - thin_res;
+	int nz = int((zmax - thin_zmin) / thin_res + .99);
+	float thin_zmax = thin_zmin + nz * thin_res;
+	double fizmin = (thin_zmin - zoff_meters) / zmult_meters;
+	double fizres = (thin_res - zoff_meters) / zmult_meters;
+
+	// *************************************
+	// Alloc
+	// *************************************
+	int *nhita = new int[nx*ny];
+	int *nptsPerZBin = new int[nz];
+	memset(nptsPerZBin, 0, nz * sizeof(int));
+
+	// *************************************
+	// Find no. of hits in each horizontal slice
+	// *************************************
+	for (iin = 0; iin < npts_read; iin++) {
+		ibin = (za[iin] - fizmin) / fizres;
+		if (ibin < 0) ibin = 0;
+		if (ibin >= nz) ibin = nz - 1;
+		nptsPerZBin[ibin]++;
+	}
+
+	// *************************************
+	// Loop over horizontal slices of PC
+	// *************************************
+	for (iz = 0; iz < nz; iz++) {
+		if (nptsPerZBin[iz] == 0) continue;			// skip search if no points in this z-bin
+		nhitsSlice = 0;
+		memset(nhita, 0, nx*ny * sizeof(int));
+		iz1 = int(fizmin + iz * fizres);
+		iz2 = int(fizmin + (iz + 1) * fizres);
+
+		for (iin = 0; iin < npts_read; iin++) {
+			if (za[iin] < iz1 || za[iin] >= iz2) continue;
+
+			// **********************
+			// Find the voxel for this hit
+			// **********************
+			es = get_x(iin);
+			ix = (es - thin_emin) / thin_res;
+			if (ix < 0) ix = 0;
+			if (ix >= nx) ix = nx - 1;
+			ns = get_y(iin);
+			iy = (ns - thin_nmin) / thin_res;
+			if (iy < 0) iy = 0;
+			if (iy >= ny) iy = ny - 1;
+			ip = iy * nx + ix;
+
+			// **********************
+			// Transfer only the first hit in a voxel to the output
+			// **********************
+			if (nhita[ip] == 0) {
+				xab[iout] = xa[iin];
+				yab[iout] = ya[iin];
+				zab[iout] = za[iin];
+				iab[iout] = ia[iin];
+				rotab[iout] = rota[iin];
+				if (will_write_flag != 0) {
+					flagsab[iout] = flagsa[iin];
+					classab[iout] = classa[iin];
+					udataab[iout] = udataa[iin];
+					pointSourceIDab[iout] = pointSourceIDa[iin];
+				}
+				if (point_data_type == 1 || point_data_type == 3) {
+					timeab[iout] = timea[iin];
+				}
+				if (point_data_type == 2 || point_data_type == 3) {
+					redab[iout] = reda[iin];
+					grnab[iout] = grna[iin];
+					bluab[iout] = blua[iin];
+				}
+				iout++;
+				nhitsSlice++;
+				nhitsOut++;
+
+				// Write block when block is filled
+				if (iout == blockSize) {
+					write_block(blockSize);
+					iout = 0;
+				}
+
+			}
+			nhita[ip]++;
+		}
+		cout << "Slice " << iz << ", nout=" << nhitsSlice << endl;
+			
+	}
+
+	// Write last partial block
+	if (iout > 0) {
+		write_block(iout);
+	}
+	nWrite = nptsWrite;
+	delete[] nhita;
+	delete[] nptsPerZBin;
+	return(1);
 }
 
 

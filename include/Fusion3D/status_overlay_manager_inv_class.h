@@ -6,9 +6,7 @@
 Adds OpenInventor display to parent class status_overlay_manager_class.
 
 Updates the clock when clock changes and updates the compass whenever camera aimpoint, az, el or zoom changes.
-If you just update display whenever camera aimpoint, az, el or zoom changes, then it is too slow and updates fall behind latest, so must do something different.
-There are options here for different strategies to leave room for experimentation.
-
+Status overlays are drawn in map coordinates so need to recalculated whenever camera is changed.
 */
 class status_overlay_manager_inv_class:public status_overlay_manager_class {
  private:
@@ -20,16 +18,16 @@ class status_overlay_manager_inv_class:public status_overlay_manager_class {
 	 SoPerspectiveCamera*  			camera_pers;
 
 	  SoSFFloat*					GL_clock_time;		///< OIV Global -- Clock current time in s after midnight
-	  SoSFInt32*					GL_aimpoint_flag;   // OIV Global -- For updates of camera aim point
-	  SoSFFloat*					GL_camera_az;		// OIV Global -- For updates of camera az
-	  SoSFFloat*					GL_camera_el;		// OIV Global -- For updates of camera az
-	  SoSFFloat*					GL_camera_zoom;		// OIV Global -- For updates of camera zoom
+	  SoSFInt32*					GL_aimpoint_flag;   ///< OIV Global -- For updates of camera aim point
+	  SoSFFloat*					GL_camera_az;		///< OIV Global -- For updates of camera az
+	  SoSFFloat*					GL_camera_el;		///< OIV Global -- For updates of camera az
+	  SoSFFloat*					GL_camera_zoom;		///< OIV Global -- For updates of camera zoom
 
 	  SoFieldSensor*				ticSensor;			///< Monitors clock updates
-	  SoFieldSensor*				aimpointSensor;		// Monitors aimpoint updates
-	  SoFieldSensor*				azSensor;			// Monitors azimuth updates
-	  SoFieldSensor*				elSensor;			// Monitors elevation updates
-	  SoFieldSensor*				zoomSensor;			// Monitors zoomn updates
+	  SoFieldSensor*				aimpointSensor;		///< Monitors aimpoint updates
+	  SoFieldSensor*				azSensor;			///< Monitors azimuth updates
+	  SoFieldSensor*				elSensor;			///< Monitors elevation updates
+	  SoFieldSensor*				zoomSensor;			///< Monitors zoomn updates
 
 	  camera4d_manager_inv_class* 	camera4d_manager_inv;			///< Internal casting of atrlab_class camera-manager
 

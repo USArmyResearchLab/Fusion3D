@@ -3,10 +3,10 @@
 #ifdef __cplusplus
 
 /**
-Stores the set of files for a map including last-hit DEM, first-hit DEM, grayscale intensity, color texture, and MrSID high-res texture.
+Stores the set of files for a map including DSMs, grayscale, color and MrSID textures, point clouds and KML extents.
+Stores the set of files for a map including last-hit DEM, first-hit DEM, grayscale intensity texture, color texture, MrSID high-res texture,
+point clouds and KML extents.\n
 Either finds all the files in a given directory that match the given pattern or can store files individually where filenames dont follow a pattern.
-The pattern matching currently implemented is a subset of regular expressions -- only the '*' is recognized.
-An example pattern would be 'dem_*_a2_*.tif'.\n
 \n
 The class can search arbitrarily deep in a directory tree.
 \n
@@ -19,7 +19,7 @@ dem_1m_a2_tile1.tif		base file containing last hit (a2) elevation data that is s
 dem_1m_a1_tile1.tif		associated file containing first hit (a1) elevation data (derived from a2 file by '_a2_' -> '_a1_')\n
 mrg_1m_a1_tile1.tif		associated file containing rgb texture data (derived from a2 file by '_a2_' -> '_a1_' and 'dem_' -> 'mrg_')\n
 int_1m_a1_tile1.tif		associated file containing intensity texture data (derived from a2 file by '_a2_' -> '_a1_' and 'dem_' -> 'int_')\n
-otrhophoto_tile1.sid	associated file containing high-resolution orthophoto (arbitrary filename)
+otrhophoto_tile1.sid	associated MrSID file containing high-resolution orthophoto (arbitrary filename)
 
 
 */
@@ -35,12 +35,11 @@ class dir_class:public base_jfd_class{
    int nfiles_mask;			///< No of mask files in dir satisfying inclusion criteria
    int nfiles_low_tex;		///< No of low-res texture files in dir satisfying inclusion criteria
 
-   string sdirname;			// Name of base dir to be searched
-   char *pattern_kml;		// Match pattern for KML files
-   char *pattern_a2i;		// Match pattern for a2 files
-   char *pattern_mrsidi;	// Match pattern for MrSID files
-   char *pattern_low_tex;	// Match pattern for low-res texture files
-   char *match_pat;			// Working storage for patterns
+   string sdirname;			///< Name of base dir to be searched
+   char *pattern_kml;		///< Match pattern for KML files
+   char *pattern_a2i;		///< Match pattern for a2 files
+   char *pattern_mrsidi;	///< Match pattern for MrSID files
+   char *match_pat;			///< Working storage for patterns
    
    std::vector<string>a2name;		///< Per file -- a2 DEM pathname
    std::vector<string>a1name;		///< Per file -- a1 DEM pathname
@@ -52,10 +51,10 @@ class dir_class:public base_jfd_class{
    std::vector<string>maskname;		///< Per file -- mask pathname
    std::vector<string>lowtname;		///< Per file -- low-res texture pathname
 
-   int fileset_defined_flag;// 0 if not defined, 1 if defined (filenames defined by search or add tile)
-   int texture_filetype;	// 1='int', 2='mrg', 0=mrsid only, -99=unknown
-   int sensor_type;			// 0=unknown, 1=Buckeye, 2=Haloe, 3=ALIRT
-   int search_kml_flag;		// 0=dont search, 1=include search for KML files
+   int fileset_defined_flag;///< 0 if not defined, 1 if defined (filenames defined by search or add tile)
+   int texture_filetype;	///< 1='int', 2='mrg', 0=mrsid only, -99=unknown
+   int sensor_type;			///< 0=unknown, 1=Buckeye, 2=Haloe, 3=ALIRT
+   int search_kml_flag;		///< 0=dont search, 1=include search for KML files
    
  public:
    dir_class();

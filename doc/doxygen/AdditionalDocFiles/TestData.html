@@ -1,0 +1,116 @@
+<HEAD>
+<TITLE>TEST AND VALIDATION MAPS AND TESTING PROCEDURES</TITLE>
+</HEAD>
+<BODY>
+<H1>TEST AND VALIDATION MAPS AND TESTING PROCEDURES</H1>
+<HR>
+
+<H2><A NAME="test-validate">CURRENT VALIDATION MAPS</A></H2>
+
+
+<TABLE BORDER>
+<CAPTION>Validation Maps</CAPTION>
+<TR><TH>Map Name      <TH>Location                    <TH>Project File                    <TH>Texture <TH>Tex Mosaic<TH>Draw<TH>Track<TH>Notes
+
+<TR><TD>Adelaide      <TD>C:\openSource\Fusion3D\NotToOS\adelaide<TD>AdelaideTest.s4d <TD>GeoTiff <TD>No        <TD>    <TD><TD>DEM+PC; PC cull DEM pts
+<TR><TD>ALC Sensors   <TD>D:\ALCSensorTest            <TD>sensorTest.s4d              <TD>Mixed   <TD>Yes Mixed <TD>    <TD><TD>India Project box+pts
+<TR><TD>APG           <TD>D:\APG                      <TD>bigTiffTest.s4d             <TD>Big Tiff<TD>No        <TD>    <TD><TD>
+<TR><TD>Belgium       <TD>D:\Belgium                  <TD>BelgiumDemo.s4d             <TD>MrSID   <TD>No        <TD>    <TD>FlyThru<TD>Bookmarks
+<TR><TD>Baghdad New   <TD>D:\Baghdad2_NewGridding     <TD>demoJFDGridding.s4d         <TD>MrSID   <TD>No        <TD>    <TD>       <TD>Gridding, Very large PC
+<TR><TD>Baghdad Old   <TD>D:\Baghdad2_OldGridding     <TD>demoBuckeyeGridding.s4d     <TD>MrSID   <TD>No        <TD>    <TD>       <TD>Very large PC
+<TR><TD>Fredericksburg<TD>D:\demoFredericksburg       <TD>ProjAnim.s4d                <TD>MrSID   <TD>No        <TD>    <TD>FlyThru<TD>Point cloud, animation, cache
+<TR><TD>Mars Jezero   <TD>D:\Mars\MarsJezero          <TD>twoTiles   .s4d             <TD>GeoTiff <TD>Yes       <TD>    <TD><TD>Hi-res gray tex; make lo-res tex using DEM
+<TR><TD>Montreal      <TD>D:\Montreal\LiDAR_2015_2-5-6<TD>MontrealDemo.s4d            <TD>Mrsid   <TD>No        <TD>    <TD><TD>tex, elev different coords 
+<TR><TD>Nangahar      <TD>D:\Nangahar                 <TD>Nangahar_DrawScenario.s4d   <TD>Mrsid   <TD>No        <TD>Yes <TD><TD>Draw functions, Buttons
+<TR><TD>Nangahar      <TD>D:\Nangahar                 <TD>Nangahar_3Routes.s4d        <TD>Mrsid   <TD>No        <TD>    <TD>Dist meas<TD>
+<TR><TD>Urgent        <TD>D:\demoUrgent               <TD>Parms_Ottawa30_Urgent.s4d   <TD>GeoTiff <TD>No        <TD>    <TD><TD>Buttons
+<TR><TD>Wosan         <TD>D:\wosan                    <TD>wosanTestBig.s4d            <TD>GeoTiff <TD>Yes Tiff  <TD>    <TD><TD>Big lowres test (150x100, 3)
+<BR>
+<TR><TD>DC2018 LAS       <TD>D:\DC2018_las        <TD>testLargePC.s4d                 <TD>N/A     <TD>No        <TD>    <TD><TD>PC: Max size cloud for 64-bit
+<TR><TD>FINE Kabul       <TD>D:\FINE              <TD>demo_Kabul_bpf.s4d              <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC only, Slider on TAU
+<TR><TD>FINE Spiderhole  <TD>D:\FINE              <TD>demo_spiderholes.s4d            <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC only, Slider on TAU, look under terrain
+<TR><TD>FINE Village     <TD>D:\FINE              <TD>demo_village_bpf.s4d            <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC only, Slider on TAU, 
+<TR><TD>FINE Snowfield   <TD>D:\FINE              <TD>demo_snowfield.s4d              <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC only, Slider on TAU, 
+<TR><TD>FINE Powerlines  <TD>D:\FINE\Composites   <TD>PowerLines.s4d                  <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC+DEM, filter PC on elevation 
+<TR><TD>FINE CampRoberts <TD>D:\FINE\Composites   <TD>CampRoberts_10cm.s4d            <TD>N/A     <TD>No        <TD>    <TD><TD>PC: Slider on TAU, test target range
+<TR><TD>FINE Haiti       <TD>D:\FINE\Composites   <TD>haiti.s4d                       <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC+DEM, filter PC on elevation, tents under foliage
+<TR><TD>FINE elYunque    <TD>D:\FINE\Composites   <TD>elYunque.s4d                    <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC+DEM, filter PC on elevation, Targets in deep foliage
+<TR><TD>FINE Pender      <TD>D:\FINE\Composites   <TD>pender9.s4d                     <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC+DEM, bookmarks+vector-overlays (dup?), Overhead, low quality
+<TR><TD>FINE Pender truth<TD>D:\FINE\Composites   <TD>pender_truth.s4d                <TD>N/A     <TD>No        <TD>    <TD><TD>PC: PC+DEM, filter PC on elevation, Ground-based lidar
+</TABLE>
+<BR><BR><BR>
+
+
+
+<H2><A NAME="test-commercial">COMMERCIAL TEST MAPS</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Test Cases</CAPTION>
+<TR><TH>Map					<TH>Tiles				<TH>Elev Res<TH>Texture				<TH>Tex Res	<TH>Test Of	<TH>Notes
+<TR><TD>Lubbock	                  <TD>Hundreds from Merrick	<TD>1m	<TD>sat photos reg by Merrick	<TD>0.6/1.0	<TD>many files
+<TR><TD>Astrium North Korea		<TD>1 Astrium From Sat. Photos<TD>1m	<TD>9 .tif color			<TD>0.5m	<TD>tiff hi-res texture	-- ~80 square km						<TD> 
+<TR><TD>UVA Waynesboro			<TD>1 Myself from LAS		<TD>1.5m	<TD>1 .int (no mrg)		<TD>1.5m	<TD> 										<TD>Ladar only, no photos
+<TR><TD>Vashon Island WA		<TD>11 Myself from .e00		<TD>2m	<TD>11 .int (hill shading)	<TD>2m	<TD>Coord trans (NAD83); multifile Other, e00 conversion	<TD>DEM in .e00 format (ESRI proprietary)
+<TR><TD>MtWow-Mt Rainier		<TD>4	as provided			<TD>1.8m	<TD>4 gray (hill shading)	<TD>1.8m	<TD>NAD83 -- Northing has negative vals				<TD>Gaps between tiles
+<TR><TD>Serpent Mound			<TD>1 from LAS			<TD>1m	<TD>1 .int from From LAS	<TD>1m	<TD>WGS84, nothing challenging					<TD>Small diagonal strip
+<TR><TD>Novato				<TD>1 from LAS			<TD>1m	<TD>1 .int from From LAS	<TD>1m	<TD>NAD83									<TD>
+</TABLE>
+<BR><BR><BR>
+
+
+<pre>
+
+
+
+</pre>
+
+
+<H2><A NAME="test-buckeye">BUCKKEYE/ALIRT/HALOE TEST MAPS</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Test Cases</CAPTION>
+<TR><TH>Directory                     		<TH>Sensor <TH>N<TH>Texture<TH>Major test	    <TH>Notes
+<TR><TD>F:\Belgium\Belgium\JFD_1and2combined    <TD>Buckeye<TD>1<TD>MrSID  <TD>BuckEye, Load-all-DEMS	<TD> 
+<TR><TD>Haloe/Asadabad/345200N0710800E		<TD>Haloe  <TD>1<TD>int    <TD>HALOE, Load-all-DEMS	<TD>datums have different noData vals
+<TR><TD>C:\map3dview\rtv\ALIRT\3Tiles		<TD>ALIRT  <TD>3<TD>int    <TD>ALIRT, Load-all-DEMS	<TD>datums have different noData vals
+<TR><TD>F:\map3dview\rtv\Konar			<TD>Buckeye<TD>8<TD>MrSID  <TD>Demo anim			<TD> 
+</TABLE> 
+<BR><BR><BR>
+
+
+<pre>
+
+
+
+</pre>
+
+
+<H2><A NAME="test-points">TEST POINT CLOUDS</A></H2>
+
+<TABLE BORDER>
+<CAPTION>Test Cases</CAPTION>
+<TR><TH>Pt File                                            <TH>Type               <TH>With DEM<TH>Format<TH>Textur	    <TH>Test Features
+<TR><TD>F:/FINE/demo_snowfield                             <TD>FINE, map mode     <TD>No      <TD>BPF   <TD>Intensity<TD>Filter on TAU or elevation
+<TR><TD>F:/FINE/demo_spiderholes                           <TD>FINE, map mode     <TD>Yes     <TD>BPF   <TD>Intensity<TD>Color elevation rel to DEM
+<TR><TD>F:/PtCloudMay2012/US28_11340_1B2_S2_015.las        <TD>Buckeye Terrestrial<TD>No      <TD>LAS   <TD>Intensity<TD>Small, fast 
+<TR><TD>F:/PtCloudMay2012/points_a1_centresite01_tile06.las<TD>Buckeye Map Tile   <TD>No      <TD>LAS   <TD>Intensity<TD>Very large, requires read decimation 
+<TR><TD>F:/map3dview/rtv/Fredericksburg/bothLASFiles       <TD>Buckeye Terrestrial<TD>No      <TD>LAS   <TD>Color    <TD>Multiple files, rgb
+<TR><TD>F:/map3dview/rtv/AGCDemAndPtCloud/anRBGplutANoRGB  <TD>Buckeye Terrestrial<TD>No      <TD>LAS   <TD>Color    <TD>mix false color and rgb data
+</TABLE>
+<BR><BR><BR>
+
+
+<pre>
+
+
+
+</pre>
+
+
+<H2><A NAME="install-dev">TESTING PROCEDURES</A></H2>
+<H3><A NAME="install-dev">Visual Studio Properties Modified</A></H3>
+<PRE>
+
+</PRE>
+
+

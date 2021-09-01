@@ -1,0 +1,165 @@
+<HEAD>
+<TITLE>CAD MODELS IN SHAPEFILE FORMAT</TITLE>
+</HEAD>
+<BODY>
+<H1>CAD MODELS IN SHAPEFILE FORMAT</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#poly_shape_intro">Introduction</A>
+<P>
+<LI><A HREF="#poly_shape_open">Open Vector Overlay Menu</A>
+<P>
+<LI><A HREF="#poly_shape_multipatch">Multipatch Shapefiles</A>
+<P>
+<LI><A HREF="#poly_shape_polyz">Poly-Z Shapefiles</A>
+<P>
+</UL>
+
+<H2><A NAME="poly_shape_intro">INTRODUCTION</A></H2>
+
+Shapefiles present problems for a viewer code.
+It is a very old standard that grew from a simple list of (x,y) data pairs.
+Some basic coordinate system information has been captured in auxiliary files such the .prj file.
+However there is not a well-defined method for specifying other attributes.
+Elevation is one such attribute; there is not a well-defined method for
+specifying whether elevations are relative or absolute or what vertical datum they are using.
+<P>
+To work around some of these deficiencies, the menu used to input vector overlays
+allows the user to define certain defaults and offsets as described below.
+<P>
+
+
+
+
+
+
+<H2><A NAME="poly_shape_open">OPEN VECTOR OVERLAY MENU</A></H2>
+
+You reach this menu through the "Vector Overlay" option on the main menu and then the "Open Overlay for Display Only" suboption.
+<PRE>
+
+	Default Color
+		Color assigned to all entities in the file only where no color is specified
+		Although many formats define colors, shapefiles apparently do not
+
+	Altiltude Offset
+		Elevations may be defined relative to different vertical datums
+		2 common datums used are Earth Gravitational Model (EGM96) and mean sea level (MSL).
+		The offset between these 2 datums varies with Lat-Lon, but it can be found on the net.
+		You also may use this to place models slightly above the corresponding features on the map.
+
+	Overwrite
+		Render-with-map option renders the model along with the map
+			The hidden surface algorithm mixes all elements, showing either map or model as any point, whichever is closer
+			This option MUST be used when filled polygons are used --
+			otherwise (owing to the graphics library) the model will be completely muddled
+		Overwrite-the-map
+			The model will always overwrite the map even where it is behind it
+			This option is appropriate for wireframes if you want to see lines that may be obscured by the terrain
+
+	Polygon Fill -- Default fill mode where not defined as in Shapefiles
+		Wireframe-- lines only
+		Filled -- fills all polygons
+			For shapefiles, this will be the solid color defined by the default color (see above)
+
+	Altitude Mode -- Default mode where the altitude mode is not defined as in Shapefiles
+		Clamp-to-Ground -- all elevations clamped to the ground elevation (unlikely to be used)
+		Relative-to-Ground -- all elevations relative to the ground  (unlikely to be used)
+		Absolute -- all elevations absolute, but may be a different datum than the map
+		Relative to Ground HAE -- elevations relative to a attribute defined for each object in the shapefile (GrndHAE if present)
+
+
+</PRE>
+You may input the same model twice -- once as filled polygons and once as a wireframe in a contrasting color -- 
+to show the model but highlight the individual polygons that comprise the model.
+<P>
+
+
+
+
+
+<H2><A NAME="poly_shape_multipatch">MULTIPATCH SHAPEFILES</A></H2>
+
+For elevations, do the following:
+<PRE>
+
+	Elevations		Absolute
+
+	Altitude Mode -- For Multipatch use the 'Absolute" option
+		Absolute -- all elevations absolute, but may be with a vertical datum different than the map
+
+	Altitude Offset -- For the Belgium map it is 46.98m but will vary with the map
+		You may also want to place models slightly above the corresponding features on the map.
+
+
+
+</PRE>
+Other information:
+<PRE>
+
+	Features: multiple GDAL GeometryCollection features
+		subfeatures are mutliple GDAL TIN features for the building sides
+		and multiple GDAL MultiPolygon for the roofs
+	Captures:  both roof (MultiPolygon) and building sides (TIN) 
+	coord system:  projected
+	Elevations: absolute
+	Attributes 
+		BuildingID
+		Area
+		Perimeter
+		BldHeight
+		GrndHAE	
+		GrndMSL	
+
+
+
+
+</PRE>
+
+
+
+
+
+<H2><A NAME="poly_shape_polyz">POLY-Z SHAPEFILES</A></H2>
+
+For elevations, do the following:
+<PRE>
+
+	Elevations		Relative to attributes defined for each object in the file
+		GrndHAE	Attribute defined
+		GrndMSL	Attribute defined
+
+	Altitude Mode -- For Poly-Z use the "Relative to GrndHAE" option
+		Relative to Ground HAE -- elevations relative to a attribute defined for each object in the shapefile
+
+	Altiltude Offset -- Not needed for Belgium map but may be required for other maps
+
+
+
+</PRE>
+Other information:
+<PRE>
+
+	Features:  multiple GDAL Polygon and MultiPolygon
+	Captures:  rooftops only -- no sides
+	Coord system: geodetic
+	Elevations: relative to ground
+		I think relative to attribute of each feature -- GrndHae (or GrndMsl)
+	Attributes -- same as Multipatch
+		BuildingID
+		Area
+		Perimeter
+		BldHeight
+		GrndHAE	
+		GrndMSL	
+
+
+
+
+
+</PRE>
+
+
+

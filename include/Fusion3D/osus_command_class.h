@@ -3,9 +3,10 @@
 #ifdef __cplusplus
 
 /**
-Issues commands through OSUS to task sensors to take imagery.
+Issues commands in the OSUS Standard format to task sensors to take imagery.
 
-A new thread is initialized, the command issued, a verification that the command was received by OSUS (not necessarily executed) is read and the thread is destroyed.
+A new thread is initialized, the command issued, a verification that the command was received by OSUS
+(not necessarily executed) and the thread is destroyed.
 
 */
 class osus_command_class:public base_jfd_class{

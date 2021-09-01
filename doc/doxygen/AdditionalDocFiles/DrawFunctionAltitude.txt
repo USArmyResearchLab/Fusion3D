@@ -1,0 +1,18 @@
+FUSION3D DRAW FUNCTION NOTES
+
+ALTITUDE
+Altitudes of all lines and points are kept as absolute values.  When a point is digitized, by default it is assigned the altitude of the map at that point.
+This altitude can be modified in several ways as described below, but always stored as absolute values.
+The altitudes are stored in KML as absolute values.
+Altitudes are drawn slightly above their altitudes so they show up well on the terrain.  This offset is a parameter that can be set in the project file.
+
+ALTITUDE MODS
+From the menu, one can modify the altitude of the current feature (line or point),
+setting it either to an absolute altitude or a relative altitude where every point is the specified distance above the altitude of the map at that point.
+When digitizing a line, all previous previous points digitized for that line will be adjusted to the new altitude and all subsequent points for that line will also be adjusted.
+When digitizing a point, the adjustment will apply to the current highlighted point which will be the point just digitized.
+So the height adjustment must be made after the point is digitized rather then before.
+
+INTERUPTING DIGITIZING WITH OTHER FUNCTIONS
+When digitizing is interrupted, by something like measuring elevations or setting bookmarks, use the menu entry 'initiate draw' to turn off the other function and resume drawing.
+

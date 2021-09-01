@@ -53,6 +53,7 @@ class image_mrsid_class:public image_geo_class {
    int read_file_data() override;
    int read_file_close() override;
 
+   int read_file_data_down(int downsample_ratio);
    int read_into_roi(double roi_w, double roi_n, double roi_e, double roi_s, int nxcrop, int nycrop, unsigned char *data, int &ninter);
 
 };

@@ -220,33 +220,6 @@ int mensuration_manager_inv_class::refresh()
 	  SoDB::writeunlock();
 	  action_current = 4;
    }
-   
-   // **********************************************
-   // Display distance and angle for LOS
-   // **********************************************
-   else if (action_current == 6) {
-	   xpt1 = GL_mousem_east->getValue();
-	   ypt1 = GL_mousem_north->getValue();
-	   SoDB::writelock();
-	   lineBase->removeAllChildren();
-	   classBase->addChild(mensurateBase);
-	   pointSet->numPoints.setValue(0);				// Dont want point to show for this option
-
-	   float zaim = camera_manager->get_cg_z();
-	   textTran->translation.setValue(xpt1, ypt1, zaim);				// Put text at aim-point depth so wont be out of focus for stereo
-
-	   SoSFFloat* GL_action_float1 = (SoSFFloat*)SoDB::getGlobalField("Action-Float1");
-	   SoSFFloat* GL_action_float2 = (SoSFFloat*)SoDB::getGlobalField("Action-Float2");
-	   float dist = GL_action_float1->getValue();
-	   float angd = GL_action_float2->getValue();
-	   text->string = "";
-	   sprintf(startLabel, " Dist=%.1f m", dist);
-	   text->string.set1Value(1, startLabel);
-	   sprintf(startLabel, " Angl=%.1f deg", angd);
-	   text->string.set1Value(2, startLabel);
-	   SoDB::writeunlock();
-   }
-
    return(1);
 }
 
@@ -283,13 +256,6 @@ void mensuration_manager_inv_class::mousem_cb()
 		classBase->removeAllChildren();
 		SoDB::writeunlock();
 		action_current = 4;
-		refresh();
-		return;
-	}
-	else if (val == 27) {					// Signal turn on LOS measure
-		xpt1 = GL_mousem_east->getValue();
-		ypt1 = GL_mousem_north->getValue();
-		action_current = 6;
 		refresh();
 		return;
 	}

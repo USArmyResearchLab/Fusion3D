@@ -5,6 +5,11 @@
 
 class map3d_index_class;
 
+/**
+Qt dialog for opening a DSM map with arbitrary names.
+\n
+This menu is not as easy to use as the one for BuckEye but is more general allowing for any naming scheme.
+*/
 class dialogFileDemOther : public QDialog, public Ui::dialogFileDemOther
 {
 	Q_OBJECT

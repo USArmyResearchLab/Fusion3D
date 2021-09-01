@@ -82,9 +82,9 @@ int ogr_class::read_file(string sfilename)
 }
 
 // *******************************************
-/// Write to file.
+/// Write to file in Shapefile format.
 /// Write internally stored data to file filename.
-/// Currently implemented only for simple point features in KML and Shapefile formats
+/// Currently implemented only for simple point or line features in Shapefile format.
 // *******************************************
 int ogr_class::write_file(string sfilename)
 {

@@ -5,6 +5,11 @@
 
 class QRadioButton;
 
+/**
+Qt dialog for defining a new draw feature.
+\n
+Qt menu for define a new draw-function feature -- point, line, polygon or circle with associated parameters.
+*/
 class dialogDrawNew : public QDialog, public Ui::dialogDrawNew
 {
 	Q_OBJECT

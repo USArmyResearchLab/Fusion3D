@@ -1,0 +1,335 @@
+<HEAD>
+<TITLE>FUSION3D USER NOTES FOR ARL</TITLE>
+</HEAD>
+<BODY>
+<H1>FUSION3D USER NOTES FOR ARL</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#fusion3d_two">Two Versions of Fusion3D</A>
+<P>
+<LI><A HREF="#fusion3d_gdal">GDAL Environment Variables that Must be Set</A>
+<P>
+<LI><A HREF="#fusion3d_test">Test Program and Sample Dataset in the Distribution</A>
+<P>
+<LI><A HREF="#fusion3d_utils">Utility Programs Included in the Distribution</A>
+<P>
+<LI><A HREF="#fusion3d_libs">External Libraries</A>
+<P>
+<LI><A HREF="./LICENSE.txt">Apache 2.0 License for Fusion3D</A>
+<P>
+<LI><A HREF="./README_SAMPLE_DATA.html">Sample 3D Terrain Map</A>
+<P>
+<LI><A HREF="#fusion3d_windows_vs">Building for Windows Using Premade Visual Studio Solution</A>
+<P>
+<LI><A HREF="#fusion3d_windows_cmake">Building for Windows Using CMake</A>
+<P>
+<LI><A HREF="#fusion3d_linux">Building for Linux Using CMake</A>
+<P>
+<LI><A HREF="#fusion3d_other">Other Issues</A>
+<P>
+</UL>
+
+<H2><A NAME="fusion3d_two">TWO VERSIONS OF THE FUSION3D VIEWER</A></H2>
+
+There are two version of the code available:  the newer Qt version and the older version.
+The older version was kept and kept basically compatible with the newer version.
+It was unclear during development whether useful functionality would be lost with the new version and relatively cheap to keep both versions.
+<P> 
+The newer version of the Fusion3D viewer is based on Qt.
+The core of OpenInventor is OS independent as is the Coin3d library implementation.
+Low-level OS-dependent functions are implemented in several bridge libraries.
+SoQt is a bridge to Qt which in turn interfaces with a number of OSs.
+(Quarter is a newer bridge library to Qt but is lighter weight and does not have some of the key viewer functionality that Fusion3D depends on.)
+<P>
+Pros:  The implementation is 64-bit allowing much more memory so that much bigger maps can be accomodated.
+Qt interfaces with a large number of OS's and has been tested with both Windows and Ubuntu.
+It should be relatively to simple to port to virtually any other platform that supports OpenGL.
+<P>
+Cons:  Qt does not support the SpaceNavigator so this functionality has been lost -- it could probably be reimplemented at a very low level but
+that would probably require a lot of effort.
+(The loss of the SpaceNavigator was offset somewhat by adding the ability to pan using the right mouse button.)
+<P>
+The older version based on Microsoft Foundation Classes (MFC) has been retained.
+This version uses the SoWin library bridge to MFC.
+<P>
+Pros:  It does retain the SpaceNavigator.
+<P>
+Cons:  The SoWin library is 32-bit only and MFC is Windows only, so this version is limited to 32-bit Windows.
+<P>
+
+
+
+
+<H2><A NAME="fusion3d_gdal">GDAL ENVIRONMENT VARIABLES</A></H2>
+
+The GDAL library requires an environment variable GDAL_DATA that points to text files that are used to help implement
+the large variety of potential coordinate systems.
+As of GDAL 3.0, a second environment variable is also required: PROJ_LIB which must point to the directory that has the file proj.db.
+As of this rev, GDAL uses the Proj library to help determine coordinate systems.
+<P>
+If GDAL is installed then this environment variable may be set, but if it is not then try the following options:
+
+
+<PRE>
+
+	GDAL_DATA should point to a subdirectory supplied with the GDAL distribution where various .csv files and other text files
+		describe various coordinate systems (directory 'gdal_data' in some Windows distributions, 'share/gdal' in some linux distributions).
+	PROJ_LIB should be the path to the file proj.db (not including the filename itself).
+
+	1.  If possible, add the definitions to the system or user environment variables.
+		For linux, add the paths to the file '/etc/environment' something like
+			GDAL_DATA="/usr/share/gdal"
+			PROJ_LIB="/usr/share/proj"
+		Restart or otherwise ensure that the new environment variables are incorporated
+
+
+	2a.  If GDAL_DATA is unset at runtime, Fusion3D will set it to a subdirectory within the install directory
+			GDAL_DATA=<install-dir>/Fusion3D/bin/GDAL/gdal-data
+			This works on Windows for the Release version of the code but not the Debug version
+
+	2b.  If PROJ_LIB is unset at runtime, Fusion3D will set it to a subdirectory within the install directory
+			PROJ_LIB=<install-dir>/Fusion3D/bin/GDAL/proj6/share
+			This works on Windows for the Release version of the code but not the Debug version
+
+	3.  For Windows and Visual Studio, you can set an environment variable within Visual Studio
+			Project Properties -> Configuration Properties -> Debugging -> Environment
+				set environment variable (eg GDAL_DATA=C:\Fusion3D\bin\GDAL\gdal-data)
+
+
+</PRE>
+
+
+<H2><A NAME="fusion3d_test">TEST CODE AND SAMPLE DATASET</A></H2>
+
+A test code 'testSampleScene.exe' and a sample scene are provided for basic testing of the Fusion3D viewer.
+The scene is a rural area in New York that contains a road with a few houses, fields and an area with tree cover.
+It was obtained from the LiDARUSA website, lidarusa.com, that contains a number of freely downloadable lidar datasets.
+<P>
+We used only the A1 tile of the 4 available,
+and further cropped the point cloud to minimize the Fusion3D distribution download.
+We derived DSMs from the downloaded A1 point cloud using the ARL 'gridder' utility.
+This utility produces two DSMs:  a last-hit (a2) DSM and a first-hit (a1) DSM.
+<P>
+The point cloud was cropped to the upper-left corner of the image to minimize size.
+It was also culled with another ARL utility to eliminate point-cloud points very near the last-hit DSM.
+This is not necessary for the viewer but was done to illustrate how the DSM and point cloud can be used together.
+It has 2 advantages:  It reduces the cloud size (and total dataset size) by about half and it also reduces visual clutter.
+<P>
+
+
+
+
+<H2><A NAME="fusion3d_utils">UTILITY PROGRAMS INCLUDED IN DISTRIBUTION</A></H2>
+
+There are 4 utiltiy codes that are an unofficial part of the Fusion3D distribution.
+To make things easier to manage, the source codes are included and build is also included in the premade Visual Studio solution.
+It did not seem worthwhile to include the utilities in the CMake structure -- more things to go wrong or require editing --
+or to include in the documentation.
+<P>
+The executable for the 4 utilities should be included in the Qt version of the Fusion3D bin directory.
+<P>
+
+
+
+
+
+<H3><A NAME="fusion3d_utils">Utility gridder that Creates a DSM from a Point Cloud</A></H2>
+
+The gridder code can be accessed through the 'Point Cloud' menu in the Qt version of Fusion3D.
+It produces two DSMs:  a last-hit (a2) DSM and a first-hit (a1) DSM.
+<P>
+The code was originally written to create DEMS from very large collections of point-cloud files.
+It was used to make maps for Woson North Korea and for Montreal.
+It has the capacity to process hundreds of point-cloud files at a time and create very large maps made up of multiple DEM tiles.
+<P>
+The gridding technique used by BuckEye and others was very poor for our purposes and the approach used here is much better
+(see various Dammann papers and symposium presentations).
+<P>
+The code has been tested on relatively clean .las point-cloud files (as would be generated by a good linear-mode lidar).
+Only points that are very far from the average surface and that are certainly noise are filtered out.
+It has also been tested on a few very particular .bpf point-cloud files that have been processed by the FINE algorithm (see below).
+It the input filetype is .bpf, it is assumed that it is this subtype and processed accordingly.
+<P>
+The code sometimes crashed when run in Debug mode.
+The issue appeared to be with GDAL and have to do with the GDAL class OGRSpatialReference.
+There were no issues in Release mode.
+GDAL provides executables for Windows only for Release mode, so this may be what causes the problem.
+<P>
+
+
+
+
+<H3><A NAME="fusion3d_utils">Utility PCCull that Culls Point-Cloud Points Near a DSM</A></H2>
+
+The code was originally written to cull very large point clouds where the viewer was decimating severely.
+The hope was that if we culled out all the points near the corresponding DSMs that we could greatly reduce the size of the files
+and thus show a much larger percentage of the points.
+When we did this, we reduced the file size by about half -- not as good as we had hoped but still useful.
+The resulting point clouds look significantly denser.
+<P>
+When the files are culled, they have to be combined with the DSM since they lose almost all their smooth areas like grass and roof tops.
+The combination looks better since the point clouds add clutter to the DSM and the point clouds are denser also.
+So culling is useful if the 2 datasets are combined.
+<P>
+The culling process takes some time, so we implemented it in a separate utility.
+We made the ROI larger than default (1280x1280 rather than 128x128) and that sped up the computations greatly.
+With default values it was spending most of its time rereading the elevation data for new ROIs.
+<P>
+One specifies all all point cloud files within a directory that match a pattern (default *.las).
+The search is recursive so finds files in subdirectories.
+Likewise, one finds all DSMs within a directory that match a pattern (default *.tif).
+One also specifies a culling threshold; all points are culled whose elevation is closer than that threshold to the corresponding DSM elevation.
+<P>
+The output filenames are constructed from the input point cloud filenames by inserting "_cull".
+For example the input file test.las would generate an output file test_cull.las.
+The process is to read a block of point cloud data from the input file, cull it, then write it out.
+Therefore, it should be able to read arbitrarily large files without memory problems.
+<P>
+
+
+<H3><A NAME="fusion3d_utils">Utility mosaicr that Creates a Low-Res Texture Mosaic for Fusion3D</A></H2>
+
+The code was originally written to make a downsampled mosaic from a group of .tif texture files for the Wonson North Korea map.
+This map is huge and reading a full-scale texture file for each low-res tile --
+reading it, cropping it, then downsampling it -- was taking an unacceptibly long time.
+<P>
+The resulting texture image will be just large enough to encompass all the input files and will be black in any areas
+where there is no input data.
+The code moves file-by-file, summing each input pixel from that file into the appropriate (downsampled) mosaic pixel.
+Thus every output pixel is the average of all the input pixels that overlap it.
+The code is currently implemented for MrSID and GeoTiff input files and a GeoTiff output file.
+It cannot write MrSID files since we do not have a license to write MrSID (only to read these files).
+Since the Fusion3D viewer reads the resulting output file only once at full resolution, there is not a significant advantage of MrSID
+over GeoTiff anyway.
+<P>
+A limitation of the current implementation is that it doesn't do well with making a mosaic from grayscale images.
+These cant be matched nicely with color MrSID imagery.
+Adding false color to the images could be done as it is in the Fusion3D viewer but this would require associated elevation images,
+greatly complicating the implementation and the user interface.
+The Fusion3D viewer is also not yet capable of adding false color to a grayscale mosaic.
+<P>
+
+
+
+
+<H3><A NAME="fusion3d_utils">Utility cropr that Crops a Point Cloud to a Specified Subregion</A></H2>
+
+This is a very simple code that crops a point cloud to a specified subregion.
+<P>
+
+
+
+
+<H2><A NAME="fusion3d_libs">EXTERNAL OPEN-SOURCE LIBRARIES</A></H2>
+
+<TABLE BORDER>
+<CAPTION>External Open-Source Libraries for Fusion3D</CAPTION>
+<TR><TH>Library<TH>Version<TH>Release<TH>Debug<TH>Notes
+<TR><TH>       <TH>Tested <TH>       <TH>     <TH>
+
+<TR><TD>Coin3d  <TD>4.0   <TD>Required  <TD>Required  <TD>Core graphics library inplementing the OpenInventor API
+<TR><TD>SoQt    <TD>1.6.0 <TD>Required  <TD>Required  <TD>Bridge library implementing OS-dependent OpenInventor functions through Qt
+<TR><TD>Qt      <TD>5.12.6<TD>Required  <TD>Required  <TD>Multi-platform operating system interface
+<TR><TD>GDAL    <TD>3.1.2 <TD>Required  <TD>Required  <TD>General-purpose library for import/export of vector and raster file formats
+<TR><TD>MrSID   <TD>9.5.4 <TD>Required  <TD>Required  <TD>Import only library for MrSID images (used for texturing the DEM maps)
+<TR><TD>Libkml  <TD>2.2   <TD>Not Needed<TD>Required  <TD>Import/export of KML files
+<TR><TD>assimp  <TD>5.0.1 <TD>Optional  <TD>Optional  <TD>No core functionality but necessary to overlay CAD models onto the maps
+</TABLE
+<BR><BR><BR>
+
+
+<PRE>
+
+	1. Assimp library is required only to overlay CAD models onto the terrain maps.
+		It can import many CAD formats including .obj, COLLADA
+
+	2. GDAL includes a release version of the KML libraries
+		However, for Visual Studio Libkml is written to be internal to the calling code rather than accessed through a .dll,
+		the release libraries are inconsistent with the debug version, and a debug version of Libkml is required.
+
+
+</PRE>
+
+
+<pre>
+
+	Set environment variable to provide the path to platform-specific plugins:
+			QT_QPA_PLATFORM_PLUGIN = <path to Qt library like msvc2017_64>\plugins\platforms
+
+
+</pre>
+
+
+<H2><A NAME="fusion3d_windows_vs">BUILDING FOR WINDOWS AND VISUAL STUDIO -- VISUAL STUDIO</A></H2>
+
+A premade Visual Studio 2017 solution is provided and it is assumed that this would be the method used at ARL.
+CMake files are also provided and are described in the README file for the distribution.
+CMake files should also work for linux and have been tested in Ubuntu.
+This is also described in the README file.
+<P>
+The premade solution is set up to build both Release and Debug in x64.
+It is included in subdirectory build/msvc2017.
+The Visual Studio solution can be extended to x86 but this will require extra editing.
+<P>
+Building with Visual Studio and Qt requires that the Visual Studio Qt Addin be installed.
+This addin is available free as a .vsix file that will automatically install when opened.
+<P>
+The following changes will probably have to be made to the solution:
+<PRE>
+
+	The optional Assimp library:
+		Library included in the premade solution
+		To remove it:
+			All Projects -> Properties -> C/C++ -> Preprocessor -> Preproc Defs:  Delete LIBS_ASSIMP
+			Fusion3D/TestAdelaide Projects -> Properties -> Linker -> Input: delete assimp-vc141-mt.lib
+
+	Modify paths to Include Directories for the external libraries listed above
+			lfusion3d Project -> Properties -> C/C++ -> General -> Additional Include Dirs: modify paths
+
+	Modify paths to Library Directories for the external libraries listed above
+			Fusion3D/TestAdelaide Projects -> Properties -> Linker -> General: modify paths
+
+
+</PRE>
+
+
+
+
+
+
+</PRE>
+
+
+
+
+
+
+<H2><A NAME="fusion3d_other">OTHER ISSUES</A></H2>
+<H3><A NAME="fusion3d_libs">MrSID Linux Version Problems with Newer Compilers</A></H3>
+
+The latest (Oct 2020) download of the MrSID SDK for linux generates compile errors for gcc compiler versions greater than version 5.
+It was verified with gcc version 5, checks the gcc version number and will not compile for newer gcc versions.
+The best fix for this problem is to edit a .h file in the MrSID distribution:
+<PRE>
+
+	In file:  <install dir>\MrSID_DSDK-9.5.4.4709-win64-vc15\Raster_DSDK\include\lt_platform.h
+	Change line:	#if (defined(__GNUC__) || defined(__GNUG__)) && (3 <= __GNUC__ && __GNUC__ <= 5)
+	To    line:	#if (defined(__GNUC__) || defined(__GNUG__)) && (3 <= __GNUC__ && __GNUC__ <= 9) // Any number >= to current compiler version
+
+
+</PRE>
+If this is not possible, then you can redefine the the __GNUC__ value in the internals.h file like the following
+<PRE>
+
+	#define __GNUC__ 5
+
+
+</PRE>
+This will generate warnings but it appears it has no ill effect.
+<P>
+
+
+
+

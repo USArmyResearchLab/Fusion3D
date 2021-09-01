@@ -236,17 +236,6 @@ int camera4d_manager_inv_class::get_focal_length(float &focal_length)
 }
 
 // **********************************************
-/// Refresh anything that changes with time
-// **********************************************
-int camera4d_manager_inv_class::update_time(int i_tic_in, float time_in)
-{
-   time_battlefield_cur = time_in;
-   refresh_pending = 1;
-   refresh();
-   return (1);
-}
-
-// **********************************************
 /// Refresh the camera.
 // **********************************************
 int camera4d_manager_inv_class::refresh()

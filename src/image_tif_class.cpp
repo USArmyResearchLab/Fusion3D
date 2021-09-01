@@ -6,6 +6,7 @@
 image_tif_class::image_tif_class(gps_calc_class *gps_calc_in)
         :image_geo_class()
 {
+	class_type = "tif";
 	if (gps_calc_in == NULL) {
 		exit_safe(1, "image_tif_class::image_tif_class:  NULL gps_calc_class");
 	}
@@ -225,11 +226,22 @@ int image_tif_class::read_into_roi(double roi_w, double roi_n, double roi_e, dou
 
 
 	// ***************************************
-	// Full intersection, no downsampling, color/grayscale
+	// Full intersection, no downsampling, color
 	// ***************************************
-	if (!partial_flag && !downsample_flag) {
-		for (ip=0; ip<nspp * crop_nrows*crop_ncols; ip++) {
+	if (!partial_flag && !downsample_flag && data_type == 6) {
+		for (ip = 0; ip<3*crop_nrows*crop_ncols; ip++) {
 			data_out[ip] = data[0][ip];
+		}
+	}
+
+	// ***************************************
+	// Full intersection, no downsampling, grayscale
+	// ***************************************
+	else if (!partial_flag && !downsample_flag) {
+		for (ip = 0; ip<crop_nrows*crop_ncols; ip++) {
+			data_out[3 * ip    ] = data[0][ip];
+			data_out[3 * ip + 1] = data[0][ip];
+			data_out[3 * ip + 2] = data[0][ip];
 		}
 	}
 
@@ -814,19 +826,34 @@ int image_tif_class::read_header_by_gdal()
 		warning_s("No transform with data origin -- cant read file", filename_save);
 		return(0);
 	}
-	dwidth  = adfGeoTransform[1];
-	dheight = -adfGeoTransform[5];
-	ulx = adfGeoTransform[0];
-	uly = adfGeoTransform[3];
+	xres  = adfGeoTransform[1];				// Native units ?
+	yres = -adfGeoTransform[5];				// Native units ?
+	xTiepoint = adfGeoTransform[0];			// Native units ?
+	yTiepoint = adfGeoTransform[3];			// Native units ?
+
+	// Convert from native to meters/deg -- NOT implemented -- done in my alt implementation -- do you want to do it?
+	dwidth = xres;
+	dheight = yres;
+	ulx = xTiepoint;
+	uly = yTiepoint;
 
 	// **********************************************
-	// Parms from GDALRasterBand
-	// ****************** GETTING NO-DATA EXPERIMENTAL,  NOT FULLY IMPLEMENTED ************
+	// Parms from GDALRasterBand -- Data type and noData value
 	// **********************************************
 	GDALRasterBand *rasterBand = poDataset->GetRasterBand(1);
 	if (rasterBand != NULL) {
+		GDALDataType dt = rasterBand->GetRasterDataType();
+		if (dt == GDT_Byte) {
+			iCharIntFloatFlag = 1;
+		}
+		else if (dt == GDT_UInt16) {
+			iCharIntFloatFlag = 2;
+		}
+		else if (dt == GDT_Float32) {
+			iCharIntFloatFlag = 3;
+		}
 		int pbSuccess;
-		double nod = rasterBand->GetNoDataValue(&pbSuccess);
+		double nod = rasterBand->GetNoDataValue(&pbSuccess);// ****************** GETTING NO-DATA EXPERIMENTAL,  NOT FULLY IMPLEMENTED ************
 		if (pbSuccess) nodataValue = nod;
 	}
 
@@ -841,31 +868,31 @@ int image_tif_class::read_header_by_gdal()
 		return(0);
 	}
 	OGRSpatialReference oSRS(cRef);	
-	//oSRS.importFromWkt(cRef);		// This should work in later revs but not defined in this
-	if (oSRS.IsProjected()) {
-		geog_type_flag = 0;
-	}
-	else if (oSRS.IsGeographic()) {
-		geog_type_flag = 1;
-	}
-	//else {					// GDAL can create DEMs that are good but dont identify as either proj or geo??
-	//	char ctemp[400];
-	//	sprintf(ctemp, "No projection/geo info -- cant read file  %s", filename_save.c_str());
-	//	warning(1, ctemp);
-	//	return(0);
-	//}
-	bool isGeo = oSRS.IsGeographic();
-	bool isPrj = oSRS.IsProjected();
+	//xyunits_to_m = oSRS.GetLinearUnits();		// May not be compatible with older versions of GDAL
 	//epsgTypeCode = oSRS.GetEPSGGeogCS();	// Not what we want -- associated geographic coord system?
 	const char *acode = oSRS.GetAuthorityCode(NULL);
 	if (acode == NULL) {
 		char ctemp[400];
 		if (diag_flag > 0) fprintf(stdout, "WARNING:  GDAL finds no EPSG -- try alternate parser  %s", filename_save.c_str());
 		//warning(1, ctemp);
-		return(0);
+		// return(0);
+		localCoordFlag = 3346;							// EPSG for local coord system -- may be different from global
 	}
-	localCoordFlag = atoi(acode);							// EPSG for local coord system -- may be different from global
-	double lineUnits = oSRS.GetLinearUnits();
+	else {
+		localCoordFlag = atoi(acode);							// EPSG for local coord system -- may be different from global
+	}
+
+	// **********************************************
+	// If global coord system geographic, convert to projected here
+	// **********************************************
+	if (oSRS.IsProjected()) {
+		geog_type_flag = 0;
+	}
+	else if (oSRS.IsGeographic()) {
+		geog_type_flag = 1;
+		init_geog_type();
+		geog_type_flag = 0;
+	}
 	//OGRSpatialReference::DestroySpatialReference(&oSRS);
 	//delete &oSRS;
 
@@ -923,9 +950,6 @@ int image_tif_class::read_header_by_gdal()
 	utm_cen_east[0] = ulx + (float(ncols) / 2.) * dwidth;
 	cen_utm_east = utm_cen_east[0];
 
-	if (geog_type_flag > 0) {		// Coord system is geographic
-		init_geog_type();
-	}
 
 	  if (diag_flag > 0) cout << "   Image center at East " << utm_cen_east[0] << " North " << utm_cen_north[0] << endl;
 	  if (diag_flag > 0) cout << "         pixel size x = " << dwidth << " y = " << dheight << endl;
@@ -949,35 +973,19 @@ int image_tif_class::read_header_by_gdal()
 int image_tif_class::init_geog_type()
 {
 	double lat, lon, north, east, north2, east2;
-	lat = yTiepoint;
-	lon = xTiepoint;
+	lat = uly;
+	lon = ulx;
 	gps_calc_class *gps_calct = new gps_calc_class();
 	gps_calct->init_wgs84_from_ll(lat, lon);
 	int utm_lon_zone = gps_calct->get_utm_lon_zone_ref();
 	localCoordFlag = utm_lon_zone + 32600;
-	// **********************************************
-	// If global coord system not defined (first file presented with coord system) then define
-	// **********************************************
-	if (!gps_calc->is_coord_system_defined()) {
-		gps_calc->init_from_epsg_code_number(localCoordFlag);
-	}
 
 	gps_calct->ll_to_proj(lat, lon, north, east);
-	gps_calct->ll_to_proj(lat + yres, lon + xres, north2, east2);
+	gps_calct->ll_to_proj(lat + dheight, lon + dwidth, north2, east2);
+	ulx = east;
+	uly = north;
 	dheight = north2 - north;
 	dwidth = east2 - east;
-
-	uly = north - iyTiepoint * dheight;		// For hyperspectral, tiepoint is top of image
-	lry = uly - float(nrows) * dheight;
-	utm_cen_north[0] = uly - (float(nrows) / 2.) * dheight;
-	cen_utm_north = utm_cen_north[0];
-
-	ulx = east + ixTiepoint * dwidth;		// For hyperspectral, tiepoint is image left
-	lrx = ulx + float(ncols) * dwidth;
-
-	transform_to_global_coord_system(localCoordFlag);		// Transform ulx,uly,lry,lrx from local to global coord system if necessary
-	utm_cen_east[0] = ulx + (float(ncols) / 2.) * dwidth;
-	cen_utm_east = utm_cen_east[0];
 	return(1);
 }
 
@@ -1006,20 +1014,30 @@ int image_tif_class::read_file_data()
 }
 
 // ******************************************
-/// Read the data from an open image into externally allocated storaget.
+/// Read the data from an open image into externally allocated storage -- entire, single-band, uchar only.
+/// Specialized get-data designed for masks.
 // ******************************************
-int image_tif_class::get_data_uchar(unsigned char* udata)
+int image_tif_class::get_data_all_1band_uchar_to_external(unsigned char* udata)
 {
-   if (!header_only_flag) {
-      data[0] = udata;
-	  if (tile_flag) {
-         read_data_by_tiles(1);
-      }
-      else {
-         read_data_by_strips(1);
-      }
-   }
-   return(1);
+	if (useGdalReadFlag) {
+#if defined(LIBS_GDAL)
+		GDALRasterBand *poBand;
+		poBand = poDataset->GetRasterBand(1);
+		poBand->RasterIO(GF_Read, 0, 0, ncols, nrows, udata, ncols, nrows, GDT_Byte, 0, 0);
+#endif
+	}
+	else {
+		if (!header_only_flag) {
+			data[0] = udata;
+			if (tile_flag) {
+				read_data_by_tiles(1);
+			}
+			else {
+				read_data_by_strips(1);
+			}
+		}
+	}
+	return(1);
 }
 
 // ******************************************
@@ -1482,7 +1500,8 @@ int image_tif_class::read_data_by_gdal(int external_alloc_flag)
 
 		if (!external_alloc_flag) {
 			if (ualloc_flag) delete[] data[0];
-			data[0] = new unsigned char[nbands*nrows_crop*ncols_crop];
+			size_t sz = size_t(nbands) * size_t(nrows_crop) * size_t(ncols_crop);	// Allows for larger arrays
+			data[0] = new unsigned char[sz];
 			ualloc_flag = nbands*nrows_crop*ncols_crop;
 		}
 	}
@@ -1511,21 +1530,27 @@ int image_tif_class::read_data_by_gdal(int external_alloc_flag)
 	// Read uchar -- 8-bit unsigned int, GDT_Byte
 	// *********************************
 	if (oCharIntFloatFlag == 1) {
-		//poDataset->RasterIO(GF_Read, iw1, ih1, ncols_crop, nrows_crop, data[0], ncols_crop, nrows_crop, GDT_Byte, 3, NULL, 0, 0, 0);	\\ Garbled image
+		if (nbands == 1) {
+			poBand = poDataset->GetRasterBand(1);
+			poBand->RasterIO(GF_Read, iw1, ih1, ncols_crop, nrows_crop, data[0], ncols_crop, nrows_crop, GDT_Byte, 0, 0);
+		}
 
-		int iband, iy, ix, isamp;
-		unsigned char *buf = new unsigned char[nrows_crop*ncols_crop];
-		for (iband = 0; iband < nbands; iband++) {
-			poBand = poDataset->GetRasterBand(iband + 1);
-			poBand->RasterIO(GF_Read, iw1, ih1, ncols_crop, nrows_crop, buf, ncols_crop, nrows_crop, GDT_Byte, 0, 0);
-			for (iy = 0; iy < nrows_crop; iy++) {
-				isamp = iy * ncols_crop;	
-				for (ix = 0; ix < ncols_crop; ix++, isamp++) {
-					data[0][nbands*isamp + iband] = buf[isamp];
+		// Multiple bands -- GDAL reads by band, so have to resequence data so band is inner loop
+		else {
+			int iband, iy, ix, isamp;
+			unsigned char *buf = new unsigned char[nrows_crop*ncols_crop];
+			for (iband = 0; iband < nbands; iband++) {
+				poBand = poDataset->GetRasterBand(iband + 1);
+				poBand->RasterIO(GF_Read, iw1, ih1, ncols_crop, nrows_crop, buf, ncols_crop, nrows_crop, GDT_Byte, 0, 0);
+				for (iy = 0; iy < nrows_crop; iy++) {
+					isamp = iy * ncols_crop;
+					for (ix = 0; ix < ncols_crop; ix++, isamp++) {
+						data[0][nbands*isamp + iband] = buf[isamp];
+					}
 				}
 			}
+			delete[] buf;
 		}
-		delete[] buf;
 	}
 
 	// *****************************************
@@ -1674,7 +1699,6 @@ int image_tif_class::read_ties()
       //   yd = yd - 1.0;
       //   cout << "   Tiepoint xd " << xd << " yd " << yd << " zd " << zd << endl;
       //}
-      utm_flag = 1;
 
    }
    return(1);
@@ -1706,7 +1730,6 @@ int image_tif_class::read_model_transformation()
 	dheight = fabs(dval[5]);
 	if (diag_flag > 0) cout << "   Tiepoint ix " << ixTiepoint << " iy " << iyTiepoint << endl;
 	if (diag_flag > 0) cout << "   Tiepoint x  " << xTiepoint  << " y  " << yTiepoint  << endl;
-	utm_flag = 1;
 	return(1);
 }
 

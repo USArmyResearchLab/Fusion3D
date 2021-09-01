@@ -34,14 +34,9 @@ int kml_manager_class::reset_all()
 
 	n_kml = 0;
 	d_above_ground = 0.;
-	red_default = 0.6;
-	grn_default = 0.6;
-	blu_default = 0.6;
 	dir_flag = 0;
 	dirname.clear();
 	n_kml_dir = 0;
-	tmin_flag = 0;
-	tmax_flag = 0;
 
 	draw_data->clear();
 	draw_data->set_elev_offset(d_above_ground);
@@ -95,18 +90,6 @@ int kml_manager_class::read_tagged(const char* filename)
 	   }
        else if (strcmp(tiff_tag,"Vector-Diag-Level") == 0) {
           fscanf(tiff_fd,"%d", &diag_flag);
-       }
-       else if (strcmp(tiff_tag,"Data-Lims-Tmin") == 0) {
-          fscanf(tiff_fd,"%s", cline);
-          time_conversion->set_char(cline);
-          tmin = time_conversion->get_int();
-          tmin_flag = 1;
-       }
-       else if (strcmp(tiff_tag,"Data-Lims-Tmax") == 0) {
-          fscanf(tiff_fd,"%s", cline);
-          time_conversion->set_char(cline);
-          tmax = (float)time_conversion->get_int();
-          tmax_flag = 1;
        }
        else {
           fgets(tiff_junk,240,tiff_fd);

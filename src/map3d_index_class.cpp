@@ -1248,8 +1248,8 @@ int map3d_index_class::init_map()
    // ********************************************************************************
 	roi_height = nl_lowres * tile_dh;
 	roi_width = nl_lowres * tile_dw;
-	roi_northing = image_tif_a2[0]->get_utm_cen_north(0);
-	roi_easting = image_tif_a2[0]->get_utm_cen_east(0);
+	roi_northing = image_tif_a2[0]->get_cen_utm_north();
+	roi_easting = image_tif_a2[0]->get_cen_utm_east();
 	adjust_tile_center(image_tif_a2[0], roi_northing, roi_easting);
 	if (!calc_roi_intersections()) {
 		cerr << "map3d_index_class::make_index; Origin does not intersect any map " << endl;
@@ -1313,8 +1313,8 @@ int map3d_index_class::get_map_extent()
          warning(1, "map3d_index_class::define_map; Cant read header ");
       }
 
-      utm_cen_north 	= image_tif->get_utm_cen_north(0);
-      utm_cen_east  	= image_tif->get_utm_cen_east(0);
+      utm_cen_north 	= image_tif->get_cen_utm_north();
+      utm_cen_east  	= image_tif->get_cen_utm_east();
       tile_pixel_height	= image_tif->get_dheight();
       tile_pixel_width	= image_tif->get_dwidth();
       tile_nrows	= image_tif->get_n_rows();
@@ -1683,7 +1683,12 @@ int map3d_index_class::apply_mask_amp(unsigned char *data_loc, float size_textur
 			ixm = (east - mask_amp_w) / tile_dw;
 			ipm = iym * mask_amp_nx + ixm;
 			ipr = iy * nx_texture  + ix;
-			if (mask_amp[ipm] == 1) {
+			if (mask_amp[ipm] == 2) {
+				data_loc[3 * ipr] = 0;
+				data_loc[3 * ipr + 1] = 0;
+				data_loc[3 * ipr + 2] = 255;
+			}
+			else if (mask_amp[ipm] > 0) {	// Simple masks are 1 as generated, 255 as read in from file
 				//data_loc[3 * ipr] = data_loc[3 * ipr] / 2;			//Original scheme mimics shadows and tries not to crush terrain detail
 				//data_loc[3 * ipr + 1] = data_loc[3 * ipr + 1] / 2;
 				//data_loc[3 * ipr + 2] = 80;
@@ -1691,11 +1696,6 @@ int map3d_index_class::apply_mask_amp(unsigned char *data_loc, float size_textur
 				data_loc[3 * ipr] = amp;									// Military likes shadowed regions to be reddish
 				data_loc[3 * ipr + 1] = 0;
 				data_loc[3 * ipr + 2] = 0;
-			}
-			else if (mask_amp[ipm] == 2) {
-				data_loc[3*ipr  ] = 0;
-				data_loc[3*ipr+1] = 0;
-				data_loc[3*ipr+2] = 255;
 			}
 		}
 	}
@@ -2395,8 +2395,8 @@ int map3d_index_class::set_tile_bounds(image_tif_class **image_tif_loc, int tile
 			exit_safe(1, "map3d_index_class::set_tile_bounds; Cant read header ");
 		}
 		image_tif_hdr->read_file_close();
-		utm_cen_north 	= image_tif_hdr->get_utm_cen_north(0);
-		utm_cen_east  	= image_tif_hdr->get_utm_cen_east(0);
+		utm_cen_north 	= image_tif_hdr->get_cen_utm_north();
+		utm_cen_east  	= image_tif_hdr->get_cen_utm_east();
 		adjust_tile_center(image_tif_hdr, utm_cen_north, utm_cen_east);
 		if (i == 0 && tile_type == 0) {
 			double latt, lont;
@@ -2712,8 +2712,9 @@ int map3d_index_class::get_elev_to_given(double north, double east, int roi_nxt,
 
 			image_tif->read_threadsafe_float(sname, iw1, ih1, iw2, ih2, fdatat);
 
+			/* Logic of this is wrong, I think, so modified as below -- Leave this until revision exercised for a bit 
 			ix_off = 0;
-			if (iw1 == ncols_exclude && iw2 == nx_tile - ncols_exclude) {	// Width of tile entirely within roi
+			if (iw1 == ncols_exclude && iw2 == nx_tile + ncols_exclude) {	// Width of tile entirely within roi
 				ix_off = int((tile_w[itile] - roi_wt) / tile_dw) + ncols_exclude;	// May want to avoid bad col
 				if (ix_off > roi_nxt - nx_tile) ix_off = roi_nxt - nx_tile;
 			}
@@ -2728,6 +2729,15 @@ int map3d_index_class::get_elev_to_given(double north, double east, int roi_nxt,
 			else if (ih1 == 0) {
 				iy_off = roi_nyt - ny_tile;
 			}
+			*/
+
+			ix_off = int((tile_w[itile] - roi_wt) / tile_dw) + iw1;	// 
+			if (ix_off < 0) ix_off = 0;
+			if (ix_off > roi_nxt - nx_tile) ix_off = roi_nxt - nx_tile;
+
+			iy_off = int((roi_nt - tile_n[itile]) / tile_dh) + ih1;
+			if (iy_off < 0) iy_off = 0;
+			if (iy_off > roi_nyt - ny_tile) iy_off = roi_nyt - ny_tile;
 
 			for (iy_tile = 0, ip_tile = 0; iy_tile<ny_tile; iy_tile++) {
 				ip_out = (iy_tile + iy_off) * roi_nxt + ix_off;

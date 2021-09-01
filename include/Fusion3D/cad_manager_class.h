@@ -18,8 +18,8 @@ They implemented camera-following of CAD-modeled people and a different method f
 
 class cad_manager_class:public atrlab_manager_class{
    protected:
-      int n_cad;						// No of CAD objects currently defined
-      int n_cad_max;					// No of CAD objects that can be defined (maybe interactively)
+      int n_cad;						///< No of CAD objects currently defined
+      int n_cad_max;					///< No of CAD objects that can be defined (maybe interactively)
 
 	  double eastOrigin, northOrigin;	///< Origin of CAD model -- location in local projection
 	  float elevOrigin;					///< Origin of CAD model -- elevation

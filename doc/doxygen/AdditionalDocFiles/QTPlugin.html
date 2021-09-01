@@ -1,0 +1,241 @@
+<HEAD>
+<TITLE>PLUGIN FOR QT</TITLE>
+</HEAD>
+<BODY>
+<H1>PLUGIN FOR QT</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#qt_intro">Introduction</A>
+<P>
+<LI><A HREF="#qt_plugin">Plugin Approaches</A>
+<P>
+<LI><A HREF="#qt_log">Writing Diagnostics to the Log File</A>
+<P>
+<LI><A HREF="#qt_info">Getting Information about Layers</A>
+<P>
+</UL>
+
+<H2><A NAME="qt_intro">INTRODUCTION</A></H2>
+
+I got the API for QT from Duane Synder just after I renew maintenance in late August 1024.
+I got it for version 8.0.3.4.
+<P>
+<P>
+
+<H2><A NAME="qt_plugin">PLUGIN APPROACHES</A></H2>
+<H3><A NAME="qt_plugin_files">Calling Fusion3D with Filenames</A></H3>
+
+This approach does not appear to work.
+I can get pathnames for the textures.
+But I cant get pathnames for either the DEMs or the point clouds.
+I was able to get the 'names' of the DEMs but this was just part of the pathname -- no path and no suffix.
+So pathname 'F:\Manassas\dem_1m_a1_JFD.tif' produces name 'dem_1m_a1_JFD'.
+<P>
+Getting QTA models -- getting the number of models using QT_PLUGIN_POINT_NUM_SOURCE_FILES -- looked like it might work.
+But that always seems to produce NO (zero) models.
+<P>
+
+
+<H3><A NAME="qt_plugin_mixed">Calling Fusion3D with Mixture of Filenames and Interprocess Communication</A></H3>
+
+The basic concept would be to provide the DEMs to Fusion3D using Interprocess Communications and to supply the textures by providing them in the call sequence.
+This has several drawbacks.  Most obviously, it is not elegant, treating DEMs and textures differently.
+Since I cant get the DEM filenames, this method appears to be the only alternative for this data type.
+It has the drawback that the DEM file may be too big to fit into my 32-bit memory space, but typical BuckEye files would fit comfortably.
+I could supply the textures also thru Interprocess Communications -- the hooks look to be there.
+This may be OK with typical BuckEye MrSID files that match their DEM tiles, but I have seen BuckEye MrSID files that are much too large to fit into Fusion3D memory.
+Also, QT may downsample the textures and I THINK that the QT would supply the downsampled textures.
+<P>
+Below are the QT API calls that would be used to get the DEM data:
+
+<PRE>
+
+Get number of surface models
+	unsigned int numSurfaceModels = 0;
+	SendMessage( hQTWin, QT_PLUGIN_GET_NUM_SURFACE_MODELS, 0, &numSurfaceModels);
+
+Get metadata for each surface
+	qtSurfaceInfo mySurfaceInfo;
+	memset( &mySurfaceInfo, 0, sizeof(qtSurfaceInfo) );
+	unsigned int modelIndex = 1;  		// Can be model index number or ID 
+	SendMessage( hQTWin, QT_PLUGIN_DESCRIBE_SURFACE_MODEL, modelIndex, &mySurfaceInfo);
+
+Get pointers to data
+	qtSurfaceDataPointerInfo myInfo;
+	memset( &myInfo, 0, sizeof(qtSurfaceDataPointerInfo) );
+	SendMessage( hQTWin, QT_PLUGIN_SURFACE_GET_DATA_POINTERS, modelID, &myInfo );
+
+
+
+</PRE>
+
+<H2><A NAME="qt_log">WRITING DIAGNOSTICS TO LOG</A></H2>
+
+Since there is no text window open, it looks like the best way to get diagnostics is to write to the standard QT log files as shown below:
+<PRE>
+
+Log files are in directory:
+	C:\Documents and Settings\name\My Documents\QTModeler_8034_up32
+
+Writes to files
+	QTVLog.txt
+	QTVSentinelLog.txt	Only sometimes??
+
+Write to log with following:
+	char *myLogEntry = "jfdxxx this is a log entry";
+	SendMessage( qtWindow, QT_PLUGIN_ADD_LOG_ENTRY, 0, (LPARAM)myLogEntry );
+
+
+</PRE>
+<H2><A NAME="qt_info">GETTING INFORMATION ABOUT LAYERS</A></H2>
+<H3><A NAME="qt_info">Surface Models</A></H3>
+<PRE>
+
+QT_PLUGIN_GET_NUM_SURFACE_MODELS
+
+VERSION: 	QTM 8.0.1, Build 80678 and later
+
+PURPOSE:	Returns the number of Surface models currently loaded into QT
+
+USAGE: 
+	unsigned int numSurfaceModels = 0;
+	SendMessage( hQTWin, QT_PLUGIN_GET_NUM_SURFACE_MODELS, 0, &numSurfaceModels);
+
+QT_PLUGIN_DESCRIBE_SURFACE_MODEL
+
+VERSION:  	QTM 8.0.1, Build 80678 and later
+
+PURPOSE:	Describes the requested Point Cloud model
+
+USAGE: 
+	qtSurfaceInfo mySurfaceInfo;
+	memset( &mySurfaceInfo, 0, sizeof(qtSurfaceInfo) );
+
+	unsigned int modelIndex = 1;  		// Can be model index number or ID 
+	SendMessage( hQTWin, QT_PLUGIN_DESCRIBE_SURFACE_MODEL, modelIndex, &mySurfaceInfo);
+
+	qtIDType modelID = myInfo.modelID;  	// Can be model index or ID 
+	SendMessage( hQTWin, QT_PLUGIN_DESCRIBE_SURFACE_MODEL, modelID, &mySurfaceInfo);
+
+DATA STRUCTURE: 
+struct qtSurfaceInfo {
+	qtIDType modelID;			// Model ID for reference in other messages
+	qtModelClasses modelclass;		// Model class, usually CLASS_QTTMODEL
+	unsigned int width;			// Width of grid
+	unsigned int height;			// Height of grid
+	double scalex;   			// Grid scale in x
+	double scaley;   			// Grid scale in y
+	double heading;   			// Grid orientation
+	float nanValue;   			// NoData cell value
+	bool isSelected;			// Is model selected in layer tree?
+	bool hasVertexColors;		// Does model have vertex colors?
+	unsigned char colorDataType;	// QT_ COLOR_NONE, QT_ COLOR_RGB, QT_ COLOR_RGBA, 
+						QT_ COLOR_INT, QT_ COLOR_IA, QT_ COLOR_ALPHA
+	bool hasNormals;			// Does model have per-vertex normal vectors?
+	char name[260];			// Model name in QT
+	double minx;			// Min X in global coordinate system
+	double maxx; 			// Max X in global coordinate system
+	double miny; 			// Min Y in global coordinate system
+	double maxy; 			// Max Y in global coordinate system
+
+
+
+</PRE>
+<H3><A NAME="qt_info">Point-Cloud Models</A></H3>
+<PRE>
+
+
+
+QT_PLUGIN_POINT_NUM_SOURCE_FILES
+
+VERSION: 	QTM 8.0.2, Build 80708 and later
+
+PURPOSE:	Returns the number of source files linked to a QTA-linked QTC model
+
+USAGE: 
+	int numFiles = 0;
+	SendMessage( hQTWin, QT_PLUGIN_POINT_NUM_SOURCE_FILES, 0, &numFiles);
+
+
+
+
+
+QT_PLUGIN_POINT_DESCRIBE_SOURCE_FILE
+
+VERSION:  	QTM 8.0.2, Build 80708 and later
+
+PURPOSE:	Describes a QTA source file
+
+USAGE: 
+	qtSourceFileInfo mySourceFileInfo; 
+	memset( &mySourceFileInfo, 0, sizeof(qtSourceFileInfo) ); 
+	mySourceFileInfo.desiredFileNum = 2; 
+	SendMessage( hQTWin, QT_PLUGIN_POINT_DESCRIBE_SOURCE_FILE, desiredModelID, &mySourceFileInfo ); 
+
+DATA STRUCTURE: 
+struct qtSourceFileInfo {
+	int desiredFileNum;			// Index of desired source file			
+	char fileName[QT_MAX_PATH];		// File Path
+	__int64 pointOffset;			// QTA index of first point in file
+	__int64 numPoints;			// Number of QTA points in file
+};
+
+
+
+</PRE>
+<H3><A NAME="qt_info">Textures</A></H3>
+<PRE>
+
+
+QT_PLUGIN_GET_NUM_TEXTURES
+
+VERSION:  	QTM 8.0.1, Build 80678 and later
+
+PURPOSE:	Returns the number of Textures currently loaded into QT
+
+USAGE: 
+	unsigned int numTextures = 0;
+	SendMessage( hQTWin, QT_PLUGIN_GET_NUM_TEXTURES, 0, &numTextures);
+
+
+
+
+
+
+QT_PLUGIN_DESCRIBE_TEXTURE2
+
+VERSION:  	QTM 8.0.2, Build 80691 and later
+
+PURPOSE:	Describes the OpenGL Data for a Texture
+
+USAGE: 	qtTexture2Info myTexture2Info;
+		memset( &myTexture2Info, 0, sizeof(qtTexture2Info) );
+
+		unsigned int textureIndex = 1;  	// Can be index number or ID 
+		SendMessage(hQTWin,QT_PLUGIN_DESCRIBE_TEXTURE2, textureIndex,&myTexture2Info );
+
+DATA STRUCTURE: 
+struct qtTexture2Info {
+	qtIDType textureID;				// Texture ID for reference in other messages
+	qtTextureClasses texClass; 			// Texture ID for reference in other messages
+			// QT_TEXTURE_IMAGE			// Photometric Imagery
+			// QT_TEXTURE_CUT			// Alpha used as a Cut Filter
+			// QT_TEXTURE_CROP			// Alpha used as a Crop Filter
+			// QT_TEXTURE_GRIDSTAT		// GridStat Image
+			// QT_TEXTURE_DECAL			// Color applied as a decal rather than mixed
+			// QT_TEXTURE_SHADOW		// Shadowmap Depth Image
+			// QT_TEXTURE_LOS			// RTLOS Depth Image
+			// QT_TEXTURE_SHADOW_IMAGE	// 2D Shadow Luminance Image
+
+	char name[260]; 				// Texture Name in QT
+	char sourceFileName[512]; 		//  NULL if there is no source file 
+	
+	bool isSelected; 				// Texture is currently selected in the layer tree
+	bool isFilterTexture; 			// Texture is a filter rather than an image
+	bool isSmoothed; 				// Interpolated between pixels?
+
+
+
+</PRE>

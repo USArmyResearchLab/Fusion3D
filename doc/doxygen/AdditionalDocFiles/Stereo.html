@@ -1,0 +1,330 @@
+<HEAD>
+<TITLE>STEREO IN COIN3D</TITLE>
+</HEAD>
+<BODY>
+<H1>STEREO IN COIN3D</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#stereo_intro">Introduction: Current Status</A>
+<P>
+<LI><A HREF="#stereo_work">Tested Stereo Configurations that Work</A>
+<P>
+<LI><A HREF="#stereo_nowork">Tested Stereo Configurations that Do Not Work</A>
+<P>
+<LI><A HREF="#stereo_sbs">Side-By-Side Stereo</A>
+<P>
+</UL>
+
+<H2><A NAME="stereo_intro">INTRODUCTION: CURRENT STATUS</A></H2>
+
+The current status of 3D stereo display is very poor.
+For display:  
+there are no longer any stereo-capable TVs being made (the last ones were in 2015)
+and the older ones are not available on Ebay or other sites.
+Likewise, there are no stereo-capable computer monitors (except maybe for the ASUS PG278QR which MAY work).
+They too are very difficult to find used.
+There are some projectors that advertise 3D capability (Optima looks promising).
+This refers to display of DVD movies rather than PC so it is not clear if any would work with my setup.
+<P>
+For graphics cards:  
+Newer cards may drop stereo support.
+For Gforce cards this has already happened.
+I am not sure what the time line is for the Quadro cards.
+<P>
+For software:  
+Nvidia is abandoning 3D.
+According to the web, early versions of Windows10 drivers support it but newer versions do not.
+As described in other docs here, I could never get stereo to work with Windows10
+although the Nvidia rep claims that it should work.
+<P>
+Autostereo:
+This is easier for small single-user displays.
+There is a older phone that has it and the technology has been updated for a Android tablet.
+There are a few other tablet implementations.
+A car display is another option that is being considered.
+<P>
+For TVs there have been a number of research groups that have shown tech demos, but no real production.
+Stream TV is the latest company that promised products but appears to be defunct -- no recent updates their website.
+The newer 8K TVs should have enough pixels finally to support stereo so it may restart once they become common.
+<P>
+For older configurations:  
+Over a number of years we have tested many hardware/software configurations for stereo.
+Listed below are the most current.
+<P>
+
+<H2><A NAME="stereo_work">TESTED WORKING STEREO CONFIGURATIONS</A></H2>
+
+<H3><A NAME="terr_issues">Dell Laptop with 42" LG Stereo TV</A></H3>
+
+This is really good for demos, since this TV uses passive polarized glasses and comes in many sizes.
+I read that it can work with a Samsung (active glasses) and it may work with other 3D tvs, but havent been able to test this.
+<P>
+I could get the LG to work both with the SOAR PC with a Quadro FX3800 card and
+with a Dell Precision M6400 laptop with a FX 2700M Quadro card (with 512M memory).
+A Quadro card is necessary, I think, but I dont know what else.
+<P>
+The sync looks to be done entirely on the TV -- the IR sync box does not need to be hooked up.
+It just does alternate frames to each eye, so it gets the stereo inside-out sometimes.
+You have to use the swap-eyes on the stereo setting to fix this.
+The following settings were used:
+<P>
+The laptop and TV are privately owned by the author of the code.
+
+<PRE>
+
+	Laptop
+		Dell Precision M6400
+		4 GB memory
+		Windows7 Home Premium 64bit (Service Pack 1)
+
+	Graphics card
+		Quadro FX 3700M
+		Driver version 341.92
+
+	Nvidia Control Panel
+		Single display only (it can probably work with both)
+		Resolution:  1080p, 1920x1080 (native)
+		Stereo Display Mode:  custom/Nvidia Recommended (choose Nvidia Recommended, but later shows Custom)
+		Stereo Enable:  On
+
+	Display:  LG 42LM6200 Stereo-capable TV
+
+	Cable
+		Display Port from laptop to BizLink adaptor to DVI
+		DVI to HDMI into TV (HDMI4 port labeled PC)
+
+	Procedure
+		Hook up cable
+		Turn on TV
+		Turn on laptop
+
+	Glasses:  Passive polarized
+
+
+</PRE>
+
+
+<H3><A NAME="terr_issues">Eurocom Laptop with 48" LG Stereo TV</A></H3>
+
+This has essentially the same configuration as the Dell laptop and LG TV listed above.
+The Quadro driver version is probably different.
+<P>
+
+
+<H3><A NAME="terr_issues">SI Tower PC with Asus VG278HR Monitor</A></H3>
+
+
+<PRE>
+
+	SI Tower PC built in-house for ARL
+		8 GB memory
+		Windows7 
+
+	Graphics card
+		Quadro K4000
+		Driver version 333.11
+
+	Nvidia Control Panel
+		Single display only
+		Resolution:  1920x1080 (native) @120Hz
+		Stereo Display Mode:  Generic Active Stereo (with Nvidia 3D Vision)
+		Stereo Enable:  On
+
+	Display:  ASUS VG278HR
+		This display has built-in emitter
+
+	Cable
+		DVI to DVI -- must use higher-bandwidth version with all the pins
+
+	Procedure
+		Just the standard display configuration
+
+	Glasses:  Active Nvidia
+
+
+</PRE>
+<H3><A NAME="terr_issues">Tower PC with Acer Monitor</A></H3>
+
+This is very similar to the PC-Asus configuration listed above except that
+a separate Nvidia emitter is required.
+
+
+<H3><A NAME="terr_issues">Tower PC with Mitsubishi Projection TV</A></H3>
+
+This is a very old configuration, certainly no longer available.
+The PC is a very old XP and the TV is a Mitsubishi that has special DIN connector to hook to the emitter
+(so the USB goes to the computer but the DIN to the TV).
+<P>
+
+
+
+<H2><A NAME="stereo_nowork">TESTED NON-WORKING STEREO CONFIGURATIONS</A></H2>
+<H3><A NAME="stereo_nowork_1">Dell Laptop with ASUS VG278HR Monitor (ARL)</A></H3>
+
+The Dell laptop did not work with the ASUS monitor.
+I tried a number of Nvidia Control Panel settings.
+None would turn on the built-in emitter.
+Some gave a 3D view that looked correct and some made the graphics extremely slow -- a symptom I have seen with other bad configurations.
+<P>
+I tried the separate emitter but Windows said it could not find the driver.
+There is no place on the laptop to plug in the stereo DIN, so I doubt this would ever work.
+<P>
+
+
+
+<H3><A NAME="stereo_nowork_2">Tower PC with ASUS VG279Q Monitor (JFD)</A></H3>
+
+This monitor shows a stereo image that is almost right but has very severe ghosting.
+With the right stereo settings, the emitter is recognized and turns on and the display shows a stereo image.
+It is evident that the sync is not quite right as both the proper stereo image and a basically mono image
+appear on the screen.
+<P>
+The resolution must be adjusted to 120Hz and the stereo settings to either 'Generic stereo with 3D vision' or 'Onboard DIN with 3d vision'.
+<P>
+
+
+
+
+<H3><A NAME="stereo_nowork_2">Windows 10 Issues</A></H3>
+
+I was not able to get stereo to work with Windows 10.
+I contacted Nvidia who said said it should work, at least with earlier versions of Windows 10.
+I was working with a representative when Covid hit and I had to be out of the office and could not use my test computer.
+I was never able to pick up the task again.
+The history is given in more detail in other documentation.
+<P>
+
+
+
+
+
+
+<H3><A NAME="stereo_nowork_3">Not Able to Toggle Stereo on the Fly from Coin3D</A></H3>
+
+It appears that it is not possible to toggle (change on the fly) stereo settings with the Coin3d library.
+Both libraries allow 3 stereo options: no stereo, raw stereo (the Nvidia system with glasses) and anaglyph.
+Once the stereo type has been set, an attempt to toggle into or out of raw-stereo mode causes a crash.
+<P>
+
+
+<H2><A NAME="stereo_sbs">SIDE-BY-SIDE STEREO</A></H2>
+
+One possible way to implement side-by-side would be to use the Stencil Buffer to filter the left stereo buffer into the left half of the output color buffer 
+and the right stereo buffer into the right half of the output.
+Before that the left and right stereo buffers would have to be compressed --
+the left buffer would have to be downsampled into the left half of the buffer
+and the right buffer would be downsampled into the right half.
+Implementing the Stencil Buffer would be easy since it is very similar to what is done now with interleaved stereo.
+Compressing the buffers is much trickier -- I dont have any idea which buffers to modify, how to break into the rendering process in the right place,
+or how to modify the buffers.
+<P>
+It looks like stereo with interleaved rows or cols is done with a Stencil Buffer that blocks every other row or col of the left and right buffers 
+as they are transferred into the final color buffer.
+<P>
+
+
+<H3><A NAME="terr_issues">If Interleaved, Use Stencil Buffer</A></H3>
+
+<PRE>
+
+	In file C:\jdammann\SoWinWithSpaceNav\src\Inventor\Win\common\viewers\SoGuiViewer.cpp.in
+
+So@Gui@Viewer::setStereoType(So@Gui@Viewer::StereoType s)
+{
+  switch (s) {
+  case So@Gui@Viewer::STEREO_NONE:
+    this->setQuadBufferStereo(FALSE);
+    this->setStereoViewing(FALSE);
+    break;
+
+  case So@Gui@Viewer::STEREO_ANAGLYPH:
+    this->setStereoViewing(TRUE);
+    this->setQuadBufferStereo(FALSE);
+    break;
+
+  case So@Gui@Viewer::STEREO_QUADBUFFER:
+    this->setStereoViewing(TRUE);
+    this->setQuadBufferStereo(TRUE);
+
+    // Check, in case GL quad buffers not supported with the driver
+    // config:
+    if (!this->isQuadBufferStereo()) {
+      this->setStereoViewing(FALSE);
+      return FALSE;
+    }
+    break;
+
+  case So@Gui@Viewer::STEREO_INTERLEAVED_ROWS:
+  case So@Gui@Viewer::STEREO_INTERLEAVED_COLUMNS:
+    this->setStereoViewing(TRUE);
+    this->setQuadBufferStereo(FALSE);
+    this->setStencilBuffer(TRUE);
+
+</PRE>
+
+
+<H3><A NAME="terr_issues">If Interleaved, Set the Stencil Buffer</A></H3>
+
+<PRE>
+	In SoWinViewer.cpp
+
+SoWinViewerP::initStencilBufferForInterleavedStereo(void)
+{
+...
+
+	bytewidth -- the size of a row in bytes
+	newsize[1] -- the number of rows
+
+
+  if (fillmask) {
+    GLubyte * mask = this->stereostencilmask;
+
+    if (s == SoWinViewer::STEREO_INTERLEAVED_COLUMNS) {
+      // alternating columns of 0's and 1's
+      (void)memset(mask, 0x55, bytewidth * newsize[1]);
+    }
+    else {
+      // alternating rows of 0's and 1's
+      for (short h=0; h < newsize[1]; h++) {
+        const GLubyte fill = (h % 2) ? 0xff : 0x00;
+        (void)memset(mask + (h * bytewidth), fill, bytewidth);
+      }
+    }
+
+    this->stereostenciltype = s;
+  }
+
+...
+
+
+</PRE>
+
+<H3><A NAME="terr_issues">If Interleaved, Execute the Stencil Buffer</A></H3>
+
+<PRE>
+
+	In SoWinViewer.cpp
+
+SoWinViewer::actualRedraw(void)
+...
+
+    case SoWinViewer::STEREO_INTERLEAVED_ROWS:
+    case SoWinViewer::STEREO_INTERLEAVED_COLUMNS:
+      PRIVATE(this)->initStencilBufferForInterleavedStereo();
+      glEnable(GL_STENCIL_TEST);
+      // immutable data in the stencil buffer
+      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+      glStencilFunc(GL_EQUAL, 0x1, 0x1);
+      PRIVATE(this)->reallyRedraw(clearcol, clearz);
+      break;
+
+...
+
+
+
+</PRE>
+
+
+

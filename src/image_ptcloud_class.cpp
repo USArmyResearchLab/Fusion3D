@@ -7,7 +7,6 @@ image_ptcloud_class::image_ptcloud_class()
         :base_jfd_class()
 {
    epsgTypeCode		= -99;
-   data_intensity_type = 0;		// Metadata
    tauFlag = 0;	
    timeFlag = 0;	
    emin = 0.;
@@ -16,10 +15,11 @@ image_ptcloud_class::image_ptcloud_class()
    nmax = 1.;
    zmin = 0.;
    zmax = 1.;
+   nbands = -99;		// unknown
    npts_file = 0;
    npts_read = 0;
    bytes_per_point = 16;	// Correct for typical .bpf -- assumes 12 bytes for x,y,z), 2 for intensity and 2 for TAU, override for LAS
-   nskip = 1;
+   decimation_n = 1;
    amp_min = 0.;
    amp_max = 255.;
    amp_lims_user_flag = 0;
@@ -63,12 +63,18 @@ double image_ptcloud_class::get_utm_cen_north()
 }
 
 // ********************************************************************************
-/// Set stride to be used in reading file.
+/// Set decimation factor (1 for no decimation, n to keep 1 in every n samples.
 // ********************************************************************************
-int image_ptcloud_class::set_nskip(int nskip_in)
+int image_ptcloud_class::set_decimation_n(int n)
 {
-   nskip = nskip_in;
-   return(1);
+	if (n <= 0) {
+		decimation_n = 1;
+		return(0);
+	}
+	else {
+		decimation_n = n;
+		return(1);
+	}
 }
 
 // ********************************************************************************
@@ -146,13 +152,13 @@ int image_ptcloud_class::get_coord_system_code()
    return epsgTypeCode;
 }
 
-// ********************************************************************************
-/// Get data intensity type.
-/// type is 5 for grayscale (one unsigned char per pixel), 6 for color (3 unsigned char for rgb per pixel)
-// ********************************************************************************
-int image_ptcloud_class::get_intensity_type()
+// ******************************************
+/// Get the number of bands in the associated intensity/color data.
+/// Returns 0 for no intensity/color info, 1 for intensity only, 3 for color.
+// ******************************************
+int image_ptcloud_class::get_nbands()
 {
-   return data_intensity_type;
+	return nbands;
 }
 
 // ********************************************************************************
@@ -295,7 +301,7 @@ unsigned char* image_ptcloud_class::get_tau()
 // ******************************************
 int image_ptcloud_class::get_z_at_percentiles(float percentile1, float percentile2, float percentile3, float &z1, float &z2, float &z3, int diag_flag)
 {
-   std::cerr << "image_ptcloud_class::get_z_at_percentiles:  default method dummy" << std::endl;
-   return(0);
+	std::cerr << "image_ptcloud_class::get_z_at_percentiles:  default method dummy" << std::endl;
+	return(0);
 }
 

@@ -169,7 +169,7 @@ int image_bpf_class::read_file_header()
 		epsgTypeCode = 32600 + 42;
 
 	}
-	data_intensity_type = 5;	// Intensity only
+	nbands = 1;	// Intensity only
 
 	int nf = pbpf->getNumberOfExtraFields();
 	string s1;
@@ -261,8 +261,8 @@ int image_bpf_class::read_file_data()
 	clock_t start_time;	// Timing
 	
 
-	pbpf->setNStride(nskip);
-	npts_read = npts_file / nskip;
+	pbpf->setNStride(decimation_n);
+	npts_read = npts_file / decimation_n;
 
 	// Read
 	start_time = clock();

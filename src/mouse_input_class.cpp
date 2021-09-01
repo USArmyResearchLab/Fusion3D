@@ -9,10 +9,7 @@ mouse_input_class::mouse_input_class()
 	mode = 1;
 	left_mouse_count = 0;
 	middle_mouse_count = 0;
-	n_managers = 0;
-	root = NULL;
 	myViewer = NULL;
-	type_cam = -99;
 	camera4d_manager_inv = NULL;
 	camera_pers = NULL;
 
@@ -39,15 +36,14 @@ mouse_input_class::~mouse_input_class()
 // ********************************************************************************
 int mouse_input_class::register_root(SoSeparator* root_in)
 {
-	root = root_in;
 	mouseButtonEventCB = new SoEventCallback;
 	mouseButtonEventCB->addEventCallback(SoMouseButtonEvent::getClassTypeId(), mouse_button_cbx, this);
 	mouseMotionEventCB = new SoEventCallback;
 #if defined (LIBS_SOWIN)
 	mouseMotionEventCB->addEventCallback(SoLocation2Event::getClassTypeId(), mouse_motion_cbx, this);// SoWin bug -- cant remove callback so always on
 #endif
-	root->addChild(mouseButtonEventCB);
-	root->addChild(mouseMotionEventCB);
+	root_in->addChild(mouseButtonEventCB);
+	root_in->addChild(mouseMotionEventCB);
 	return(1);
 }
    
@@ -71,7 +67,7 @@ int mouse_input_class::register_camera_manager(camera4d_manager_inv_class* camer
 }
 
 // ********************************************************************************
-/// Process mouse events.
+/// Process mouse events for camera translation and thumbwheel zoom and for middle-mouse picking.
 // ********************************************************************************
 int mouse_input_class::process_button_event(const SoEvent *event)
 {
@@ -134,7 +130,7 @@ int mouse_input_class::process_button_event(const SoEvent *event)
 	// Thumbwheel toward user
 	// *****************************************************
 	else if (SO_MOUSE_PRESS_EVENT(event, BUTTON4)) {		// Wheel toward the user
-		GL_camera_zoom->setValue(-1.0);
+		GL_camera_zoom->setValue(1.0);
 		// std::cout << "button4" << std::endl;
 	}
 
@@ -142,7 +138,7 @@ int mouse_input_class::process_button_event(const SoEvent *event)
 	// Thumbwheel away from user
 	// *****************************************************
 	else if (SO_MOUSE_PRESS_EVENT(event, BUTTON5)) {		// Wheel away from the user
-		GL_camera_zoom->setValue(1.0);
+		GL_camera_zoom->setValue(-1.0);
 		// std::cout << "button5" << std::endl;
 	}
 	// **************************************
@@ -155,7 +151,7 @@ int mouse_input_class::process_button_event(const SoEvent *event)
 }
 
 // ********************************************************************************
-/// Process mouse events.
+/// Process mouse events for camera rotations in elevation and azimuth.
 // ********************************************************************************
 int mouse_input_class::process_motion_event(const SoEvent *event)
 {

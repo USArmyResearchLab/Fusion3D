@@ -114,6 +114,10 @@ int globals_inv_class::set_globals()
 	GL_mobmap_cmin = (SoSFFloat*)SoDB::createGlobalField("Mobmap-CMin", SoSFFloat::getClassTypeId());
 	GL_mobmap_cmax = (SoSFFloat*)SoDB::createGlobalField("Mobmap-CMax", SoSFFloat::getClassTypeId());
 	GL_mobmap_filt_type = (SoSFInt32*)SoDB::createGlobalField("Mobmap-Filt-Type", SoSFInt32::getClassTypeId());
+	GL_mobmap_filt_rmin = (SoSFFloat*)SoDB::createGlobalField("Mobmap-Filt-RMin", SoSFFloat::getClassTypeId());
+	GL_mobmap_filt_rmax = (SoSFFloat*)SoDB::createGlobalField("Mobmap-Filt-RMax", SoSFFloat::getClassTypeId());
+	GL_mobmap_filt_amin = (SoSFFloat*)SoDB::createGlobalField("Mobmap-Filt-AMin", SoSFFloat::getClassTypeId());
+	GL_mobmap_filt_amax = (SoSFFloat*)SoDB::createGlobalField("Mobmap-Filt-AMax", SoSFFloat::getClassTypeId());
 	GL_mobmap_fine_cur = (SoSFInt32*)SoDB::createGlobalField("Mobmap-Fine-Cur", SoSFInt32::getClassTypeId());
 	GL_mobmap_fine_min = (SoSFInt32*)SoDB::createGlobalField("Mobmap-Fine-Min", SoSFInt32::getClassTypeId());
 	GL_mobmap_fine_max = (SoSFInt32*)SoDB::createGlobalField("Mobmap-Fine-Max", SoSFInt32::getClassTypeId());
@@ -148,12 +152,6 @@ int globals_inv_class::set_globals()
 	GL_write_ny->setValue(512);
 
 	GL_sensor_types = (SoSFString*)SoDB::createGlobalField("Sensor-Types", SoSFString::getClassTypeId());
-	GL_mti_sensor_north = (SoSFFloat*)SoDB::createGlobalField("MTI-Sensor-North", SoSFFloat::getClassTypeId());
-	GL_mti_sensor_east = (SoSFFloat*)SoDB::createGlobalField("MTI-Sensor-East", SoSFFloat::getClassTypeId());
-	GL_mti_sensor_elev = (SoSFFloat*)SoDB::createGlobalField("MTI-Sensor-Elev", SoSFFloat::getClassTypeId());
-	GL_mti_sensor_north->setValue(0.);
-	GL_mti_sensor_east->setValue(0.);
-	GL_mti_sensor_elev->setValue(0.);
 
 	GL_rainbow_min = (SoSFFloat*)SoDB::createGlobalField("Rainbow-Min", SoSFFloat::getClassTypeId());
 	GL_rainbow_max = (SoSFFloat*)SoDB::createGlobalField("Rainbow-Max", SoSFFloat::getClassTypeId());

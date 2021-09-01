@@ -1,0 +1,294 @@
+<HEAD>
+<TITLE>LINE OF SIGHT CALCULATIONS</TITLE>
+</HEAD>
+<BODY>
+<H1>LINE OF SIGHT CALCULATIONS</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#los-algs">Algorithms</A>
+<P>
+<LI><A HREF="#los-out">Output Files</A>
+<P>
+<LI><A HREF="#los-read">Reading in Mask Files</A>
+<P>
+<LI><A HREF="#los-draw">Drawing a Ray from the Sensor at Center to a Specified Point on the Ground</A>
+<P>
+<LI><A HREF="#los-time">Timing Tests</A>
+<P>
+<LI><A HREF="#los-todo">To Do</A>
+<P>
+<LI><A HREF="#los-implement">Implementation</A>
+<P>
+</UL>
+
+The LOS feature was originally developed for short-range applications like VBIED events where it would be used
+to determine where spotters could be located within a few-block radius.
+For these cases it could be used interactively with minimal compute times.
+<P>
+It has been extended to much larger ranges and some extensions have been programmed to make it faster and easier to
+use at these large ranges.
+However, there are still mods that could be done to make the calculations faster and
+to make offline calculations easier.
+For example, there is no multithreading and adding this would speed up calculations a lot.
+<P>
+
+
+<H2><A NAME="los-algs">ALGORITHMS</A></H2>
+<H3><A NAME="ch-los-3dem">Ground-to-Ground LOS</A></H3>
+
+This algorithm calculates the LOS from a center test point just above the ground to all points in the
+surrounding area.
+The LOS algorithm works as follows:
+<PRE>
+
+1.  Get a square section of map centered at the test point and sized by outer radius parameter
+
+2.  Loop over pixels in this square section in order
+ 
+3.  Loop over ranges out from the center to the test pixel
+	starting at the min-range parameter 
+	stepping 0.5 pixel size
+	iff (pixel elevation > vector elevation) at step, mask test pixel
+
+
+</PRE>
+<H3><A NAME="ch-los-3dem">LOS to Airborne Sensor</A></H3>
+
+This algorithm calculates the LOS from a center test point just above the ground to an
+airborne sensor.
+This algorithm works as follows:
+<PRE>
+
+1.  Get a square section of map centered at the test point.
+	The size is determined by the mask size + a guardband 
+	The guardband is made big enough so all raytracing will stay within the square.
+
+2.  Loop over pixels in the mask in order
+ 
+3.  Loop over ranges out from the test pixel toward the sensor
+	start the vector some elevation above the test pixel (approx 1m) to avoid noise, etc.
+	step just far enough along the vector to get to the next pixel along the path
+	iff (pixel elevation > vector elevation) at step, mask test pixel and stop
+	When you get a fixed elevation above the test pixel, mark test pixel visible and stop 
+
+Possible improvements:
+
+Terminating the raytrace as soon as possible -- as soon as it is sure there is no shadowing --
+is important to the speed.
+
+1.  Calculate highest elevation in the square section of map and use this to end the search.
+	Probably, this will be relatively low and end the search quickly.
+	However, may be high enough to push search outside the square of the map.
+	
+	
+
+</PRE>
+<H3><A NAME="ch-los-3dem">LOS for Sun Shadowing</A></H3>
+
+This algorithm is basically the same as the above algorithm for LOS to an airborne sensor.
+The primary difference is that the time of day and location on the earth is used to determine the sun location.
+That location is then used in the same way as the standoff sensor location.
+<P>
+
+
+<H2><A NAME="los-out">LOS Output Files</A></H2>
+
+<H3><A NAME="ch-los-3dem">Export of LOS Mask to GeoTiff File</A></H3>
+
+Masks are 1-bit, for each pixel the value is non-zero if the pixel is shaded, 0 if not.
+They are written in GeoTiff format as 8-bit files, either 0 or 255 to make them easy to see in any viewer.
+The files include the location information for the mask but no information about the LOS paramaters that generated them.
+<P>
+
+
+
+
+<H3><A NAME="ch-los-3dem">Export of LOS to Shapefile</A></H3>
+
+This algorithm outlines LOS regions for export.
+It creates simple polygons, each of which is a single line that does not cross itself.
+One wants to outline all of the visible regions and all shadowed regions within visible regions.
+However, one does not want to outline shadowed regions that touch the border of the calculation area.
+This makes the outlines difficult to interpret.
+<P>
+One part of the algorithm is to mark all pixels within a region with a unique value.
+A region is a group of pixels that are all either visible or shadowed and are 4-neighbors.
+One starts with a seed pixel, identifies all its neighbors in the region, and adds those neighbors to a list.
+One goes down the list, for each pixel identifying all its neighbors in the region and adding to the list.
+When there are no more neighbors, the region is complete.
+<P>
+
+This algorithm works as follows:
+<PRE>
+
+1.  Loop around the calculation border and find all shadowed regions that touch the border
+	Mark all these regions with a value (=2) that excludes them from further calculations 
+
+2.  Loop over all remaining regions, starting with the region around the center point
+	Do all visible regions (=0), then do all shadowed regions (=1) not excluded in step 1.
+	For first region, use center point for seed if possible.  Otherwise, search
+ 
+3.  Find all pixels in the region and mark with a unique value
+
+4.  From the seed pixel, step right until hitting a pixel outside the region or the boundary
+
+5.  Trace the boundary
+	keep the boundary on your right shoulder
+	build a list of boundary vertices
+	When you get back to the first vertex, stop 
+
+6.  Find a new seed
+	Step in order over the mask looking for the first pixel not already in a region
+	
+7.  If no new seeds found for visible regions, then start looking for shadowed regions	
+	
+
+</PRE>
+<H3><A NAME="ch-los-3dem">Export of LOS to Shapefile -- Superceded Algorithm</A></H3>
+
+This algorithm finds only the single polygon for the visible region centered on the test pixel
+for the ground-to-ground LOS.
+It has been superceded by the algorithm described above and deleted from the code.
+The polygon algorithm works as follows:
+
+<PRE>
+
+1.  Loop over azimuth angles
+
+2.  Trace ray out from center from pixel to pixel along azimuth direction
+ 
+3.  Test mask at each pixel traversed
+
+4.  When first obstructed pixel encountered, note length of vector
+
+5.  Mark the end of the vector with a point
+
+6.  Write as Shapefile
+
+
+</PRE>
+<H2><A NAME="los-read">READING IN GEOTIFF MASK FILES</A></H2>
+
+The GeoTiff mask file generated by the Fusion3D viewer can be read in again and will display in the same way as when it was generated.
+When originally generated, masks are 0/1 but when saved they are 0/255 to make them easily visible in standard viewers.
+Currently the viewer recognizes any non-zero value except 2 as a shadowed area and zero values as non-shadowed.
+It should be possible to view masks generated by other codes as long as they are GeoTiff
+<P>
+
+
+<H2><A NAME="los-draw">DRAWING RAY FROM SENSOR TO SELECTED LOCATION ON THE GROUND</A></H2>
+
+The ray is used to visualize the LOS to a particular spot.
+The ray is drawn from the sensor location to a specified point on the ground.
+The point is chosen by a middle mouse click and the line extends from the sensor height to the minimum height at the ground point,
+where these heights are the current values from the LOS Parameter menu.
+<P>
+
+
+<H2><A NAME="los-time">TIMING TESTS</A></H2>
+
+Timing tests were done on the DC2016 dataset that has 0.5m pixels.
+The test parameters were as follows:
+<PRE>
+
+	Center height		30m
+	Per height			2m
+	Min range			1m
+	Max range			Variable as shown
+
+
+</PRE>
+
+
+
+<TABLE BORDER>
+<CAPTION>Ground-to-Ground LOS Calculations</CAPTION>
+<TR><TH>Type <TH>No. of pixels<TH>Time(s)<TH>Memory<TH>Notes
+
+<TR><TD>Ground<TD>4000x4000   <TD>436    (7 min)<TD>1.46 GB<TD>2km x 2km with 0.5m pixels
+<TR><TD>Ground<TD>6000x6000   <TD>1344(22.4 min)<TD><TD>3km x 3km with 0.5m pixels
+<TR><TD>Ground<TD>8000x8000   <TD>2804(46.7 min)<TD><TD>4km x 4km with 0.5m pixels
+<TR><TD>Ground<TD>10000x10000 <TD>4686(78.1 min)<TD>1.44 GB<TD>5km x 5km with 0.5m pixels
+<TR><TD>Ground<TD>12000x12000 <TD>6815 (114 min)<TD>2.5 GB<TD>6km x 6km with 0.5m pixels
+<TR><TD>Ground<TD>14000x14000 <TD>8757 (146 min)<TD>   ? GB<TD>7km x 7km with 0.5m pixels
+</TABLE>
+<BR><BR><BR>
+
+
+<H2><A NAME="los-todo">TO DO</A></H2>
+
+<H3><A NAME="los-implement-make">Adding LOS Parameters to the Output Mask File</A></H3>
+
+When mask GeoTiff files are written they contain geo information about the location but no information about the LOS parameters used to create the mask.
+When the mask is then read in, LOS parameters are unknown.
+This is needed to generate diagnostics that show the ray from the center sensor to a point on the ground.
+At a minimum, the code needs to know the height at the center point and the height at the points to be seen.
+<P>
+This information can be added to the file using the GDAL metadata construct.
+<P>
+For now, the user should set the parameters in the LOS parameter menu before reading doing any diagnostics.
+<P>
+
+
+
+
+<H2><A NAME="los-implement">IMPLEMENTATION NOTES</A></H2>
+<H3><A NAME="los-implement-standoff">Standoff Sensor Implementation</A></H3>
+
+Standoff sensors can be very low to the horizon so tracing a ray from a point in the map to the sensor 
+may cover a very long distance before it gets to an elevation where it is safe to assume the point is not shadowed
+and the calculation may be terminated.
+This can require virtually unbounded regions of maps.
+<P>
+Obviously the area of the map to be traced must be larger than area of the LOS mask to be generated
+but this area must be reasonably bounded.
+To provide a reasonable bound, both a height difference and a max guard width are used.
+The height difference is 30m.
+The guard width is set so the map cant be larger than 2 times the mask size.
+<P>
+
+
+
+ 
+<H3><A NAME="los-implement-read">Read LOS Mask from GeoTiff File</A></H3>
+<PRE>
+
+	1.  Get filename and add file to texture server
+		From menu -- thru map3d_manager_inv_class::los_cb()
+			texture_server_class::add_mask_file(string filename)
+	OR
+		From Project File -- thru texture_server_class::read_tagged(char* filename)
+			texture_server_class::add_mask_file(string filename)
+
+	2.  Apply masks
+		texture_server_class::get_texture(...)
+			if (nmask > 0 && imask_current >= 0 && n_intersections > n_intersections_old) apply_masks(...);
+
+	3. Clear masks
+		texture_server_class::clear_all_masks()
+
+
+</PRE>
+<H3><A NAME="los-implement-make">Real-Time Make Mask</A></H3>
+<PRE>
+
+Hi-res turned off -- replaced by med-res
+
+Process
+	atr_los_class calculates mask
+		atr_los_class gets texture resolution from map3d_index
+			dxvox = map3d_index->get_res_roi();
+
+	atr_los_class registers mask with map3d_index -- mask array, mask extent
+		map3d_index_class::register_mask(int *mask_in, double north, double east, int ny, int nx)
+
+	map3d_index_class applies mask
+		map3d_index_class::apply_mask_amp(int data_type)
+
+
+</PRE>
+
+
+

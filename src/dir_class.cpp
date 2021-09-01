@@ -10,7 +10,6 @@ dir_class::dir_class()
    pattern_a2i	    = new char[100];
    pattern_mrsidi	= new char[100];
    pattern_kml      = new char[100];
-   pattern_low_tex  = new char[100];
 
    clear_all();
 }
@@ -25,7 +24,6 @@ dir_class::~dir_class()
    delete[] pattern_a2i;
    delete[] pattern_mrsidi;
    delete[] pattern_kml;
-   delete[] pattern_low_tex;
 }
 
 // ********************************************************************************
@@ -74,7 +72,6 @@ int dir_class::clear_demset()
 	strcpy(pattern_a2i, "");
 	strcpy(pattern_mrsidi, "");
 	strcpy(pattern_kml, "");
-	strcpy(pattern_low_tex, "");
 	return(1);
 }
 
@@ -567,6 +564,19 @@ int dir_class::check_valid_demset()
 		}
 	}
 
+	// Look for lowres texture file if not already defined
+	if (lowtname.size() == 0) {
+		find_all_with_pattern("*_lowres_texture.tif", 7, 0);				// Only look in parent dir
+		if (lowtname.size() == 0) {
+			cout << "NO lowres texture file (*_lowres_texture.tif) " << endl;
+		}
+		else if (lowtname.size() == 1) {
+			cout << "USING lowres texture file " << lowtname[0].c_str() << endl;
+		}
+		else {
+			cout << "MULTIPLE lowres texture files (*_lowres_texture.tif) -- may cause problems" << endl;
+		}
+	}
 	return(1);
 }
 
@@ -619,15 +629,12 @@ int dir_class::find_buckeye(const char *pattern_a2, const char *pattern_mrsid, i
 	int n = strlen(pattern_kml);
 	*(pattern_kml + n -4) = '\0';
 	strcat(pattern_kml, ".kml");
-	strcpy(pattern_low_tex,  "*_lowres_texture.tif");		// "*_lowres_texture.*" doesnt work
 	find_all_with_pattern(pattern_a2,    0, recursive_flag);
 	find_all_with_pattern(pattern_a1,    1, recursive_flag);
 	find_all_with_pattern(pattern_mrg,   2, recursive_flag);
 	find_all_with_pattern(pattern_int,   3, recursive_flag);
 	if (pattern_mrsid != NULL) find_all_with_pattern(pattern_mrsid, 4, recursive_flag);
 	if (search_kml_flag)       find_all_with_pattern(pattern_kml,   5, recursive_flag);
-
-	find_all_with_pattern(pattern_low_tex,  7, 0);				// Only look in parent dir
 
 	if (nfiles_mrg == nfiles_a2) {
 		texture_filetype = 2;

@@ -2,6 +2,8 @@
 #define _camera4d_manager_class_h_	
 #ifdef __cplusplus
 
+class status_overlay_manager_inv_class;
+
 /**
 Manages camera movement.
 
@@ -17,8 +19,6 @@ Although a ground-level view is tempting, it causes severe stereo depth problems
 look good with typical lidar map data that is taken from above and doesnt capture vertical surfaces.
 
 */
-
-class status_overlay_manager_inv_class;
 
 class camera4d_manager_class:public atrlab_manager_class{
    protected:

@@ -5,6 +5,11 @@
 
 class vector_index_class;
 
+/**
+Qt dialog for opening a CAD input file.
+\n
+Qt menu.
+*/
 class dialogCadOpen : public QDialog, public Ui::dialogCadOpen
 {
 	Q_OBJECT

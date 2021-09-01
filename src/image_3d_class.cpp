@@ -51,7 +51,6 @@ image_3d_class::image_3d_class()
    hxx[30]=215; hxx[31]=223; hxx[32]=233; hxx[33]=242; hxx[34]=250;
    hxx[35]=259; hxx[36]=265; hxx[37]=270;
 
-   n_chirps = 1;		// Default to 1 valid chirp
    xangle_delta = 1.;		// Angle in deg
    yangle_delta = 1.;		// Angle in deg
    xangle_center = 0.;
@@ -326,17 +325,6 @@ int image_3d_class::set_res_spoiling_factor(int exponent_of_factor_2)
 }
 
 // ********************************************************************************
-/// Register output diagnostic filename.
-// ********************************************************************************
-int image_3d_class::set_diag_file(char *filename, int diag_level_in)
-{
-   diag_filename = new char[300];
-   strcpy(diag_filename, filename);
-   diag_level = diag_level_in;
-   return(1);
-}
-
-// ********************************************************************************
 /// Set data intensity type.
 /// @param type 5 for grayscale (one unsigned char per pixel), 6 for color (3 unsigned char for rgb per pixel)
 // ********************************************************************************
@@ -570,14 +558,6 @@ int image_3d_class::get_num_time()
 int image_3d_class::get_file_size()
 {
    return file_size;
-}
-
-// ********************************************************************************
-// Return depth
-// ********************************************************************************
-int image_3d_class::get_n_chirps()
-{
-   return n_chirps;
 }
 
 // ********************************************************************************

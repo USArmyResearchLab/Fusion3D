@@ -31,9 +31,6 @@ class los_manager_inv_class:public los_manager_class{
 
         SoSFString*     GL_filename;        // OIV Global -- Open new file
         SoSFInt32*      GL_busy;            // OIV Global -- For multithreading
-		SoSFFloat*		GL_mti_sensor_north;// OIV Global -- MTI sensor loc
-        SoSFFloat*		GL_mti_sensor_east;	// OIV Global -- MTI sensor loc
-        SoSFFloat*		GL_mti_sensor_elev;	// OIV Global -- MTI sensor loc
 
         SoSFFloat*		GL_clock_time;		// OIV Global -- Clock current time in s after midnight
         SoSFString*		GL_clock_date;		// OIV Global -- Clock date/time string from track
@@ -46,6 +43,7 @@ class los_manager_inv_class:public los_manager_class{
         SoFieldSensor*		losSensor;		// Monitors menu requests
 
 		// Private methods
+		int get_parms_from_menu();
 		int draw_los_sensor();
 		int draw_los_line(float xptt1, float yptt1, float elevt1, float xptt2, float yptt2, float elevt2);
         static void los_cbx(void *userData, SoSensor *timer);

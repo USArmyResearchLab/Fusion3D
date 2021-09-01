@@ -74,10 +74,17 @@ int lfusion3d(const char* projFile)
 		dir_class *dir = new dir_class();
 
 		// ******************************************************************
+		// Define helper class for masks (currently texture masks for LOS)
+		// ******************************************************************
+		mask_server_class* mask_server = new mask_server_class();
+		mask_server->register_coord_system(gps_calc);
+
+		// ******************************************************************
 		// Define helper class for lowres DEM
 		// ******************************************************************
 		map3d_lowres_class* map3d_lowres = new map3d_lowres_class();
 		map3d_lowres->register_coord_system(gps_calc);
+		map3d_lowres->register_mask_server(mask_server);
 		map3d_lowres->register_dir(dir);
 
 		// ******************************************************************
@@ -102,7 +109,7 @@ int lfusion3d(const char* projFile)
 		int n_managers = 1;		// Reserve 0 for camera manager
 		map3d_manager_inv_class 	*map3d_manager_inv = new map3d_manager_inv_class(10);				// DEMs
 		atrlab_manager_a[n_managers++] = map3d_manager_inv;
-		ladar_mm_manager_inv_class *ladar_mm_manager_inv = new ladar_mm_manager_inv_class(100);			// Point clouds -- after DEMs
+		ladar_mm_manager_inv_class *ladar_mm_manager_inv = new ladar_mm_manager_inv_class(120);			// Point clouds -- after DEMs
 		atrlab_manager_a[n_managers++] = ladar_mm_manager_inv;
 		kml_manager_inv_class* kml_manager = new kml_manager_inv_class(n_kml_max);						// Vector overlays for display only
 		atrlab_manager_a[n_managers++] = kml_manager;
@@ -134,6 +141,7 @@ int lfusion3d(const char* projFile)
 			atrlab_manager_a[i]->register_vector_index(vector_index);
 			atrlab_manager_a[i]->register_dir(dir);
 			atrlab_manager_a[i]->register_clock(clock_input);
+			atrlab_manager_a[i]->register_mask_server(mask_server);
 			atrlab_manager_a[i]->register_map3d_lowres(map3d_lowres);
 			atrlab_manager_a[i]->register_viewer(myViewer);
 		}
@@ -237,10 +245,14 @@ int lfusion3d(const char* projFile)
 		keyboard_input->register_managers(atrlab_manager_a, n_managers);
 		keyboard_input->register_clock(clock_input);
 
-		camera4d_manager_inv->wire_count(&(keyboard_input->curs_up_count), 50);		//Decrease elev -- use indices 50-69 that are fixed
-		camera4d_manager_inv->wire_count(&(keyboard_input->curs_down_count), 51);	//Increase elev
-		camera4d_manager_inv->wire_count(&(keyboard_input->curs_left_count), 52);	//Increase az
-		camera4d_manager_inv->wire_count(&(keyboard_input->curs_right_count), 53);	//Decrease az
+		//camera4d_manager_inv->wire_count(&(keyboard_input->curs_up_count), 50);	//Decrease elev -- use indices 50-69 that are fixed
+		//camera4d_manager_inv->wire_count(&(keyboard_input->curs_down_count), 51);	//Increase elev
+		//camera4d_manager_inv->wire_count(&(keyboard_input->curs_left_count), 52);	//Increase az
+		//camera4d_manager_inv->wire_count(&(keyboard_input->curs_right_count), 53);//Decrease az
+		ladar_mm_manager_inv->wire_count(&(keyboard_input->curs_up_count), 0);		// Raise upper limit on elevation by 1
+		ladar_mm_manager_inv->wire_count(&(keyboard_input->curs_down_count), 1);	// Lower upper limit on elevation by 1
+		ladar_mm_manager_inv->wire_count(&(keyboard_input->curs_left_count), 2);	// Lower upper limit on elevation by 5
+		ladar_mm_manager_inv->wire_count(&(keyboard_input->curs_right_count), 3);	// Raise upper limit on elevation by 5
 
 		// Wire function keys for special demo
 		//for (i_data_ladar=0; i_data_ladar<n_ladar_gr; i_data_ladar++) {

@@ -250,10 +250,6 @@ int image_2d_inv_class::make_texture(SoTexture2 *locTexture)
    // Grayscale, no transparency
    // **********************************
    else if      ((data_type == 5 || data_type == 7) && !transparency_flag) {
-      if (hist_eq_flag) {
-         calc_hist_eq(0);
-	 data_ptr = get_data_histeq();
-      }
       locTexture->image.setValue(SbVec2s(ncols,nrows), 1, data_ptr);
    }
 
@@ -261,10 +257,6 @@ int image_2d_inv_class::make_texture(SoTexture2 *locTexture)
    // Grayscale, transparency
    // **********************************
    else if ((data_type == 5 || data_type == 7) && transparency_flag) {
-      if (hist_eq_flag) {
-         calc_hist_eq(0);
-	 data_ptr = get_data_histeq();
-      }
       unsigned char *data_tex = new unsigned char[2*ncols*nrows];
       for (int i=0; i<ncols*nrows; i++) {
             data_tex[2*i  ] = data_ptr[i];

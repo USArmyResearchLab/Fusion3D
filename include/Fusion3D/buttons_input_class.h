@@ -16,7 +16,6 @@ Buttons are turned on/off either from a project file (parsed within this class) 
 
 int *button_vis_flag;	 Array of flags that govern whether or not each button is currently visible\n
 	0 - 19 default buttons\n
-	80 - 89 line / point editing buttons\n
 	0 - Map vis\n
 	1 - Vector vis\n
 	2 - Point cloud vis\n
@@ -28,14 +27,14 @@ int *button_vis_flag;	 Array of flags that govern whether or not each button is 
 	8 - Highlighting of obstructions(points where a2 - DEM significantly higher than a1 - DEM) vis\n
 	9 - Hi - res texture vis\n
 	10 - Reset vis\n
-	20 - Script play
-	21 - Script next
-	30 - Clock Reverse 1
-	31 - Clock Reverse
-	32 - Clock Stop
-	33 - Clock Forward
-	34 - Clock Forward 1
-	70 - 73 - Jump - to - bookmark
+	20 - Script play\n
+	21 - Script next\n
+	30 - Clock Reverse 1\n
+	31 - Clock Reverse\n
+	32 - Clock Stop\n
+	33 - Clock Forward\n
+	34 - Clock Forward 1\n
+	70 - 73 - Jump - to - bookmark\n
 	80 - Editing off\n
 	81 - Add point or add point to end of line\n
 	82 - Move point -- point closest to mouse - press to mouse - release\n

@@ -9,11 +9,11 @@ image_2d_class::image_2d_class()
 {
    nrows = 0;
    ncols = 0;
+   dheight = 1.;
+   dwidth = 1.;
    nbands = 3;					// Most common data
    data_type     = 7;			// Default to multi-frame gray
    
-   dheight = 1.;
-   dwidth = 1.;
    cen_utm_north = 0.;
    cen_utm_east = 0.;
    look_pitch = 0.;
@@ -32,13 +32,10 @@ image_2d_class::image_2d_class()
    iframe_min = -99;
    iframe_max = -99;
 
-   aspect = 1.;
    transparency_flag = 0;
    transparency_alpha = 0.5;
    color_base_flag = 0;
-   hist_eq_flag = 0;
    
-   utm_flag = 0;
    read_flag = 0;
    yflip_flag = 0;
    swap_flag = 0;
@@ -47,10 +44,8 @@ image_2d_class::image_2d_class()
    
    data   	= new unsigned char*[1];
    fdata   	= NULL;
-   edata   	= NULL;
    ualloc_flag 	= 0;
    falloc_flag 	= 0;
-   ealloc_flag 	= 0;
    bad_data_flag = 0;
    
    utm_cen_north    = new double[1];
@@ -72,7 +67,6 @@ image_2d_class::~image_2d_class()
       delete[] data;
    }
    if (falloc_flag > 0)  delete[] fdata;
-   if (ealloc_flag > 0)  delete[] edata;
 }
 
 // ******************************************
@@ -138,30 +132,11 @@ int image_2d_class::set_color_base(float r, float g, float b)
 }
 
 // ******************************************
-/// Set histogram equalization flag.
-/// @param flag 1 to turn on histogram equalization, 0 to turn off.
-// ******************************************
-int image_2d_class::set_hist_eq(int flag)
-{
-   hist_eq_flag = flag;
-   return(1);
-}
-
-// ******************************************
 /// Set flag to flip image in y-axis.
 // ******************************************
 int image_2d_class::set_yflip_flag(int flag)
 {
    yflip_flag = flag;
-   return(1);
-}
-
-// ******************************************
-/// Set flag to read the header only.
-// ******************************************
-int image_2d_class::set_header_only_flag(int flag)
-{
-   header_only_flag = flag;
    return(1);
 }
 
@@ -242,7 +217,7 @@ int image_2d_class::get_n_rows()
 // ******************************************
 int image_2d_class::get_n_cols()
 {
-   return ncols;
+	return ncols;
 }
 
 // ********************************************************************************
@@ -318,39 +293,6 @@ unsigned char* image_2d_class::get_data_frame(int i_frame)
 }
 
 // ******************************************
-/// Get data that has been histogram equalized.
-// ******************************************
-unsigned char* image_2d_class::get_data_histeq()
-{
-   return edata;
-}
-
-// ******************************************
-/// Get the UTM flag.
-/// @return	1 if data in UTM format, 0 if not.
-// ******************************************
-int image_2d_class::get_utm_flag()
-{
-   return utm_flag;
-}
-
-// ******************************************
-/// Get the UTM Northing for the center of the frame.
-// ******************************************
-double image_2d_class::get_utm_cen_north(int i_frame)
-{
-   return utm_cen_north[i_frame];
-}
-
-// ******************************************
-/// Get the UTM Easting for the center of the frame.
-// ******************************************
-double image_2d_class::get_utm_cen_east(int i_frame)
-{
-   return utm_cen_east[i_frame];
-}
-
-// ******************************************
 /// Get the image height in m.
 // ******************************************
 float image_2d_class::get_dheight()
@@ -388,59 +330,5 @@ double image_2d_class::get_cen_utm_north()
 double image_2d_class::get_cen_utm_east()
 {
    return cen_utm_east;
-}
-
-// ******************************************
-/// Protected make histogram.
-// ******************************************
-int image_2d_class::calc_hist_eq(int iframe_in)
-{
-   int i;
-   int npix = nrows*ncols;
-   int *hist = new int[256];
-   unsigned char* data_ptr = data[iframe_in];
-   float norm;
-
-   // ******************************************
-   // Alloc
-   // ******************************************
-   if (ealloc_flag != npix) {
-      if (edata != NULL) delete[] edata;
-      edata = new unsigned char[npix];
-      ealloc_flag = npix;
-   }
-   
-   // ******************************************
-   // Make histogram
-   // ******************************************
-   memset(hist, 0, 256*sizeof(int));
-   for (i=0; i<npix; i++) {
-      hist[data_ptr[i]]++; 
-   }
-   
-   // ******************************************
-   // From histogram to cumulative histogram
-   // ******************************************
-   for (i=1; i<256; i++) {
-      hist[i] = hist[i-1] + hist[i]; 
-   }
-   
-   // ******************************************
-   // Normalize
-   // ******************************************
-   norm = 255. / float(npix);
-   for (i=0; i<256; i++) {
-      hist[i] = int(norm * hist[i] + 0.49);
-   }
-   
-   // ******************************************
-   // Mod data values
-   // ******************************************
-   for (i=1; i<npix; i++) {
-      edata[i] = hist[data_ptr[i]]; 
-   }
-   
-   delete[] hist;
-   return(1);
 }
 

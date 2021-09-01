@@ -1,0 +1,84 @@
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<H1>MOSAICR CODE FOR MAKING A DOWNSAMPLED MOSAIC TEXTURE FILE OR MERGING FILES</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#mosaic_intro">Introduction</A>
+<P>
+<LI><A HREF="#mosaic_run">Making the Mosaic</A>
+<P>
+<LI><A HREF="#merge">The Merge Option</A>
+<P>
+</UL>
+
+<H2><A NAME="mosaic_intro">INTRODUCTION</A></H2>
+
+This utility creates a single file from a number of input files.
+Its primary function is to create a single low-resolution texture file that can be used to speed up visualization of very large maps.
+A secondary function is to merge a number of files without downsampling (see below).
+<P>
+The code was originally written to make a downsampled mosaic from a group of .tif texture files for the Woson North Korea map.
+This map is huge and reading a full-scale texture file for each low-res tile --
+reading it, cropping it, then downsampling it -- was taking an unacceptibly long time.
+<P>
+The resulting texture image will be just large enough to encompass all the input files and will be black in any areas
+where there is no input data.
+<P>
+
+
+
+<H2><A NAME="mosaic_run">THE MOSAIC OPTION</A></H2>
+
+The code moves file-by-file, summing each input pixel from that file into the appropriate (downsampled) mosaic pixel.
+Thus every output pixel is the average of all the input pixels that overlap it.
+<P>
+The code is currently implemented for MrSID and GeoTiff input files and a GeoTiff output file.
+It cannot write MrSID files since we do not have a license to write MrSID (only to read these files).
+Since the Fusion3D viewer reads the resulting output file only once at full resolution, there is not a significant advantage of MrSID
+over GeoTiff anyway.
+<P>
+A limitation of the current implementation is that it doesn't do well with making a mosaic from grayscale images.
+These cant be matched nicely with color MrSID imagery.
+Adding false color to the images could be done as it is in the Fusion3D viewer but this would require associated elevation images,
+greatly complicating the implementation and the user interface.
+The Fusion3D viewer is also not yet capable of adding false color to a grayscale mosaic.
+<P>
+
+
+<H3><A NAME="las_grid">Call Format </A></H3>
+
+The user has the option of either entering from a chosen directory all the files matching a certain pattern, or
+he can enter groups of files by selecting them from a browser window.
+Currently, the first method can deal with MrSID files or GeoTiff but not a mixture of the 2 since the pattern matching is not general enough.
+<P>
+The other inputs are the filename for the output file and the desired output resolution.
+<P>
+
+
+
+<H2><A NAME="mosaic_run">MERGE OPTION</A></H2>
+
+The code was extended a little to provide an option to merge multiple files into a single file with no downsampling
+and using a simple algorithm.
+This option was implemented both for 1-band or 3-band texture images and also for floating point DEM files.
+The simple algorithm just processes each file in sequence transfering pixel values from each input pixel to the
+corresponding output pixel (except no-data pixels that are ignored).
+Thus the value of the output pixel is the last input pixel that was written to it rather that averaging as done with the Mosaicing option.
+<P>
+The motivation for adding this feature was that some maps that I downloaded for Mars did not work in Fusion3D or in Mosaicr.
+The issue is that Fusion3D expects rectangular tiles whose data and boundaries are aligned with fixed latitudes and longitudes.
+The Mars tiles has boundaries are aligned with fixed latitudes and longitudes but they overlap.
+The actual data do not overlap and the data boundary between tiles is irregular.
+The surrounding area in each tile is filled with no-data values.
+So Fusion3d was using only 1 of the several files in the overlap areas and using no-data values from this file rather than the proper
+data from the adjacent file.
+<P>
+Merging these files provides a much more regular file and solves the visualization problem with Fusion3D
+(as long as the merged files do not get too large).
+<P>
+
+

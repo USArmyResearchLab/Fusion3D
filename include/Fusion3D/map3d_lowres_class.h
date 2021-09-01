@@ -72,7 +72,8 @@ class map3d_lowres_class:public base_jfd_class{
 	 float(*coords_lod)[3];		///< Work -- Vertex Coords for individual tile
 	 float(*coords_lod_tex)[2];	///< Work -- Texture Coords for individual tile
 
-	dir_class *dir;							///< Helper class -- for map filenames
+	dir_class *dir;						///< Helper class -- for map filenames
+	mask_server_class*	mask_server;	///< Helper class -- to overlay masks like LOS
 
 	// Private methods
 	float get_lowres_elev_at_loc_dem(double north, double east);
@@ -88,6 +89,7 @@ public:
 	int write_parms(FILE *out_fd) override;
 	int clear_all() override;
 
+	int register_mask_server(mask_server_class*	mask_server_in);
 	int register_dir(dir_class *dirin);
 	int register_elev_dem(double north, double west, float dx, float dy, int nx, int ny, float* elev);
 	int register_elev_pc (double north, double south, double east, double west);

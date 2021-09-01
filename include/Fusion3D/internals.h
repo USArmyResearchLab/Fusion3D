@@ -1,16 +1,17 @@
 #ifndef _internals_h_
 #define _internals_h_
 
-/** \mainpage 3-D Fusion Viewer Map3dview
+// \verbinclude README.html
+/** \mainpage Fusion3D 3D Terrain Viewer
 
 \section intro_sec Introduction 
 
-\verbinclude map3dviewDocIntro.txt
+A general description of the Fusion3D 3D terrain viewer is <A HREF="../../../README.html">here</A>.
 
 \section Index Index 
 
 An index of general topics is
-<A HREF="../../AdditionalDocFiles/Map3dviewDocIndex.html">here</A>.
+<A HREF="../AdditionalDocFiles/Fusion3DIndex.html">here</A>.
 
 
 */
@@ -264,6 +265,7 @@ using namespace std;
 #include "elev_estimate_class.h"
 #include "interval_calc_class.h"
 #include "time_conversion_class.h"
+#include "mask_server_class.h"
 #include "map3d_lowres_class.h"
 #include "draw_data_class.h"
 #include "color_balance_class.h"
@@ -271,7 +273,6 @@ using namespace std;
 #include "vector_index_class.h"
 #include "vector_layer_class.h"
 #include "shapefile_class.h"
-#include "track_analysis_class.h"
 #include "sensor_read_class.h"
 #include "sensor_read_osus_class.h"
 #include "roi_meta_class.h"
@@ -299,6 +300,7 @@ using namespace std;
 #include "cache_class.h"
 #include "image_3d_class.h"
 #include "image_ptcloud_class.h"
+#include "image_pccsv_class.h"
 #include "image_las_class.h"
 #include "image_las_demify_class.h"
 #include "image_bpf_class.h"
@@ -309,7 +311,6 @@ using namespace std;
 #include "image_transformation_class.h"
 #include "image_yaff_class.h"
 #include "image_rtv_class.h"
-#include "transform.h"
 #include "camera4d_manager_class.h"
 #include "camera4d_manager_inv_class.h"
 #include "status_overlay_manager_class.h"
@@ -329,7 +330,6 @@ using namespace std;
 	#include "menu_input_class_sowin.h"
 #endif
 #include "keyboard_input_class.h"
-#include "atr_class.h"
 #include "atr_los_class.h"
 #include "ladar_mm_manager_class.h"
 #include "ladar_mm_manager_inv_class.h"
@@ -372,6 +372,7 @@ using namespace std;
 	#include "dialogClockTime.h"
 	#include "dialogOptionsParms.h"
 	#include "dialogCadOpen.h"
+	#include "dialogCSV.h"
 #else
     #include "DirDialog.h"
 	#include "dialog_load_dir.h"

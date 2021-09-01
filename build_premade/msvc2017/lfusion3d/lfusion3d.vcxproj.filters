@@ -31,9 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\atr_class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\atr_los_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -343,16 +340,10 @@
     <ClCompile Include="..\..\..\src\time_track_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\track_analysis_class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\track_manager_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\track_manager_inv_class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\utilities_jfd.cpp">
@@ -379,11 +370,17 @@
     <ClCompile Include="..\..\..\src\image_las_demify_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\mask_server_class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\image_pccsv_class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\dialogCSV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\include\Fusion3D\atr_class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\Fusion3D\atr_los_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -636,16 +633,10 @@
     <ClInclude Include="..\..\..\include\Fusion3D\time_track_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\Fusion3D\track_analysis_class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\Fusion3D\track_manager_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\Fusion3D\track_manager_inv_class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\Fusion3D\transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\Fusion3D\vector_index_class.h">
@@ -664,6 +655,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\Fusion3D\image_las_demify_class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Fusion3D\mask_server_class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Fusion3D\image_pccsv_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -736,6 +733,9 @@
     <QtMoc Include="..\..\..\include\Fusion3D\dialogVecToggle.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="..\..\..\include\Fusion3D\dialogCSV.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="..\..\..\ui\dialogClockTime.ui">
@@ -793,6 +793,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="..\..\..\ui\dialogCadOpen.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="..\..\..\ui\dialogCSV.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

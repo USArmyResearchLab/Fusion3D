@@ -1,0 +1,153 @@
+<HEAD>
+<TITLE>UNIVERSITY OF VIRGINIA DATA -- BROADEN TYPES OF DATA THAT CAN BE ACCESSED</TITLE>
+</HEAD>
+<BODY>
+<H1>UNIVERSITY OF VIRGINIA LIDAR DATA -- BROADEN TYPES OF DATA THAT CAN BE ACCESSED</H1>
+<HR>
+
+<H2>INDEX</H2>
+<UL>
+<LI><A HREF="#ps_intro">Introduction</A>
+<P>
+<LI><A HREF="#ps_maps">Virginia Maps</A>
+<P>
+</UL>
+
+<H2><A NAME="ps_intro">INTRODUCTION</A></H2>
+
+In January 2013 I visited the University of Virginia.
+In the Scholars Lab, there was interest in building 3-D terrain models for areas around Charlottesville.
+In the Media lab, there was interest in terrain maps of Lhasa in Tibet.
+<P>
+
+<H3><A NAME="ps_e00">Virginia Maps</A></H3>
+
+I was not able to find terrain maps of Charlottesville itself.
+The state had made maps of an area west of Charlottesville around Waynesboro/Staunton and also around the Eastern shore.
+I got a sample map of an area of Waynesboro.
+<P>
+The best data I could find was point-cloud data in LAZ format.
+I converted the LAZ files that I got to LAS using laszip.
+I then made a DEM at 1.5m resolution at about 3.7 points per pixel.
+The LAS data included intensity, so I was able to make an intensity image for the DEM.
+It looks pretty good, all things considered.
+<P>
+I also looked at a DEM they provided.
+The DEM looks to be bare-earth, although I didnt find any doc on the subject.
+There was also no intensity image, so the DEM looks really bad by itself.
+<P>
+I tried to find a good orthophoto.
+I looked on the NGA WARP site, but could not find anything good.
+I found a grayscale image that didnt seem to have very good res.
+I also found a 4-band image, but the res is only 4-m and the bands are separate
+making it even more awkward to use.
+So far, it is much better to use the ladar intensity from the LAS.
+<P>
+
+
+<H2><A NAME="ps_maps">VIRGINIA MAPS</A></H2>
+
+
+
+<H3><A NAME="ps_e00">LAS</A></H3>
+I converted the LAZ files that I got to LAS using laszip.
+I got a number of LAZ files, but AQ37.laz has lots of interesting features
+The converted LAS file looks like this:
+
+
+<PRE>
+
+File Name:	AQ37.las
+File Size:	105,160 kb
+File Date:	Wed Feb 13 19:03:57 2013
+
+File Type:	LAS
+File Signature:	LASF
+File Source ID:	0
+Global Encoding:	1
+LAS Version:	1.2
+System Identifier:	EXTRACTION
+Generating Software:	NGC LAS Utils
+File Creation Date:	July 08, 2011
+Per-point Time:	YES
+Per-point RGB:	NO
+
+Total Points:	3,755,734
+First Return:	3,337,285
+Second Return:	396,558
+Third Return:	21,620
+Fourth Return:	271
+Fifth Return:	0
+
+Min X:	745,500.000
+Max X:	747,000.000
+Min Y:	4,335,000.000
+Max Y:	4,336,500.000
+Min Z:	189.970
+Max Z:	247.724
+Estimated GSD:	0.821
+
+X File Precision:	0.001000
+Y File Precision:	0.001000
+Z File Precision:	0.001000
+
+
+Georegistration
+Coordinate System:	NAD83 / UTM zone 17N
+Horizontal Units:	Meters
+Vertical Units:	Meters
+
+
+
+1500x1500 meter.
+I was able to use the NAD83 coord system for this file and got the right lat-long from it.
+
+
+
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<H3><A NAME="ps_e00">DEM</A></H3>
+I was able to read this with QT.
+<P>  
+
+
+<PRE>
+
+File Name:	dem_n16_4701_10.2011.NRCS.img
+File Size:	17,428 kb
+File Date:	Wed Jan 30 13:45:27 2013
+
+File Type:	Erdas Imagine Images (.img)
+Grid Width:	2,000
+Grid Height:	2,000
+Number Bands:	1
+Band 1:	Height : 32-bit Float
+
+Georegistration
+Projection:	NAD_1983_HARN_StatePlane_Virginia_North_FIPS_4501_Feet
+Corner 1 X:	11,399,999.000
+Corner 1 Y:	6,714,999.000
+Corner 2 X:	11,404,999.000
+Corner 2 Y:	6,714,999.000
+Corner 3 X:	11,399,999.000
+Corner 3 Y:	6,709,999.000
+Corner 4 X:	11,404,999.000
+Corner 4 Y:	6,709,999.000
+
+The map is 5000 ft by 5000 ft, or a resolution of 2.5ft per pixel.
+
+</PRE>

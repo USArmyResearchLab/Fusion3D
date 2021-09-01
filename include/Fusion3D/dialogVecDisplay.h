@@ -5,6 +5,13 @@
 
 class vector_index_class;
 
+/**
+Qt dialog for opening vector overlay files used for display only.
+\n
+Qt dialog for opening vector overlay files used for display only.
+The menu allows the user to set some display parameters for use when not defined in the input file
+(the shapefile format often lacks basic display parameters).
+*/
 class dialogVecDisplay : public QDialog, public Ui::dialogVecDisplay
 {
 	Q_OBJECT

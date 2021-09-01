@@ -20,7 +20,6 @@ int status_overlay_manager_class::reset_all()
 	red = 1.0;
 	grn = 0.0;
 	blu = 0.0;
-	updateInterval = 1.0;
 	compassScaleFactor = 0.025;
 	return(1);
 }
@@ -85,7 +84,6 @@ int status_overlay_manager_class::write_parms(FILE *out_fd)
 
 	fprintf(out_fd, "Status-Compass %d\t\t# 0 no overlay, 1 simple overlay, 2 fancier overlay\n", displayCompassFlag);
 	fprintf(out_fd, "Status-Color %f %f %f\t\t# r, g, b [0.1] \n", red, grn, blu);
-	if (updateInterval     != 1.0  ) fprintf(out_fd, "Status-Update %f\t\t# Interval in s for update of status display\n", updateInterval);
 	if (compassScaleFactor != 0.025) fprintf(out_fd, "Status-Scale  %f\t\t# Scale factor for compass (default = 0.025)\n", compassScaleFactor);
 	fprintf(out_fd, "\n");
 	return(1);

@@ -2,18 +2,23 @@
 #define _write_manager_inv_class_h_	
 #ifdef __cplusplus
 
-/**
-Manages writing.
-
-The primary function at this time is to dump the screen to a file.\n
-\n
-The user has 2 options.  He can supply a filename and dump the screen to that file.
-He can also dump the screen to a predefined filename containing a sequence number that is automatically incremented.
-This option is designed for making short movies by dumping an animated sequence of screen captures to a sequence of files.
-
-*/
 class buttons_input_class;
 
+/**
+Manages writing the screen to a file and also updates all managers when a new Project File is selected.
+
+When a new Project File is selected, this class updates all managers, having them read the project file and 
+initialize themselves with the information in that file.
+There was not a good place to put this function -- it was easiest done in a manager and was put here arbitrarily.\n
+\n
+The write function implemented at this time is to dump the screen to a file.\n
+The user has 2 options.  He can supply a filename and dump the screen to that file.
+He can also dump the screen to a filename containing a sequence number that is automatically incremented.
+The basename is defined by the user and a sequence number is appended.
+This option is designed for making short movies by dumping an animated sequence of screen captures to a sequence of files.
+\n
+
+*/
 class write_manager_inv_class:public atrlab_manager_class{
    private:
       SoSeparator* 		classBase;			// Base of tree for class

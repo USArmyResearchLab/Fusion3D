@@ -13,6 +13,7 @@ gridder::gridder(QWidget *parent)
 	nDemX = 1;
 	nDemY = 1;
 	nPC = 0;
+	maxPixTile = 10000;
 
 	setupUi(this);
 	demFileEdit->setText("Must be .tif and should follow convention dem_<res>m_a2_*.tif");
@@ -246,8 +247,8 @@ int gridder::calcDemDimensions()
 	// *****************************************
 	npixx = int((crop_emaxt - crop_emint) / res);
 	npixy = int((crop_nmaxt - crop_nmint) / res);
-	int ntilex = npixx / 10001 + 1;			// Some tiles exactly 10000 pixels, so make just larger
-	int ntiley = npixy / 10001 + 1;
+	int ntilex = npixx / (maxPixTile + 1) + 1;			// Some tiles exactly maxPixTile pixels, so make just larger
+	int ntiley = npixy / (maxPixTile + 1) + 1;
 	ntilesXEdit->setText(QString::number(ntilex));
 	ntilesYEdit->setText(QString::number(ntiley));
 	if (nPC > 0) {
@@ -315,8 +316,8 @@ int gridder::doGrid()
 		npixyi = npixy;
 	}
 	else {
-		ntilex = npixx / 10001 + 1;		// Some tiles exactly 10k, so make just bigger
-		ntiley = npixy / 10001 + 1;
+		ntilex = npixx / (maxPixTile + 1) + 1;		// Some tiles exactly 10k, so make just bigger
+		ntiley = npixy / (maxPixTile + 1) + 1;
 		ntile = ntilex * ntiley;
 		npixxi = npixx / ntilex;
 		npixyi = npixy / ntiley;

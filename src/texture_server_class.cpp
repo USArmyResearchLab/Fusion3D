@@ -117,6 +117,14 @@ int texture_server_class::set_change_det(float thresh, float color_max)
 }
 
 // ********************************************************************************
+/// Return 1 if all texture files are 1-band grayscale only, 0 if any files are color.
+// ********************************************************************************
+int texture_server_class::is_all_gray()
+{
+	return all_gray_flag;
+}
+
+// ********************************************************************************
 /// Return 1 if high-resolution texture is available, 0 if not.
 /// If high-resolution texture available, the high-resolution tiles can be formed.
 // ********************************************************************************

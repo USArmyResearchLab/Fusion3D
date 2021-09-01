@@ -13,12 +13,12 @@ Includes method to get the name of the class (e.g. "KML"
 */
 class base_jfd_class{
    protected:
-      int diag_flag;					// Misc -- Diagnostic level -- 0=none, 1=little, 2=moderate, 3=heavy
-      int opsys_flag;					// Misc -- Operating system -- 0=unix, 1=windows, 2=linux
-      char *class_type;					// Misc -- Unique name for each child class
+      int diag_flag;				///< Diagnostic level -- 0=none, 1=little, 2=moderate, 3=heavy
+      int opsys_flag;				///< Operating system -- 0=unix, 1=windows, 2=linux
+      char *class_type;				///< Unique name for each child class
 
-	  int localCoordFlag;				//< Coord systems -- -1=unknown local coord system, 0=local same as global, >0=EPSG where known local coord different from global 
-	  gps_calc_class *gps_calc;			//< Coord systems -- Worker class to define global coordinate systems and transformations
+	  int localCoordFlag;			///< Coord systems -- -1=unknown local coord system, 0=local same as global, Positive=EPSG where known local coord different from global 
+	  gps_calc_class *gps_calc;		///< Coord systems -- Worker class to define global coordinate systems and transformations
 
    public:
       base_jfd_class();

@@ -13,6 +13,7 @@ cache_class::cache_class()
 	nstore_cur = 0;
 
 	stat = NULL;
+	flag = NULL;
 	cstore = NULL;
 	full_index = NULL;
 }
@@ -34,9 +35,11 @@ int cache_class::reset_all()
 		if (cstore[i] != NULL) delete[] cstore[i];
 	}
 	delete[] stat;
+	delete[] flag;
 	delete[] cstore;
 	delete[] full_index;
 	stat = NULL;
+	flag = NULL;
 	cstore = NULL;
 	full_index = NULL;
 
@@ -52,7 +55,8 @@ int cache_class::reset_all()
 int cache_class::force_new_store()
 {
 	mutex_stat.lock();							// Blocking operation
-	memset(stat, 0, na*sizeof(unsigned char));
+	memset(stat, 0, na * sizeof(unsigned char));
+	memset(flag, 0, na * sizeof(unsigned char));
 	nstore_cur = 0;
 	mutex_stat.unlock();
 	return(1);
@@ -89,11 +93,13 @@ int cache_class::init(map3d_index_class *map3d_index_in, int array_size, int res
 	map_w = map3d_index->map_w;
 	map_n = map3d_index->map_n;
 
-	stat	= new unsigned char[na];
+	stat = new unsigned char[na];
+	flag = new unsigned char[na];
 	cstore	= new unsigned char*[na];
 	for (int i=0; i<na; i++) {
 		cstore[i] = NULL;
 		stat[i] = 0;
+		flag[i] = 0;
 	}
 
 	// Calculate max no. of tiles you can store so you can delete older ones if necessary
@@ -123,8 +129,8 @@ int cache_class::init(map3d_index_class *map3d_index_in, int array_size, int res
 int cache_class::query(double x, double y)
 {
 	int retval;
-	float fx = (x - map_w) /  dx;
-	float fy = (map_n - y) /  dy;
+	float fx = (x - map_w) / dx;
+	float fy = (map_n - y) / dy;
 	if (fx < 0. || fy < 0. || fx >= float(nx) || fy >= float(ny)) {
 		return -1;
 	}
@@ -144,6 +150,48 @@ int cache_class::query(double x, double y)
 		mutex_stat.unlock();
 	}
 	return retval;
+}
+
+// ********************************************************************************
+/// Set a flag for the tile centered at (x,y) -- Return 0 iff off map.
+/// Flag val = 1 reserved for grayscale texture that has been colorized by DEM elevation.
+/// @param x					Easting in m in UTM coordinates
+/// @param y					Northing in m in UTM coordinates
+/// @param val					Flag is set to this value
+// ********************************************************************************
+int cache_class::set_flag(double x, double y, int val)
+{
+	int retval;
+	float fx = (x - map_w) / dx;
+	float fy = (map_n - y) / dy;
+	if (fx < 0. || fy < 0. || fx >= float(nx) || fy >= float(ny)) {
+		return 0;
+	}
+	int ix = int(fx);
+	int iy = int(fy);
+	int ip = iy * nx + ix;
+	flag[ip] = val;
+	return 1;
+}
+
+// ********************************************************************************
+/// Get a flag for the tile centered at (x,y) -- Return -1 for off map.
+/// Flag val = 1 reserved for grayscale texture that has been colorized by DEM elevation.
+/// @param x					Easting in m in UTM coordinates
+/// @param y					Northing in m in UTM coordinates
+// ********************************************************************************
+int cache_class::get_flag(double x, double y)
+{
+	int retval;
+	float fx = (x - map_w) / dx;
+	float fy = (map_n - y) / dy;
+	if (fx < 0. || fy < 0. || fx >= float(nx) || fy >= float(ny)) {
+		return -1;
+	}
+	int ix = int(fx);
+	int iy = int(fy);
+	int ip = iy * nx + ix;
+	return flag[ip];
 }
 
 // ********************************************************************************
@@ -273,6 +321,7 @@ int cache_class::delete_buffer_if_necessary()
 			delete[] cstore[ip];
 			cstore[ip] = NULL;
 			stat[ip] = 0;
+			flag[ip] = 0;
 			nstore_cur--;
 
 			// Move the rest of full_index array down to erase the deleted tile

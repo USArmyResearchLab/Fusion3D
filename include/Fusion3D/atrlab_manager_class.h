@@ -14,67 +14,52 @@ A child class of that, mti_manager_inv_class adds the capability to draw GMTI hi
 */
 class atrlab_manager_class:public base_jfd_class {
    protected:
-      int n_data_max;				// Max no of data objects can input
-      int n_data;				// No of data objects input
-      int id;					// Id no. (sequence no) of instance
+      int n_data_max;				///< Max no of data objects that can input
+      int n_data;					///< No of data objects input      
+      int refresh_pending;			///< Change pending -- any kind (0/1 default)
+      int reread_pending;			///< Change pending -- new image (from file/Epix/etc) (0/1 default)
+      int recalc_pending;			///< Change pending -- new parms requiring recalc (0/1 default)
       
-      int refresh_pending;			// Change pending -- any kind (0/1 default)
-      int reread_pending;			// Change pending -- new image (from file/Epix/etc) (0/1 default)
-      int recalc_pending;			// Change pending -- new parms requiring recalc (0/1 default)
-      
-      float draw_standoff;			// For drawing only, offset in z to make visible
-      unsigned int seed;			// Seed for random number generator
-
-
       // Define CG of data in world coordinates
-      float cg_world_x;
-      float cg_world_y;
-      float cg_world_z;
-      float cg_world_az;			// Angle in deg from East ccw
-      float cg_world_el;			// Angle in deg from horizontal
-      float cg_world_roll;			// Angle in deg from horizontal
-      int if_translated;			// 1 iff object has been translated since last draw
-      int if_rotated;				// 1 iff object has been rotated since last draw
-      float camera_height_old;
+      float cg_world_x;				///< cg location -- easting(m)
+      float cg_world_y;				///< cg location -- northing(m)
+      float cg_world_z;				///< cg location -- elevation(m)
+      float cg_world_az;			///< cg location -- Angle in deg from East ccw
+      float cg_world_el;			///< cg location -- Angle in deg from horizontal
+      float cg_world_roll;			///< cg location -- Angle in deg from horizontal
+      int if_translated;			///< 1 iff object has been translated since last draw
+      int if_rotated;				///< 1 iff object has been rotated since last draw
+      float camera_height_old;		///< Previous camera height
       
       // Track object visibility
-      int if_visible;				// 1 if object visible, 0 if invisible
-      int **mon_onoff_a;			// Multiple vis inputs -- Location to monitor
-      int *state_onoff_a;			// Multiple vis inputs -- Last state of onoff
-      int n_onoff;				// No of locations presently monitored
-      int vis_changed_by_method;		// 1 iff vis changed by method rather than by monitoring
+      int if_visible;				///< 1 if object visible, 0 if invisible
+      int **mon_onoff_a;			///< Multiple vis inputs -- Location to monitor
+      int *state_onoff_a;			///< Multiple vis inputs -- Last state of onoff
+      int n_onoff;					///< No of locations presently monitored
+      int vis_changed_by_method;	///< 1 iff vis changed by method rather than by monitoring
       
       // Locations this class monitors for float and int inputs
-      float **slider_a;			// Array of slider values
-      float *old_slider_a;		// Previous vals for sliders
-      int **count_a;			// Array of counters
-      int *old_count_a;			// Previous vals for counters
-      int count_a_default;		// Array of counters -- Default value
+      float **slider_a;				///< Array of slider values
+      float *old_slider_a;			///< Previous vals for sliders
+      int **count_a;				///< Array of counters
+      int *old_count_a;				///< Previous vals for counters
+      int count_a_default;			///< Array of counters -- Default value
       
-      int mode_current;		// 0=search. 1=track, 2=model
-      int mode_previous;	// 
-      
-      int purpose;		// Purpose 1=truth, 2=2-d map, 3=3-d map, 4=sar, 5=ladar
+      int mode_current;				///< Camera tracking -- 0=search. 1=track, 2=model
+      int mode_previous;			///< Camera tracking -- 0=search. 1=track, 2=model
+	  int if_new_icon;				///< 1 iff new icon registered
+	  int first_range, last_range;	///< Span of ranges currently displayed
 
-	  dir_class*			dir;
-      clock_input_class*	clock_input;
-      map3d_index_class*	map3d_index;
-      image_3d_class*		image_3d;			// For any 3-d images used by manager
-      atrlab_manager_class* camera_manager;
-      vector_index_class*	vector_index;
-	  fusion3d_viewer_class* myViewer;
+	  dir_class*			dir;			///< Helper class -- 
+      clock_input_class*	clock_input;	///< Helper class -- 
+      map3d_index_class*	map3d_index;	///< Helper class -- 
+      image_3d_class*		image_3d;		///< Helper class -- For any 3-d images used by manager
+      atrlab_manager_class* camera_manager;	///< Helper class -- 
+      vector_index_class*	vector_index;	///< Helper class -- 
+	  fusion3d_viewer_class* myViewer;		///< Helper class -- 
+	  mask_server_class*	mask_server;	///< Helper class -- to overlay masks like LOS
 	  map3d_lowres_class*	map3d_lowres;	///< Helper class -- to do low-res DEM
-
-      icon_class *icon;				// Pointer to icon
-      int if_new_icon;				// 1 iff new icon registered
-
-      int first_range, last_range;		// Span of ranges currently displayed
-      
-      // Track battlefield time
-      float time_battlefield_cur;			// Current battlefield time
-      int time_battlefield_flag;			// 1 iff clock ticing
-      
-      int nframes;				// For managers of video with multiple frames
+	  icon_class *			icon;			///< Helper class -- Pointer to icon
 
       // Methods
       int check_visible();
@@ -103,10 +88,8 @@ public:
       int set_mode(int mode_current_in);
       int set_if_visible(int view_mode_in);
       int get_if_visible();
-      int get_purpose();
 
       int get_n_data();
-      int get_nframes();
       
       int set_refresh_pending();
       int set_reread_pending();
@@ -120,6 +103,7 @@ public:
       int register_vector_index(vector_index_class *vector_index);
       int register_camera_manager(atrlab_manager_class *camera_manager_in);
 	  int register_viewer(fusion3d_viewer_class *myViewer);
+	  int register_mask_server(mask_server_class*	mask_server_in);
 	  int register_map3d_lowres(map3d_lowres_class*	map3d_lowres_in);
 
       int wire_count(int *count, int index_count);
@@ -131,7 +115,6 @@ public:
       // Virtual methods
       virtual int read_tagged(const char* filename);
       virtual int refresh();
-      virtual int update_time(int i_tic_in, float time_in);
       virtual int register_icon(icon_class *icon_in);
       virtual int get_closest_icon(float east, float north, icon_class *icon_out, float &dist_to_icon);
       virtual int get_zoom_factor(float &camera_height);

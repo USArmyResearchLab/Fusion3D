@@ -295,8 +295,8 @@ int image_bpf_demify_class::read_and_rasterize_composite(int init_flag)
 	int idata_maxt=-999999;
 	int mbytes_max = 900;	// Max memory size in MBytes that can be used for storage of point-cloud
    
-	double mem_tot = (double)npts_file * (double)bytes_per_point;
-	nskip = mem_tot / (1000000. * (double)mbytes_max) + 1;
+	//double mem_tot = (double)npts_file * (double)bytes_per_point;
+	//nskip = mem_tot / (1000000. * (double)mbytes_max) + 1;
 	read_file_data();
 	rasterize_init();
 	// ***************************************
